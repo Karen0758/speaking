@@ -11,15 +11,15 @@
 <style>
 :root{
   --bg:#F7F4EE; --pg:#F7F4EE; --surface:#FFFFFF; --ink:#2A2521; --inkSoft:#5C5349; --muted:#837868;
-  --accent:#A85D00; --accentLight:#FFF4E0; --accentMid:#F5CE8B;
-  --green:#2F7A3E; --greenBg:#EEF7EC; --red:#B3392F; --redBg:#FDF0EC;
-  --amber:#96650A; --amberBg:#FFF6E3;
+  /* 全站只有三档卡其：浅 / 中 / 深。深卡其同时是主按钮色 */
+  --k-light:#F2EDE2; --k-mid:#E2D9C6; --k-deep:#7A6A4E; --k-deepHover:#68593F;
+  --accent:var(--k-deep); --accentLight:var(--k-light); --accentMid:var(--k-mid);
+  --green:var(--k-deep); --greenBg:var(--k-mid); --red:#B3392F; --redBg:#FDF0EC;
+  --amber:var(--k-deep); --amberBg:var(--k-light);
   --border:#E7DFD2; --borderSoft:#F3EEE5;
-  /* 莫兰迪：低饱和灰调，画布靠色块区分，不用边框 */
-  --m-sit:#DDE3E5; --m-fac:#C9D2D6; --m-ast:#D1D9CD; --m-blk:#DDC3B2;
-  --m-who:#EBE5DB; --m-aud:#DCD4C8; --m-goal:#E5D9BB; --m-con:#E0CFC9;
-  --m-ink:#463F37; --m-lbl:#5A5248; --m-blkink:#6B4030;
-  --m-btn:#96604A; --m-btnHover:#8A5741;
+  --line:rgba(122,106,78,.16);   /* 唯一的分隔线：只做内缝，不做外框 */
+  --m-ink:#463F37; --m-lbl:#5A5248;
+  --m-btn:var(--k-deep); --m-btnHover:var(--k-deepHover);
   --rMicro:6px; --rCtl:10px; --rCard:16px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -28,7 +28,7 @@ body{font:16px/1.75 'LXGW WenKai','Xiaolai SC','PingFang SC','Noto Sans SC',syst
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
 nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
 .brand{display:flex;align-items:center;gap:9px;font-weight:500;font-size:15px;cursor:pointer}
-.brand img{height:38px;width:auto;display:block}
+.brand img{height:48px;width:auto;display:block}
 .brand i{width:26px;height:26px;border-radius:var(--rMicro);background:var(--m-btn);display:grid;place-items:center;color:#fff;font-size:13px;font-style:normal}
 .navr{display:flex;align-items:center;gap:8px}
 button,input,textarea,select{font-family:inherit}
@@ -40,12 +40,18 @@ button:active{transform:scale(.98)}
 .btn.ghost{background:none;border:none;color:var(--muted);padding:7px 10px;font-size:13px}
 .streak{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--accent);background:var(--accentLight);
         padding:5px 11px;border-radius:999px;font-weight:500}
-.card{background:#FFFDFA;border:1px solid var(--border);border-radius:var(--rCard);padding:24px}
+/* 纸张：整块一张纸，没有外框；里面的格子靠 1px 缝隙分开 */
+.sheet{display:grid;gap:1px;background:var(--line);
+  border-radius:var(--rCard);overflow:hidden;align-content:start}
+.sheet > *{background:var(--surface);border-radius:0!important}
+.card{background:var(--surface);border:none;border-radius:var(--rCard);padding:22px 24px}
+.hr{height:1px;background:var(--line);border:none;margin:0}
 .tag{display:inline-block;font-size:12px;padding:3px 9px;border-radius:var(--rMicro);
      background:var(--borderSoft);color:var(--inkSoft);margin-right:6px}
-.tag.d-easy{background:var(--greenBg);color:var(--green)}
-.tag.d-medium{background:var(--amberBg);color:var(--amber)}
-.tag.d-hard{background:var(--redBg);color:var(--red)}
+/* 难度不再用红黄绿三色块，同一支底色靠字重深浅区分 */
+.tag.d-easy{background:var(--borderSoft);color:var(--muted)}
+.tag.d-medium{background:var(--borderSoft);color:var(--inkSoft)}
+.tag.d-hard{background:var(--accentLight);color:var(--amber)}
 .lbl{font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--muted)}
 h1{font-size:30px;font-weight:500;letter-spacing:-.02em;line-height:1.3}
 h2{font-size:20px;font-weight:500}
@@ -57,54 +63,53 @@ h2{font-size:20px;font-weight:500}
   background:var(--redBg);color:var(--red);margin-left:6px;vertical-align:2px}
 
 /* 场景画布：无边框，靠莫兰迪色块拼接 */
-.canvasBox{margin-top:18px;border-radius:var(--rCard);overflow:hidden;
-  display:grid;gap:0;
-  grid-template-columns:1fr 1.2fr 1fr;
-  grid-template-areas:
-    "sit blk who"
-    "fac blk aud"
-    "ast blk goal"
-    "con con con";}
+/* 场景卡画布：只留三块——场合 / 要拿到 / 不能做。同一支米色，靠深浅分层，不再八色拼贴 */
+.canvasBox{margin-top:20px;border-radius:var(--rCard);overflow:hidden;
+  display:grid;gap:1px;background:var(--line);
+  grid-template-columns:1fr 1fr;
+  grid-template-areas:"sit sit" "goal con";}
 @media(max-width:760px){
-  .canvasBox{grid-template-columns:1fr;
-    grid-template-areas:"blk" "sit" "who" "aud" "fac" "ast" "goal" "con";}
+  .canvasBox{grid-template-columns:1fr;grid-template-areas:"sit" "goal" "con";}
 }
-.cell{padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-height:84px;color:var(--m-ink)}
+.cell{padding:18px 20px;display:flex;flex-direction:column;gap:9px;color:var(--m-ink)}
 .cell .h{display:flex;align-items:center;gap:6px}
-.cell .h i{font-size:15px;color:var(--m-lbl);line-height:1;opacity:.85}
+.cell .h i{font-size:15px;color:var(--m-lbl);line-height:1;opacity:.8}
 .cell .h span{font-size:11px;color:var(--m-lbl);letter-spacing:.08em}
-.cell .v{font-size:15px;line-height:1.55;font-weight:500}
-.cell.sit{grid-area:sit;background:var(--m-sit)}
-.cell.fac{grid-area:fac;background:var(--m-fac)}
-.cell.ast{grid-area:ast;background:var(--m-ast)}
-.cell.who{grid-area:who;background:var(--m-who)}
-.cell.aud{grid-area:aud;background:var(--m-aud)}
-.cell.goal{grid-area:goal;background:var(--m-goal)}
-.cell.blk{grid-area:blk;background:var(--m-blk);justify-content:center;padding:24px 22px;color:var(--m-blkink)}
-.cell.blk .h i,.cell.blk .h span{color:var(--m-blkink);opacity:.75}
-.cell.blk .v{font-size:20px;line-height:1.45;font-weight:500}
-.cell.con{grid-area:con;background:var(--m-con);flex-direction:row;align-items:center;gap:10px;min-height:0;padding:13px 18px}
-.cell.con .v{font-size:14px;font-weight:400}
+.cell .v{font-size:15px;line-height:1.7}
+.cell .blank{color:var(--muted);font-size:14px}
+.cell.sit{grid-area:sit;background:var(--k-light);padding:22px 22px 24px}
+.cell.sit .v{font-size:16px;line-height:1.85}
+.cell.goal{grid-area:goal;background:var(--k-light)}
+.cell.goal .v{font-weight:500}
+.cell.con{grid-area:con;background:var(--k-light)}
+.cell.con .v{color:var(--inkSoft)}
 
 /* 首屏：打开即练 */
-.hero{display:grid;grid-template-columns:1fr 300px;gap:36px;align-items:start;padding:8px 0 40px}
-@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:36px;align-items:start;
+  padding:8px 0 40px;max-width:760px}
 .fields{display:grid;gap:14px;margin-top:18px}
 .field{display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:start}
 .field .k{font-size:12px;color:var(--muted);padding-top:3px;letter-spacing:.03em}
 .field .v{font-size:15px;line-height:1.65}
 .field.hot .v{color:var(--ink);font-weight:500}
 .field.hot{background:var(--accentLight);margin:0 -14px;padding:12px 14px;border-radius:var(--rCtl)}
-.outline{background:var(--greenBg);border-radius:var(--rCtl);padding:14px 16px;margin-top:18px}
-.outline ol{margin:8px 0 0 18px;font-size:14px;line-height:1.9;color:var(--inkSoft)}
+.outline{background:var(--k-mid);border-radius:var(--rCtl);padding:15px 17px;margin-top:18px}
+.outline ol{margin:8px 0 0 18px;font-size:14px;line-height:1.9;color:var(--m-ink)}
 .bigbtn{width:100%;background:var(--m-btn);color:#fff;border-radius:var(--rCard);padding:20px;
         font-size:17px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;
         margin-top:18px;transition:background .18s}
 .bigbtn:hover{background:var(--m-btnHover)}
-.subrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.subrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.stepper{display:inline-flex}
+.stepper .btn:first-child{border-radius:var(--rCtl) 0 0 var(--rCtl)}
+.stepper .btn:last-child{border-radius:0 var(--rCtl) var(--rCtl) 0;margin-left:-1px}
+.stepper .btn:disabled{opacity:.4;cursor:default}
+.stepper .btn:disabled:hover{border-color:var(--border)}
 
 /* 练习 */
-.prac{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start}
+.prac{display:grid;grid-template-columns:300px 1fr;gap:1px;align-items:stretch;
+  background:var(--line);border-radius:var(--rCard);overflow:hidden}
+.prac > *{border-radius:0}
 @media(max-width:900px){.prac{grid-template-columns:1fr}}
 .ring{position:relative;width:104px;height:104px;display:grid;place-items:center;flex-shrink:0}
 .ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
@@ -118,22 +123,48 @@ h2{font-size:20px;font-weight:500}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* 复盘 */
-.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rCard);padding:16px 10px;text-align:center}
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:1px;
+  background:var(--line);border-radius:var(--rCard);overflow:hidden}
+.sc{background:var(--surface);border:none;border-radius:0;padding:18px 10px;text-align:center}
 .sc .n{font-size:28px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .sc .k{font-size:12px;color:var(--muted);margin-bottom:8px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:900px){.grid2{grid-template-columns:1fr}}
 
 /* 题库 */
-.filters{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
+/* 筛选面板：默认收起，标题行显示当前筛的是什么 */
+.filterBox{margin:16px 0 14px;background:var(--k-light);border-radius:var(--rCtl);overflow:hidden}
+.filterHead{width:100%;display:flex;align-items:center;gap:9px;padding:11px 14px;
+  background:none;font-size:14px;color:var(--m-ink);text-align:left}
+.filterHead:hover{background:var(--k-mid)}
+.filterHead .chev{font-size:16px;color:var(--muted);transition:transform .25s}
+.filterBox.open .filterHead .chev{transform:rotate(180deg)}
+.filterBox.open .filterHead{border-bottom:1px solid var(--line)}
+#filterClear{padding:2px 8px;border-radius:999px;background:var(--surface)}
+#filterClear:hover{color:var(--k-deep)}
+.filters{display:none;gap:9px;padding:14px}
+.filterBox.open .filters{display:grid}
+.fgroup{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.fgLabel{font-size:12px;color:var(--muted);letter-spacing:.06em;min-width:54px;flex-shrink:0}
 .chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:13px;color:var(--inkSoft)}
-.chip.on{background:var(--m-btn);color:#fff;border-color:var(--m-btn)}
-.banklist{display:grid;gap:10px}
-.bankitem{background:var(--surface);border:1px solid var(--border);border-radius:var(--rCard);
-          padding:16px 18px;display:flex;gap:14px;align-items:flex-start;cursor:pointer}
-.bankitem:hover{border-color:var(--accentMid)}
-.bankitem.off{opacity:.42}
+.chip:hover{border-color:var(--k-mid)}
+.chip.on{background:var(--k-deep);color:#fff;border-color:var(--k-deep)}
+.chip.all{color:var(--muted)}
+.chip.all.on{background:var(--k-mid);color:var(--m-ink);border-color:var(--k-mid)}
+.bulkRow{display:flex;align-items:center;gap:6px;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--line)}
+.bankSw{flex-shrink:0;align-self:center;border:1px solid var(--border);background:var(--surface);
+  border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
+.bankSw.on{background:var(--k-mid);border-color:var(--k-mid);color:var(--m-ink)}
+.bankitem .body{cursor:pointer;border-radius:var(--rCtl);transition:color .2s}
+.bankitem .body:hover .t{color:var(--k-deep)}
+.banklist{display:grid;gap:1px;background:var(--line);
+  border-radius:var(--rCard);overflow:hidden;margin-bottom:4px}
+.bankitem{background:var(--surface);border:none;border-radius:0;
+          padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.bankitem:hover{background:#FFFDF6}
+.bankitem.off{background:#FBF8F2;color:var(--muted)}
+.bankitem.off .t{color:var(--inkSoft)}
 .bankitem .body{flex:1;min-width:0}
 .bankitem .t{font-weight:500;font-size:15px;margin-bottom:5px}
 .bankitem .b{font-size:13px;color:var(--muted);line-height:1.6}
@@ -148,7 +179,7 @@ h2{font-size:20px;font-weight:500}
 .wheelPage{position:relative;height:100dvh;
   background-image:radial-gradient(circle,#E8E1D5 1.1px,transparent 1.1px);
   background-size:26px 26px;margin:0 -28px;padding:0 28px;overflow:hidden}
-.wheelLogo{position:absolute;left:26px;top:22px;z-index:3;height:42px;width:auto;
+.wheelLogo{position:absolute;left:26px;top:22px;z-index:3;height:62px;width:auto;
   cursor:pointer;opacity:0;animation:inviteIn 1.4s ease-out .1s forwards}
 .wheelStage{position:absolute;left:50%;width:min(1280px,100%);margin-left:0;
   transform:translateX(-50%);top:30px;bottom:0;
@@ -161,11 +192,14 @@ h2{font-size:20px;font-weight:500}
   will-change:transform}
 .wheelStage.drag .stamp{transition:none}
 /* 相框：一条很淡的手绘感细线，不投影、不做内嵌高光 */
-.stamp::after,.hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+.stamp::after,.sceneHero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
   border:1px solid rgba(102,88,72,.16);border-radius:5px}
 .stamp .inner{position:relative;z-index:2;width:100%;height:100%;overflow:hidden}
 .stamp .inner img{position:relative;z-index:3;width:100%;height:100%;object-fit:cover;
   display:block;transform:scale(1.25);transform-origin:center 42%}
+/* 非人像的插画：整幅显示，不放大裁脸 */
+.stamp.full .inner img,.sceneHero.full .inner img{transform:none;object-fit:contain}
+.stamp.full .inner,.sceneHero.full .inner{background:#F5EEE9}
 .stamp .face{font-size:96px;line-height:1;
   width:100%;height:100%;display:grid;place-items:center}
 /* 左侧邀请语：像云散开一样慢慢浮上来 */
@@ -188,11 +222,9 @@ h2{font-size:20px;font-weight:500}
   max-height:70vh;overflow-y:auto;scrollbar-width:none;padding:6px 2px}
 .wheelList::-webkit-scrollbar{display:none}
 .wheelList li{list-style:none;font-size:16px;line-height:2.2;color:#B8AFA4;
-  cursor:pointer;white-space:nowrap;transition:color .25s,font-weight .25s}
-.wheelList li::before{content:"· ";opacity:.5}
+  cursor:pointer;white-space:nowrap;transition:color .25s}
 .wheelList li:hover{color:#8A8074}
-.wheelList li.on{color:var(--m-btn);font-weight:600;font-size:17px}
-.wheelList li.on::before{opacity:1;content:"● "}
+.wheelList li.on{color:var(--m-btn)}
 @media(max-width:900px){
   .wheelList{display:none}
   .wheelStage{width:100%;left:0;margin-left:0;transform:none}
@@ -210,25 +242,25 @@ h2{font-size:20px;font-weight:500}
 @media(max-width:860px){.sceneBody{grid-template-columns:1fr}}
 .qList{display:grid;gap:0}
 .qList .lbl{margin-bottom:14px}
-.qItem{padding:16px 2px;border-bottom:1px solid rgba(90,82,72,.14);cursor:pointer;
+.qItem{padding:16px 2px;border-bottom:1px solid var(--line);cursor:pointer;
   font-size:17px;line-height:1.55;color:var(--m-ink);
   display:flex;align-items:baseline;gap:12px;transition:color .2s,padding-left .25s}
 .qItem:hover{padding-left:8px;color:var(--m-btn)}
 .qItem .no{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:18px}
 .qEmpty{font-size:15px;color:var(--muted);padding:16px 0}
 
-/* 人物大图：FLIP 的落点 */
+/* 人物大图：FLIP 的落点。注意别叫 .hero——首屏的 .hero 是个 grid 容器，同名会把这里压成 0 宽 */
 .heroWrap{position:relative;justify-self:end}
-.hero{position:relative;width:322px;height:392px;background:var(--st,#DCD4C8);padding:12px;
-  filter:drop-shadow(0 12px 30px rgba(70,63,55,.14))}
-.hero .inner{position:relative;z-index:2;width:100%;height:100%;overflow:hidden}
-.hero .inner img{position:relative;z-index:3;width:100%;height:100%;object-fit:cover;display:block;
+.sceneHero{position:relative;display:block;width:322px;height:392px;
+  background:var(--st,#DCD4C8);padding:12px;border-radius:5px}
+.sceneHero .inner{position:relative;z-index:2;width:100%;height:100%;overflow:hidden}
+.sceneHero .inner img{position:relative;z-index:3;width:100%;height:100%;object-fit:cover;display:block;
   transform:scale(1.25);transform-origin:center 42%}
-.hero .inner .face{font-size:120px;line-height:1}
+.sceneHero .inner .face{width:100%;height:100%;display:grid;place-items:center;font-size:120px;line-height:1}
 .flipping{transform-origin:top left;will-change:transform}
 .sceneFade{opacity:0;transform:translateY(14px)}
 .sceneFade.in{opacity:1;transform:none;transition:opacity .55s ease .28s,transform .55s cubic-bezier(.22,1,.3,1) .28s}
-@media(max-width:860px){.heroWrap{justify-self:start}.hero{width:238px;height:290px}}
+@media(max-width:860px){.heroWrap{justify-self:start}.sceneHero{width:238px;height:290px}}
 
 /* 设置面板 *//* 设置面板 */
 .mask{position:fixed;inset:0;background:rgba(42,37,33,.42);display:none;
@@ -246,11 +278,38 @@ h2{font-size:20px;font-weight:500}
 .dlgrow{display:flex;gap:9px;margin-top:22px;align-items:center}
 .chkline{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--inkSoft)}
 .dlgmsg{font-size:13px;margin-top:12px;line-height:1.6}
+/* 上传题库 */
+.dlg .drop{margin-top:18px;padding:26px 20px;text-align:center;cursor:pointer;
+  background:var(--k-light);border-radius:var(--rCtl);transition:background .2s}
+.dlg .drop:hover,.dlg .drop.over{background:var(--k-mid)}
+.upSec{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+/* 历史记录：整行可点，进去看当时那份复盘 */
+.recrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px 8px 11px 2px;border-bottom:1px solid var(--line);cursor:pointer;
+  margin:0 -8px 0 -2px;border-radius:var(--rCtl);transition:background .15s}
+.recrow:hover{background:var(--k-light)}
+.recrow:last-child{border-bottom:none}
+.dlg{max-height:88vh;overflow-y:auto}
 
-/* 小星 */
-#kidhost{width:100%}
-#kidhost svg{width:100%;height:auto;overflow:visible;display:block}
-.kidcap{text-align:center;font-size:14px;color:var(--inkSoft);margin-top:2px;min-height:24px}
+/* 小星：常驻右下角的悬浮小人，可关掉 */
+.kidFloat{position:fixed;right:22px;bottom:20px;z-index:120;width:186px;
+  display:flex;flex-direction:column;align-items:center;
+  transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.32,1)}
+.kidFloat.off{opacity:0;transform:translateY(14px) scale(.94);pointer-events:none}
+.kidFloat .body{width:100%}
+.kidFloat .body svg{width:100%;height:auto;overflow:visible;display:block}
+.kidcap{text-align:center;font-size:14px;line-height:1.6;color:var(--inkSoft);
+  margin-top:-2px;min-height:22px;max-width:180px}
+.kidClose{position:absolute;top:0;right:0;width:24px;height:24px;border-radius:50%;
+  background:rgba(255,253,250,.9);color:var(--muted);font-size:13px;
+  display:grid;place-items:center;opacity:0;transition:opacity .2s,color .2s}
+.kidFloat:hover .kidClose{opacity:1}
+.kidClose:hover{color:var(--m-btn)}
+.kidReopen{position:fixed;right:22px;bottom:20px;z-index:120;
+  width:auto;padding:8px 14px;border-radius:999px;background:#FFFDFA;
+  border:1px solid var(--border);font-size:13px;color:var(--inkSoft);display:none}
+.kidReopen.on{display:block}
+@media(max-width:760px){.kidFloat{width:132px;right:12px;bottom:12px}.kidcap{display:none}}
 </style>
 </head>
 <body>
@@ -282,19 +341,18 @@ h2{font-size:20px;font-weight:500}
 
       <button class="bigbtn" onclick="startPractice()">开麦，<span id="h-sec">60</span> 秒</button>
       <div class="subrow">
-        <button class="btn" onclick="drawCard()">换一张</button>
-        <button class="btn" onclick="go('scene')">换个题</button>
-        <button class="btn" onclick="startPractice(30)">今天只讲 30 秒</button>
-        <button class="btn" onclick="cycleDiff()">难度：<span id="h-diffbtn">全部</span></button>
+        <span class="stepper">
+          <button class="btn" onclick="adjustSec(-30)" title="减 30 秒">− 30 秒</button>
+          <button class="btn" onclick="adjustSec(30)" title="加 30 秒">+ 30 秒</button>
+        </span>
+        <button class="btn" onclick="drawCard()">随机换一张</button>
+        <button class="btn" id="h-back" onclick="backToRelation()">返回</button>
+        <button class="btn" onclick="go('bank')">去题库里挑</button>
+        <button class="btn" onclick="cycleDiff()">随机范围：<span id="h-diffbtn">全部</span></button>
       </div>
 
-      <p class="note" style="margin-top:16px">一屏看完，不用点开任何东西。中间那块是这次真正难的地方。</p>
+      <p class="note" style="margin-top:16px">一屏看完，不用点开任何东西。开麦前先把「要拿到」那句读一遍。</p>
     </div>
-
-    <aside>
-      <div id="kidhost"></div>
-      <p class="kidcap" id="kidcap">今天想讲哪一张？</p>
-    </aside>
   </div>
 </section>
 
@@ -327,7 +385,7 @@ h2{font-size:20px;font-weight:500}
         <div id="sc-qs"></div>
       </div>
       <div class="heroWrap">
-        <div class="hero" id="sc-hero"><div class="inner" id="sc-heroInner"></div></div>
+        <div class="sceneHero" id="sc-hero"><div class="inner" id="sc-heroInner"></div></div>
       </div>
     </div>
   </div>
@@ -343,7 +401,7 @@ h2{font-size:20px;font-weight:500}
         <span style="font-size:12px;color:var(--muted);margin-left:auto" id="asrState">正在听</span>
       </div>
 
-      <div style="padding:13px 15px;border-radius:var(--rCtl);background:var(--bg);border-left:3px solid var(--accent)">
+      <div style="padding:13px 15px;border-radius:var(--rCtl);background:var(--k-light)">
         <div style="font-size:14px;font-weight:500;line-height:1.55" id="p-title"></div>
       </div>
 
@@ -365,8 +423,6 @@ h2{font-size:20px;font-weight:500}
         <div class="lbl" style="color:var(--accent);margin-bottom:6px">卡壳提示</div>
         <div style="font-size:14px;line-height:1.6;color:var(--inkSoft)" id="p-hint">停顿超过几秒会自动给一句。</div>
       </div>
-
-      <div id="kidhost2"></div>
 
       <button class="btn pri" onclick="finish()">讲完了</button>
     </aside>
@@ -395,8 +451,8 @@ h2{font-size:20px;font-weight:500}
   </div>
 
   <div class="grid2">
-    <div style="display:grid;gap:14px;align-content:start">
-      <div class="card" style="border-left:3px solid var(--accent)">
+    <div class="sheet">
+      <div class="card">
         <div class="lbl" style="margin-bottom:8px">总评</div>
         <div style="font-size:16px;line-height:1.6" id="r-overall"></div>
         <div style="margin-top:10px"><span class="tag" id="r-diffTag"></span></div>
@@ -416,7 +472,7 @@ h2{font-size:20px;font-weight:500}
       </div>
     </div>
 
-    <div style="display:grid;gap:14px;align-content:start">
+    <div class="sheet">
       <div class="card" id="r-quotesCard">
         <div class="lbl" style="margin-bottom:12px">逐句点评</div>
         <div id="r-quotes"></div>
@@ -425,7 +481,7 @@ h2{font-size:20px;font-weight:500}
         <div class="lbl" style="margin-bottom:12px">诊断</div>
         <div id="r-diag"></div>
       </div>
-      <div class="card" id="r-fuCard" style="background:var(--accentLight);border-color:var(--accentMid)">
+      <div class="card" id="r-fuCard" style="background:var(--k-mid)">
         <div class="lbl" style="margin-bottom:4px;color:var(--accent)">对方接下来会问</div>
         <p class="note" style="margin-bottom:12px">每一条都追溯到你的哪句话</p>
         <div id="r-followups"></div>
@@ -438,7 +494,7 @@ h2{font-size:20px;font-weight:500}
         <div class="lbl" style="margin-bottom:10px">你说了什么</div>
         <div style="font-size:15px;line-height:1.9;max-height:240px;overflow:auto" id="r-transcript"></div>
       </div>
-      <div class="card" id="r-flag" style="background:var(--amberBg);border-color:#F0DDB4">
+      <div class="card" id="r-flag" style="background:var(--k-light)">
         <div class="lbl" style="margin-bottom:8px;color:var(--amber)">演示说明</div>
         <p class="note" style="color:var(--amber)" id="r-flagtext"></p>
       </div>
@@ -453,11 +509,29 @@ h2{font-size:20px;font-weight:500}
       <h2>我的题库</h2>
       <p class="note" style="margin-top:4px" id="bankcount"></p>
     </div>
-    <button class="btn" onclick="go('home')">直接开练</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="openUpload()">上传题库</button>
+      <button class="btn" onclick="go('home')">直接开练</button>
+    </div>
   </div>
-  <div class="filters" id="filters"></div>
+  <div class="filterBox">
+    <button class="filterHead" id="filterHead" aria-expanded="false" aria-controls="filters">
+      <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i>
+      <span id="filterSummary">筛选</span>
+      <span style="flex:1"></span>
+      <span class="note" id="filterClear" style="display:none">清空筛选</span>
+      <i class="ti ti-chevron-down chev" aria-hidden="true"></i>
+    </button>
+    <div class="filters" id="filters"></div>
+  </div>
+  <div class="bulkRow">
+    <span class="note" id="bankShown"></span>
+    <span style="flex:1"></span>
+    <button class="btn ghost" onclick="bulkSet(true)">这批全开</button>
+    <button class="btn ghost" onclick="bulkSet(false)">这批全关</button>
+  </div>
   <div class="banklist" id="banklist"></div>
-  <p class="note" style="margin:18px 0 40px">默认全部开启，直接可练。不想要的关掉就行，不必现在就看完。</p>
+  <p class="note" style="margin:18px 0 40px">点题目本身就直接开练；右边的开关只决定它进不进「随机换一张」的池子。</p>
 </section>
 
 <!-- ═══════ 记录 ═══════ -->
@@ -472,16 +546,57 @@ h2{font-size:20px;font-weight:500}
     <div class="sc"><div class="k">累计练习</div><div class="n" id="m-cnt">0</div></div>
     <div class="sc"><div class="k">总字数</div><div class="n" id="m-chars">0</div></div>
   </div>
-  <div class="card" style="margin-bottom:14px">
-    <div class="lbl" style="margin-bottom:14px">口癖词频次<span class="note" style="margin-left:8px">每分钟，真实统计</span></div>
-    <div id="m-trend"></div>
-  </div>
-  <div class="card" style="margin-bottom:40px">
-    <div class="lbl" style="margin-bottom:12px">练过的题</div>
-    <div id="rechist"></div>
+  <div class="sheet" style="margin-bottom:40px">
+    <div class="card">
+      <div class="lbl" style="margin-bottom:14px">口癖词频次<span class="note" style="margin-left:8px">每分钟，真实统计</span></div>
+      <div id="m-trend"></div>
+    </div>
+    <div class="card">
+      <div class="lbl" style="margin-bottom:12px">练过的题</div>
+      <div id="rechist"></div>
+    </div>
   </div>
 </section>
 
+</div>
+
+<!-- 悬浮小人 -->
+<div class="kidFloat" id="kidFloat">
+  <button class="kidClose" id="kidClose" aria-label="收起小星" title="收起小星"><i class="ti ti-x"></i></button>
+  <div class="body" id="kidFloatBody"></div>
+  <p class="kidcap" id="kidcap">今天想讲哪一位？</p>
+</div>
+<button class="kidReopen" id="kidReopen">叫小星回来</button>
+
+<div class="mask" id="upMask">
+  <div class="dlg" style="max-width:560px">
+    <h3>上传题库</h3>
+    <p class="note">自己的题会追加到现有题库里，不覆盖自带的那些。全程在这台电脑上完成，文件不会上传到任何地方。</p>
+
+    <div class="drop" id="upDrop">
+      <div style="font-size:15px;color:var(--inkSoft)">把文件拖进来，或者点这里选一个</div>
+      <div class="note" style="margin-top:6px">支持 .csv / .json / .xlsx，只有「标题」是必填，其余缺了就留空</div>
+      <input type="file" id="upFile" accept=".csv,.json,.xlsx,.xls,.tsv,.txt" hidden>
+    </div>
+    <div class="dlgmsg" id="upMsg"></div>
+
+    <div class="upSec">
+      <div class="lbl" style="margin-bottom:8px">没有现成的题？让 AI 按格式写</div>
+      <p class="note">复制这段提示词，发给任意一个 AI，把它给你的结果存成 .json 或 .csv 再传上来。提示词里已经写死了字段名和可选值。</p>
+      <div class="dlgrow" style="margin-top:12px">
+        <button class="btn pri" id="upCopyBtn" onclick="copyPrompt()">复制提示词</button>
+        <button class="btn" onclick="downloadTemplate('csv')">下载 CSV 模板</button>
+        <button class="btn" onclick="downloadTemplate('json')">下载 JSON 模板</button>
+      </div>
+    </div>
+
+    <div class="dlgrow">
+      <span class="note" id="upMineCount"></span>
+      <span style="flex:1"></span>
+      <button class="btn ghost" onclick="clearMine()">清空我上传的</button>
+      <button class="btn" onclick="closeUpload()">关闭</button>
+    </div>
+  </div>
 </div>
 
 <div class="mask" id="aiMask">
@@ -517,415 +632,1065 @@ h2{font-size:20px;font-weight:500}
 
 <script>
 /* ─────────── 场景卡数据 ─────────── */
-const CARDS = [
-  {
-    "id": "sc001",
-    "title": "健身房教练第三次问你办不办年卡",
-    "domain": "消费",
-    "act": "拒绝",
-    "relation": "服务人员",
-    "emotionalCost": "低",
-    "difficulty": "easy",
-    "seconds": 60,
-    "situation": "周三晚上，你刚跑完步准备走，教练在门口拦住你",
-    "role": "你是这家健身房的月卡会员，来了两个月",
-    "audience": "教练小李，他有业绩指标，这个月还差两单",
-    "facts": "他前两次问你都说「再想想」，这次他直接把优惠单页递到你手里",
-    "assets": "你觉得他人不错，也确实不想办年卡，但你还得继续来这家健身房",
-    "blocker": "说「太贵了」他会给你算折扣，说「再想想」你已经用过两次了",
-    "goal": "把话说死，让他不再问，同时以后见面不尴尬",
-    "constraint": "一分钟内，不能撒谎说自己要搬家",
-    "outline": [
-      "先谢他，承认他推荐的东西不差",
-      "直接说不办，给一个不可反驳的理由",
-      "把话头引到以后还会来这件事上"
-    ],
-    "hints": [
-      "「不需要」比「太贵了」更难被反驳",
-      "给一个和钱无关的理由",
-      "说完主动换话题"
-    ],
-    "brief": {
-      "situation": "健身房门口、你正要走",
-      "role": "月卡会员、来了两个月",
-      "audience": "教练小李、这月差两单",
-      "facts": "前两次都说「再想想」",
-      "assets": "还得继续来这家",
-      "blocker": "说贵、他就给你算折扣",
-      "goal": "让他不再问、还不尴尬",
-      "constraint": "不能撒谎说要搬家"
-    }
-  },
-  {
-    "id": "sc002",
-    "title": "朋友第三次约你周末爬山",
-    "domain": "生活",
-    "act": "拒绝",
-    "relation": "朋友",
-    "emotionalCost": "中",
-    "difficulty": "easy",
-    "seconds": 60,
-    "situation": "周四晚上，他在微信上发来这周末的路线图和天气预报",
-    "role": "你是他大学时的室友，现在住同一个城市",
-    "audience": "他，一个很热心的人，组局从来都是他张罗",
-    "facts": "前两次你都答应了，一次临时说加班放了他鸽子，一次去了但全程在拍照没走完",
-    "assets": "你是真的不喜欢爬山，但你确实想跟他保持来往",
-    "blocker": "再找借口他会看出来，直说不喜欢又怕他觉得前两次你是在敷衍他",
-    "goal": "让他知道以后爬山别叫你，但别让他觉得你是在疏远他",
-    "constraint": "一分钟内，不能用「最近很忙」这种理由",
-    "outline": [
-      "先承认前两次是自己没说实话",
-      "说清楚不是不想见他，是不喜欢这个活动",
-      "主动提一个你真的想去的替代方案"
-    ],
-    "hints": [
-      "把「不去」和「不想见你」明确分开",
-      "承认前两次的敷衍，反而更可信",
-      "结尾要给一个具体的下次"
-    ],
-    "brief": {
-      "situation": "周四晚、他发来路线图",
-      "role": "他大学室友、同城",
-      "audience": "很热心、局都他张罗",
-      "facts": "放过他一次鸽子",
-      "assets": "真的不喜欢爬山",
-      "blocker": "再找借口、他会看出来",
-      "goal": "以后别叫我、但别疏远",
-      "constraint": "不能说「最近忙」"
-    }
-  },
-  {
-    "id": "sc003",
-    "title": "刚失业的朋友深夜发消息说想聊聊",
-    "domain": "生活",
-    "act": "安慰",
-    "relation": "朋友",
-    "emotionalCost": "中",
-    "difficulty": "easy",
-    "seconds": 60,
-    "situation": "晚上十一点，他打来语音电话，第一句是「你睡了吗」",
-    "role": "你是他工作后还常联系的少数几个朋友之一",
-    "audience": "他，上周被裁，还没跟家里说",
-    "facts": "他没有直接说难过，只是反复说「其实还好」「早就想休息了」",
-    "assets": "你自己两年前也被裁过，但你当时的处境比他好，有存款也很快找到了下家",
-    "blocker": "讲自己的经历容易变成说教，说「会好起来的」又太轻",
-    "goal": "让他愿意把真话说出来，而不是继续说「其实还好」",
-    "constraint": "一分钟内，不能给任何找工作的建议",
-    "outline": [
-      "先接住他此刻的状态，不急着解决问题",
-      "说一句让他知道不用硬撑的话",
-      "把话头交回给他"
-    ],
-    "hints": [
-      "问题比结论管用",
-      "不要说「我懂」，说一个具体的细节",
-      "允许沉默"
-    ],
-    "brief": {
-      "situation": "夜里十一点、他打来电话",
-      "role": "他为数不多的老朋友",
-      "audience": "上周被裁、没跟家里说",
-      "facts": "反复说「其实还好」",
-      "assets": "你自己也被裁过",
-      "blocker": "讲自己、容易变说教",
-      "goal": "让他愿意说真话",
-      "constraint": "不能给找工作建议"
-    }
-  },
-  {
-    "id": "sc004",
-    "title": "同事又把他的活推给你，这次是当着组长的面",
-    "domain": "职场",
-    "act": "拒绝",
-    "relation": "同事",
-    "emotionalCost": "中",
-    "difficulty": "medium",
-    "seconds": 60,
-    "situation": "周会快结束时，他说「这块小王比我熟，让他来吧」，组长看向你",
-    "role": "你和他同级，入职时间差不多",
-    "audience": "组长，他只想尽快把活派下去散会；以及在场另外五个同事",
-    "facts": "这是这个季度第三次，前两次你都接了，其中一次做到凌晨两点",
-    "assets": "你手上有两个正在做的事，但都没有明确的截止日期",
-    "blocker": "当众说不会显得不合作，说「我手上还有事」他会说「那个不急」",
-    "goal": "把这件事推回去，同时不让组长觉得你在推诿",
-    "constraint": "一分钟内，不能提前两次的旧账",
-    "outline": [],
-    "hints": [
-      "把话题从「谁做」转到「怎么排」",
-      "让组长做决定，而不是你和他对峙",
-      "给一个具体的时间冲突，不要笼统说忙"
-    ],
-    "brief": {
-      "situation": "周会末尾、他当众点你",
-      "role": "和他同级、同期入职",
-      "audience": "组长只想快点散会",
-      "facts": "这季度第三次",
-      "assets": "手上的事、都没死线",
-      "blocker": "当众说不、像不合作",
-      "goal": "推回去、又不显推诿",
-      "constraint": "不能提旧账"
-    }
-  },
-  {
-    "id": "sc005",
-    "title": "跟主管说项目要延期两周",
-    "domain": "职场",
-    "act": "坏消息",
-    "relation": "直属领导",
-    "emotionalCost": "中",
-    "difficulty": "medium",
-    "seconds": 60,
-    "situation": "周一早上的一对一，你有十分钟，这是第一个话题",
-    "role": "你是这个项目的负责人，入职一年半",
-    "audience": "主管，他下午要向上汇报，需要一个能转述出去的说法",
-    "facts": "原定这个月底上线，现在进度七成，延两周基本确定",
-    "assets": "延期是因为对接的部门临时改了要求，你有他们的书面确认；但你上上周的周报里写的是「进展顺利」",
-    "blocker": "主管很可能会问「上上周怎么说顺利」，而那确实是你写的",
-    "goal": "让他接受延期，并且同意你去要一个人手支援",
-    "constraint": "一分钟内，不能把责任全推给对接部门",
-    "outline": [],
-    "hints": [
-      "先给结论和新日期，再讲原因",
-      "主动交代周报那件事，别等他问",
-      "把「要人」包装成缩短延期的方案"
-    ],
-    "brief": {
-      "situation": "周一一对一、十分钟",
-      "role": "项目负责人、入职一年半",
-      "audience": "主管下午要往上汇报",
-      "facts": "进度七成、延两周",
-      "assets": "周报写过「进展顺利」",
-      "blocker": "他会问、周报怎么说的顺",
-      "goal": "让他接受、还给你加人",
-      "constraint": "不能全推给对接部门"
-    }
-  },
-  {
-    "id": "sc006",
-    "title": "面试官问你中间空了八个月在干什么",
-    "domain": "求职",
-    "act": "澄清",
-    "relation": "面试官",
-    "emotionalCost": "中",
-    "difficulty": "medium",
-    "seconds": 90,
-    "situation": "面试进行到二十分钟，他翻到简历第二页，抬头问你",
-    "role": "你工作五年，去年主动离职后休息了八个月",
-    "audience": "用人部门负责人，他手上还有两个候选人在面",
-    "facts": "那八个月你确实没上班，前三个月在休息，后五个月在准备转方向但没做出成品",
-    "assets": "你在那五个月里系统学了新东西，也做了两个没上线的小项目",
-    "blocker": "说「在学习」听起来像托词，说实话承认前三个月什么都没干又怕被判定为不稳定",
-    "goal": "把这八个月讲成一个有意识的选择，而不是一段找不到工作的空白",
-    "constraint": "九十秒内，不能编造任何没发生过的经历",
-    "outline": [],
-    "hints": [
-      "把八个月切成两段，分别交代",
-      "用产出说话，哪怕没上线",
-      "结尾落到「所以我现在想找的是什么」"
-    ],
-    "brief": {
-      "situation": "面试二十分钟、他抬头问",
-      "role": "工作五年、去年主动离职",
-      "audience": "他手上还有两个候选人",
-      "facts": "中间空了八个月",
-      "assets": "后五个月学了新东西",
-      "blocker": "说「在学习」、像托词",
-      "goal": "讲成有意识的选择",
-      "constraint": "不能编造经历"
-    }
-  },
-  {
-    "id": "sc007",
-    "title": "房东说明年要涨租八百",
-    "domain": "生活",
-    "act": "谈判",
-    "relation": "陌生人",
-    "emotionalCost": "中",
-    "difficulty": "medium",
-    "seconds": 60,
-    "situation": "合同还有一个月到期，他打电话来通知，语气是通知不是商量",
-    "role": "你在这里住了两年，一直按时交租",
-    "audience": "房东，他说隔壁小区都涨了",
-    "facts": "同小区确实有房子挂到了他说的价，但挂了三个月还没租出去",
-    "assets": "你不想搬，搬家成本比涨的租金还高，而他大概率不知道这一点",
-    "blocker": "说「太贵了我就搬走」是虚张声势，他要是接了你就骑虎难下",
-    "goal": "把涨幅压到四百以内，或者换成签两年不涨",
-    "constraint": "一分钟内，不能说任何你自己做不到的威胁",
-    "outline": [],
-    "hints": [
-      "先说你想继续住，把立场摆正",
-      "用那套挂了三个月的房子说话",
-      "给他一个比涨租更划算的选择"
-    ],
-    "brief": {
-      "situation": "合同剩一个月、他来电",
-      "role": "住了两年、从没拖欠",
-      "audience": "房东说隔壁都涨了",
-      "facts": "他要涨八百",
-      "assets": "搬家比涨的租金还贵",
-      "blocker": "威胁搬走、他接了怎么办",
-      "goal": "压到四百、或签两年",
-      "constraint": "不能说做不到的威胁"
-    }
-  },
-  {
-    "id": "sc008",
-    "title": "饭桌上有人半开玩笑说你们做这个的在砸别人饭碗",
-    "domain": "生活",
-    "act": "表态",
-    "relation": "朋友",
-    "emotionalCost": "中",
-    "difficulty": "medium",
-    "seconds": 60,
-    "situation": "六个人的聚餐，菜过半，气氛本来很轻松",
-    "role": "你是在座唯一在互联网公司做人工智能相关工作的人",
-    "audience": "四个不同行业的朋友，其中一个上个月刚被公司用新工具替掉了一部分工作",
-    "facts": "说这话的是另一个人，语气是开玩笑，但那位被替掉工作的朋友没接话，低头在吃菜",
-    "assets": "你确实了解这个行业，也确实见过因为这个被裁的人",
-    "blocker": "说「技术是中立的」太轻飘，说「确实会」会让那位朋友更难受",
-    "goal": "给一个真诚的、不回避也不说教的回答，让气氛别僵掉",
-    "constraint": "一分钟内，这是饭桌不是辩论赛",
-    "outline": [],
-    "hints": [
-      "先承认这件事是真的在发生",
-      "把话题从「技术好不好」转到「人怎么办」",
-      "别看向那位被替掉工作的朋友"
-    ],
-    "brief": {
-      "situation": "六人聚餐、气氛本来很好",
-      "role": "在座唯一做这行的",
-      "audience": "一个朋友刚被工具替掉",
-      "facts": "有人玩笑说你砸饭碗",
-      "assets": "你确实见过被裁的人",
-      "blocker": "说中立太轻、说会更扎心",
-      "goal": "不回避、也不说教",
-      "constraint": "饭桌、不是辩论赛"
-    }
-  },
-  {
-    "id": "sc009",
-    "title": "亲戚在饭桌上第五次问你什么时候结婚",
-    "domain": "亲密",
-    "act": "划界限",
-    "relation": "家人",
-    "emotionalCost": "高",
-    "difficulty": "medium",
-    "seconds": 60,
-    "situation": "过年家宴，一桌十二个人，她刚给你夹了一筷子菜",
-    "role": "你三十一岁，单身，工作在外地",
-    "audience": "姑姑，她是真心觉得在帮你，而且她说完全桌都在等你回答",
-    "facts": "前四次你都笑笑说「快了快了」，所以她认为这个话题是可以聊的",
-    "assets": "你确实不打算近几年结婚，但你不想跟她吵，明年还得回来",
-    "blocker": "再笑笑带过明年还会问第六次，直接说「别问了」会让一桌人下不来台",
-    "goal": "让她以后不再问，同时这顿饭能吃完",
-    "constraint": "一分钟内，不能说任何指责她的话",
-    "outline": [],
-    "hints": [
-      "先接住她的好意，那是真的",
-      "把「别问了」换成一个明确的、关于你自己的陈述",
-      "说完主动给她递个台阶"
-    ],
-    "brief": {
-      "situation": "过年家宴、一桌十二人",
-      "role": "三十一岁、单身、在外地",
-      "audience": "姑姑、真心觉得在帮你",
-      "facts": "前四次都笑笑带过",
-      "assets": "明年还得回来",
-      "blocker": "再带过、明年问第六次",
-      "goal": "让她不再问、饭还能吃完",
-      "constraint": "不能指责她"
-    }
-  },
-  {
-    "id": "sc010",
-    "title": "朋友开口借五万，说三个月就还",
-    "domain": "生活",
-    "act": "拒绝",
-    "relation": "朋友",
-    "emotionalCost": "高",
-    "difficulty": "hard",
-    "seconds": 90,
-    "situation": "他约你出来喝咖啡，聊了半小时家常之后突然说到这件事",
-    "role": "你们认识八年，他在你最难的时候帮过你一次",
-    "audience": "他，最近生意周转不开，已经找过别人但没借到",
-    "facts": "他说三个月就还，但没说清楚三个月后钱从哪来",
-    "assets": "你账上确实有这笔钱，那是你给家里备的应急钱",
-    "blocker": "说没钱他知道你有，说「我要留着应急」显得你把他排在家人之后；而且他当年确实帮过你",
-    "goal": "不借这笔钱，同时不让八年的交情断在这句话上",
-    "constraint": "九十秒内，不能说谎，也不能只说「我考虑一下」拖延",
-    "outline": [],
-    "hints": [],
-    "brief": {
-      "situation": "咖啡馆、聊半小时才说",
-      "role": "认识八年、他帮过你",
-      "audience": "周转不开、别处没借到",
-      "facts": "要借五万、说三个月还",
-      "assets": "那是家里的应急钱",
-      "blocker": "说没钱、他知道你有",
-      "goal": "不借、也不断交情",
-      "constraint": "不能说谎、不能拖延"
-    }
-  },
-  {
-    "id": "sc011",
-    "title": "同事在群里说这个问题是你没沟通清楚",
-    "domain": "职场",
-    "act": "澄清",
-    "relation": "同事",
-    "emotionalCost": "高",
-    "difficulty": "hard",
-    "seconds": 90,
-    "situation": "五十多人的项目大群，他刚发完，几个领导都在群里，你正好在开会",
-    "role": "你是这件事的对接人",
-    "audience": "群里的五十多人，包括你和他的共同上级",
-    "facts": "你确实在两周前的会上说过这件事，但只是口头说的，会后没有发纪要",
-    "assets": "当时有四个人在场可以作证，但让他们出来说话等于把事情闹大",
-    "blocker": "不回应等于默认，回应了就是当众对峙，而你手上确实没有白纸黑字",
-    "goal": "把事实说清楚，同时不把这件事变成两个人的公开撕扯",
-    "constraint": "九十秒内，不能要求任何人替你作证",
-    "outline": [],
-    "hints": [],
-    "brief": {
-      "situation": "五十人大群、领导都在",
-      "role": "这件事的对接人",
-      "audience": "群里五十多人在看",
-      "facts": "他说是你没沟通清楚",
-      "assets": "当时四个人可作证",
-      "blocker": "不回应、等于默认",
-      "goal": "说清事实、别公开撕",
-      "constraint": "不能要求别人作证"
-    }
-  },
-  {
-    "id": "sc012",
-    "title": "朋友当着一桌人问你为什么没去他的婚礼",
-    "domain": "生活",
-    "act": "澄清",
-    "relation": "朋友",
-    "emotionalCost": "高",
-    "difficulty": "hard",
-    "seconds": 90,
-    "situation": "六个人的聚餐，菜刚上齐，他放下筷子看着你问",
-    "role": "你和他认识十二年，是他最早的几个朋友之一",
-    "audience": "他，以及在座另外四个共同朋友，他们都去了婚礼",
-    "facts": "婚礼在三个月前，你当天说临时出差没去，其实那天你在家",
-    "assets": "你没去是因为前一年你妈住院时找他借钱，他没回消息",
-    "blocker": "说实话会当众揭穿他，说谎他已经不信了，而另外四个人正在听",
-    "goal": "既不撒谎也不当众翻旧账，把这件事留到只有你们两个人的时候",
-    "constraint": "九十秒内，不能说「我们私下聊」这种明显的推脱",
-    "outline": [],
-    "hints": [],
-    "brief": {
-      "situation": "六人聚餐、他放下筷子",
-      "role": "认识十二年的老友",
-      "audience": "另外四人都去了婚礼",
-      "facts": "三个月前你说出差没去",
-      "assets": "你妈住院、他没回消息",
-      "blocker": "说实话、当众揭穿他",
-      "goal": "留到只有你们俩的时候",
-      "constraint": "不能说「私下聊」"
-    }
-  }
+const SEED_CARDS = [
+ {
+  "id": "sc001",
+  "title": "实习生被同事集体甩锅",
+  "domain": "职场",
+  "act": "澄清",
+  "relation": "同事",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你在酒店前台实习。同事上班时聊天不干活，出了问题全推到你身上。领导忘记登记客人信息导致客人发火，同事对领导说「不知道她跟客人说了什么才生气」。你资历最浅，尊重前辈，但前辈反而欺负你。直接告状会树敌——你还要每天跟他们共事。沉默接受则以后次次是你。",
+  "goal": "让领导知道真相，同时不跟同事彻底翻脸",
+  "constraint": "不能说「不是我干的」这类直接推脱的话",
+  "outline": [],
+  "hints": [
+   "用事实说话而不是用情绪说话",
+   "先描述你做了什么，再问对方看到了什么"
+  ],
+  "source": "https://www.douban.com/group/topic/253789273/",
+  "sourceSite": "豆瓣"
+ },
+ {
+  "id": "sc002",
+  "title": "新人拒绝领导强加的额外工作",
+  "domain": "职场",
+  "act": "划界限",
+  "relation": "直属领导",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你刚毕业，在基层单位上班。一位同事备考公务员直接不来上班了，领导把同事的活全压给你。你第一次说「我这里事情都没做完」，领导无视你，直接把工作文件发过来了。你打电话给那个不来的同事说做不完，对方回「尽量做嘛」。你去上厕所回来，领导怒气冲冲把工作要回去，临走丢了一句「做人还是不要太自私了」。",
+  "goal": "让领导不再把别人的活丢给你，同时不让自己被贴上「自私」的标签",
+  "constraint": "不能直接说「这不是我的工作」",
+  "outline": [],
+  "hints": [
+   "先列出你手上已有的任务量和截止时间",
+   "用「我很愿意帮忙，但目前我的容量是」的句式"
+  ],
+  "source": "https://www.douban.com/group/topic/178039868/",
+  "sourceSite": "豆瓣"
+ },
+ {
+  "id": "sc004",
+  "title": "跟同事走太近说了不该说的话",
+  "domain": "职场",
+  "act": "澄清",
+  "relation": "同事",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "你跟一位同事平时关系不错，什么话都跟对方说了，包括对工作的一些真实想法和对领导的一些吐槽。后来你发现他是领导的眼线，你说的那些话可能在领导那里已经有了另一个版本。已经说出去的话收不回来了，但你还需要每天跟他共事。",
+  "goal": "在不撕破脸的前提下，让对方知道你已经察觉，并且以后不会再跟他聊敏感话题",
+  "constraint": "不能直接质问「你是不是跟领导说了」",
+  "outline": [
+   "在下次对方又想聊敏感话题时自然地把话题转走",
+   "用温和的方式划出一条边界",
+   "保持日常工作的正常交流，不冷脸但也不交心"
+  ],
+  "hints": [
+   "最好的止损方式不是回头修正，而是从当下开始改变态度",
+   "把话题从别人转移到工作本身"
+  ],
+  "source": "https://www.douban.com/group/topic/225315603/",
+  "sourceSite": "豆瓣"
+ },
+ {
+  "id": "sc005",
+  "title": "被仰慕的领导背刺后提离职",
+  "domain": "职场",
+  "act": "坏消息",
+  "relation": "直属领导",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你毕业两年，跟了一个很喜欢的小领导，把她当大姐姐。你跟人说起她总是骄傲的，给她连续打了两年饭，鞍前马后。上个月本来要跟她去新项目，结果她告诉上层已经沟通好让你回原项目，还让你对上层说「我愿意」。但你不愿意。回原项目后，同事不配合你，你深夜在办公室对着她空荡荡的工位哭。提离职那天，部门领导劝了你一上午，但那个你最在意的人始终没有联系你，没有解释也没有道歉。在大家的谈资里，错的可能是你——「抗压能力差、不够成熟」。",
+  "goal": "对部门领导说清楚你的离职原因，不让她继续在所有人面前扮演一个什么错都没有的人",
+  "constraint": "不能直接攻击那个小领导的人品",
+  "outline": [],
+  "hints": [],
+  "source": "https://www.douban.com/group/topic/296841886/",
+  "sourceSite": "豆瓣"
+ },
+ {
+  "id": "sc006",
+  "title": "前同事套话后把聊天记录发给HR",
+  "domain": "职场",
+  "act": "澄清",
+  "relation": "同事",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "前同事之前跟你随便聊天时问了你一些关于薪酬结构的事，你以为就是熟人之间的闲聊，就如实说了。后来才知道他离职后正在仲裁公司，把你的聊天截图发给了HR。现在HR拿着截图来找你核实，问你这些话是不是你说的。你当他是朋友，他把你当证据。",
+  "goal": "跟HR说清楚情况，保护自己，不让自己因为别人套的话背上责任",
+  "constraint": "不能否认自己说过的话（截图在HR手上），也不能说前同事的坏话显得自己也在站队",
+  "outline": [],
+  "hints": [
+   "承认说过但要区分闲聊和正式表态",
+   "把重点放在「我当时不知道他在收集证据」而不是「他骗了我」"
+  ],
+  "source": "https://www.v2ex.com/t/1232521",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc007",
+  "title": "工作两年犹豫辞职不知道怎么开口",
+  "domain": "职场",
+  "act": "表态",
+  "relation": "直属领导",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你是校招进的公司，工作满两年。公司环境变化很大，同事走了一半，工作量翻倍，干得越来越不开心也看不到成长。去年背了差绩效领导也不关心你。你觉得待下去没有出路，但公司当初花了大力气培养你，你觉得开口提离职会显得忘恩负义。而且你手里没有别的offer，提了之后没有退路。",
+  "goal": "让领导理解你的决定，不破坏关系，给自己留一条将来可以回来的路",
+  "constraint": "不能只说干得不开心，要给出具体且对方能接受的理由",
+  "outline": [],
+  "hints": [
+   "把原因归到个人发展方向而不是公司的问题",
+   "明确表达感激再谈离开",
+   "不提其他同事离职或绩效的事"
+  ],
+  "source": "https://www.v2ex.com/t/1231294",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc011",
+  "title": "旅行社违规服务维权",
+  "domain": "消费",
+  "act": "争取",
+  "relation": "服务人员",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "暑假一家人出游，图方便花钱找旅行社安排了包车和住宿。后来发现车不是营运车辆，保险报价280元实际保费只要31.5元。中途司机在你没同意的情况下熄火关空调打开车门——当时中午一点多室外高温，车上有你四岁的小孩。你跟司机爆发了冲突。你保留了合同、付款记录、保单和聊天记录，现在要投诉，但对方在电话里态度敷衍，说这是行业惯例。",
+  "goal": "让对方给出正式的书面处理结果，而不是电话里口头敷衍",
+  "constraint": "不能用威胁的语气，不能说「我要去告你们」，但你确实需要让他们感受到压力",
+  "outline": [],
+  "hints": [
+   "先列出具体事实和证据编号，让对方知道你做了功课",
+   "「我已经核实过」比「我要投诉你」更有威慑力"
+  ],
+  "source": "https://www.v2ex.com/t/1232255",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc014",
+  "title": "周五下班前被领导叫到办公室让加班",
+  "domain": "职场",
+  "act": "拒绝",
+  "relation": "直属领导",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "周五你正准备收拾东西走人，领导把你叫进办公室说周末有个紧急需求需要跟一下。你知道这事根本不急，而且周末你已经有安排了。他正看着你等你点头。",
+  "goal": "拒绝这次加班，不让领导觉得你态度有问题，也不让其他同事觉得你「矫情」",
+  "constraint": "不能说「我周末有事」这种会被继续追问的理由，他就在你面前",
+  "outline": [],
+  "hints": [
+   "先回一句表示收到，私聊领导问清楚紧急程度",
+   "用「我可以周一早上第一时间处理」而不是「我不做」"
+  ],
+  "source": "模式提取-豆瓣上班这件事常见求助",
+  "sourceSite": "豆瓣/V2EX"
+ },
+ {
+  "id": "sc016",
+  "title": "面试官让你做自我介绍",
+  "domain": "求职",
+  "act": "自我介绍",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "面试开始，面试官翻着你的简历说「先简单介绍一下你自己吧」。你简历上已有的经历他都能看到，你不知道该说什么才不算重复念简历。",
+  "goal": "在两分钟内让面试官对你产生兴趣，而不是复述一遍他手里的简历",
+  "constraint": "不能照着简历念，也不能只说我叫某某今年多大",
+  "outline": [
+   "从简历里挑一个跟这个岗位最相关的经历展开说",
+   "用数字或结果证明你的能力",
+   "结尾落到「为什么我想来你们这里」"
+  ],
+  "hints": [
+   "好的自我介绍不是「我做过什么」，是「我做成了什么，以及这和你们有什么关系」"
+  ],
+  "source": "模式提取-牛客网/知乎面试经验高频主题",
+  "sourceSite": "牛客网/知乎"
+ },
+ {
+  "id": "sc017",
+  "title": "朋友约你出来喝咖啡开口借钱",
+  "domain": "生活",
+  "act": "拒绝",
+  "relation": "朋友",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "朋友约你在咖啡店见面，聊了几句后放下杯子说最近手头紧想借三千块，下个月发工资就还。你手上有这笔钱，但你知道他之前跟共同朋友借过一直没还。他正看着你等答复。",
+  "goal": "拒绝借钱但不毁掉这段关系，也不让自己以后被当成提款机",
+  "constraint": "不能说「我没钱」（他知道你有工作），也不能当面说你之前借了谁没还",
+  "outline": [],
+  "hints": [
+   "先说「我理解你现在的难处」",
+   "说明自己的原则而不是针对他——「我有个规矩是不跟朋友借钱」",
+   "主动提出其他帮助方式"
+  ],
+  "source": "模式提取-知乎/V2EX高频求助",
+  "sourceSite": "知乎/V2EX"
+ },
+ {
+  "id": "sc018",
+  "title": "伴侣为小事冷战不理你",
+  "domain": "亲密",
+  "act": "道歉",
+  "relation": "伴侣",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "你们因为一件小事拌了几句嘴，具体是什么已经不重要了。她从昨晚开始不跟你说话，你发的消息她已读不回。你知道这次确实是你的语气不好，但你不确定她现在是想让你哄还是想一个人待着。",
+  "goal": "打破沉默让她愿意跟你说话，而不是让她觉得你在敷衍道歉",
+  "constraint": "不能只说「我错了」不说错在哪",
+  "outline": [
+   "先承认你具体的语气问题而不是模糊认错",
+   "说「我刚才又看了一遍我们说的话，我那句确实不该那样说」",
+   "给她一个不用马上回应的台阶"
+  ],
+  "hints": [
+   "认错要具体，道歉要留空间",
+   "「你需要我怎么做」比「别生气了」管用"
+  ],
+  "source": "模式提取-知乎/豆瓣亲密关系常见求助",
+  "sourceSite": "知乎/豆瓣"
+ },
+ {
+  "id": "sc019",
+  "title": "面试官问你的缺点是什么",
+  "domain": "求职",
+  "act": "讲清楚",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "面试进行到一半，面试官身体微微前倾说「那你觉得自己最大的缺点是什么」。你不能说「我没有缺点」显得不诚实，也不能说一个真的会扣分的缺点。",
+  "goal": "给出一个真实的缺点，但让他觉得这个缺点在这个岗位上不会成为问题",
+  "constraint": "不能说「我太追求完美了」这种明显套话，也不能说一个跟岗位核心能力相关的真缺点",
+  "outline": [],
+  "hints": [
+   "挑一个跟岗位非核心相关的真实缺点",
+   "立刻跟上你已经在怎么改",
+   "把缺点收束在「可控且正在改善」"
+  ],
+  "source": "模式提取-牛客网/知乎面试高频主题",
+  "sourceSite": "牛客网/知乎"
+ },
+ {
+  "id": "sc022",
+  "title": "跟伴侣提同居但不知道怎么开口",
+  "domain": "亲密",
+  "act": "请求",
+  "relation": "伴侣",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你们谈了快一年，感情稳定，但每次约会完各回各家总觉得少了点什么。你觉得时机差不多了，想提同居，但怕对方觉得太快，也怕万一对方拒绝了这个话题以后会尴尬。",
+  "goal": "自然地提出同居的想法，让对方感受到这是邀请而不是施压",
+  "constraint": "不能说得像是在下达通知，也不能把压力推给对方",
+  "outline": [],
+  "hints": [
+   "选一个放松的时机自然起头",
+   "用「我最近在想」而不是「我们应该」",
+   "先说你对现在状态的真实感受再提建议",
+   "给对方留足够的时间考虑"
+  ],
+  "source": "模式提取-知乎/豆瓣亲密关系常见讨论",
+  "sourceSite": "知乎/豆瓣"
+ },
+ {
+  "id": "sc023",
+  "title": "过年被父母催婚怎么回应",
+  "domain": "亲密",
+  "act": "表态",
+  "relation": "家人",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "年夜饭吃到一半，你妈放下筷子看着你说「你表妹比你小三岁，孩子都一岁了」。你爸在旁边补了一句「我们单位老王的女儿跟你同岁，人家二胎都怀上了」。满桌亲戚都在等你的回答。",
+  "goal": "让你父母暂时不再在饭桌上提这个话题，同时不破坏过年气氛",
+  "constraint": "不能说「我的事不用你们管」或者直接翻脸——这是年夜饭",
+  "outline": [],
+  "hints": [
+   "先谢他们的关心，承认他们是从爱出发",
+   "用你自己的规划回应而不是反抗——「我也在考虑，但我想先把工作稳定下来」",
+   "给一个模糊但积极的时间线"
+  ],
+  "source": "模式提取-知乎/小红书过年高频求助",
+  "sourceSite": "知乎/小红书"
+ },
+ {
+  "id": "sc031",
+  "title": "租房退押金房东指着墙说扣钱",
+  "domain": "消费",
+  "act": "谈判",
+  "relation": "服务人员",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你退租时房东来验收指着墙上说有划痕要扣五百。那个印子你搬进来就有但你没拍照留证。他站在你面前态度很坚决。",
+  "goal": "尽量少扣或不扣但你手上没有证据",
+  "constraint": "不能说当初你也没拍照也不能直接认了",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc034",
+  "title": "面试官问你对加班的看法",
+  "domain": "求职",
+  "act": "表态",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "面试快结束时面试官合上笔记本看着你说我们这边项目紧的时候可能需要加班你怎么看。你看着他不知道他想听真话还是场面话。",
+  "goal": "表达真实想法但不让自己在第一轮被刷",
+  "constraint": "不能说完全接受天天加班也不能说不接受加班",
+  "outline": [],
+  "hints": [
+   "先问能具体说说项目紧是什么节奏吗",
+   "根据回答判断是真的偶尔还是常态",
+   "回答落在把活干好而不是愿不愿意加班"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc035",
+  "title": "面试官问你为什么从上一家离职",
+  "domain": "求职",
+  "act": "澄清",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "面试官翻到你工作经历那一页抬头看着你问上一份工作为什么离职。他手里的笔还没动在等你解释。",
+  "goal": "给出一个体面的理由不让他觉得你在抱怨前东家",
+  "constraint": "不能说前领导不好也不能说钱少但他知道真实原因多半就是这些",
+  "outline": [],
+  "hints": [
+   "把原因归到发展——前一份工作让我学到了很多但后期能接触的新东西变少了",
+   "主动把话题引到所以我来这里"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc036",
+  "title": "面试官问你现在手上有其他offer吗",
+  "domain": "求职",
+  "act": "表态",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试官身子往后靠喝了口水说你手上现在有其他offer吗。你其实没有但你知道如果说了没有谈判筹码就没了。",
+  "goal": "既不撒谎也不让自己完全失去议价能力",
+  "constraint": "不能说我没有丢筹码也不能编一个不存在的大厂offer",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc047",
+  "title": "爸爸在饭桌上点评你的职业选择",
+  "domain": "生活",
+  "act": "表态",
+  "relation": "家人",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "饭吃到一半你爸放下筷子说你们这一行不稳定你看谁家孩子考了公务员多好。语气不像是指责但你知道这个话题不会自己结束。",
+  "goal": "让他知道你对目前的选择是认真的同时不让饭吃不下",
+  "constraint": "不能翻脸说我的事不用你管",
+  "outline": [
+   "先认可出发点——爸我知道你是为我好",
+   "说你的真实感受——现在做的事虽然不稳定但我觉得有意思想再试试",
+   "给一个温和的时间线"
+  ],
+  "hints": [
+   "不需要当场说服他只需要让他知道你没被冲昏头脑"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc053",
+  "title": "领导让你评价一个你并不认可的同事",
+  "domain": "职场",
+  "act": "表态",
+  "relation": "直属领导",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "领导把你叫进办公室关上门说你觉得小王最近表现怎么样，我想听听你的看法。你跟小王关系一般但知道他确实有问题。你说什么领导都会当真。",
+  "goal": "诚实但不告状，保护自己不卷入办公室政治",
+  "constraint": "不能说你问别人吧显得不配合，也不能把所有问题都抖出来",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc055",
+  "title": "领导临时让你替同事做一个你不熟悉的汇报",
+  "domain": "职场",
+  "act": "讲清楚",
+  "relation": "直属领导",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "下午三点领导走到你工位说小张临时请假了明天的汇报你替他讲一下。你打开他发给你的PPT发现一半内容你看不懂。你只有今天晚上的时间。",
+  "goal": "让领导知道你可能做不好但不让他觉得你在推活",
+  "constraint": "不能说我不行让他找别人——你已经是最后的选项了",
+  "outline": [],
+  "hints": [
+   "先说我可以试试但有几个地方我不确定可能需要你帮我看一下",
+   "把风险预告变成一次协作请求"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc056",
+  "title": "年终谈话领导问你对团队有什么意见",
+  "domain": "职场",
+  "act": "表态",
+  "relation": "直属领导",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "年终一对一谈话领导合上电脑看着你说这一年你觉得团队有什么可以改进的地方。你确实有想法但涉及到其他同事的工作方式。",
+  "goal": "说真话但不成为告状的人",
+  "constraint": "不能说我没什么意见显得没想法，也不能点名说谁的毛病",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc057",
+  "title": "面试官问你期望薪资",
+  "domain": "求职",
+  "act": "谈判",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试快结束面试官在纸上写了点什么抬头说你的期望薪资是多少。你心里有个数但怕说高了直接被刷说低了以后不好涨。他笔握在手里等你报数字。",
+  "goal": "报一个不让自己吃亏也不让自己出局的数字",
+  "constraint": "不能说按你们的标准给显得没想法，也不能说一个毫无依据的高数字",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc058",
+  "title": "面试官让你现场解决一个问题",
+  "domain": "求职",
+  "act": "讲清楚",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试官突然把一张白纸推到你面前说假设你是这个产品的负责人用户反馈说找不到某个功能你怎么解决。你没有准备这个问题白纸上什么都没有。",
+  "goal": "展示思考过程而不是给出完美答案",
+  "constraint": "不能说我不知道也不会傻坐着想五分钟",
+  "outline": [
+   "先想三十秒没问题——可以说给我半分钟我想一下",
+   "边说边在白纸上画思路框架",
+   "把重点放在你的分析逻辑而不是最终结论"
+  ],
+  "hints": [
+   "面试官要的不是正确答案是你的思考路径"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc059",
+  "title": "面试官问你五年后的规划",
+  "domain": "求职",
+  "act": "表态",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "面试官靠回椅背说聊聊你自己吧五年后你想成为什么样的人。你其实没想那么远但也知道说不知道是减分项。",
+  "goal": "说出一个看起来有方向但不像是来混日子的回答",
+  "constraint": "不能说我没想过也不能说我想取代你",
+  "outline": [
+   "把规划落在能力上而不是职位上——五年后我希望在这个领域成为能独立带项目的人",
+   "把目标跟这家公司关联"
+  ],
+  "hints": [
+   "把目标定在能力上比定在头衔上更安全"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc060",
+  "title": "面试官最后问你有什么想问我们的",
+  "domain": "求职",
+  "act": "请求",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "面试官看了看表说好我这边没什么了，你有什么想问我们的吗。你的大脑一片空白，但你知道问不出一两个问题会显得你不关心。",
+  "goal": "问出有信息量的问题让对方觉得你认真思考过",
+  "constraint": "不能说我没有问题了",
+  "outline": [
+   "问跟你岗位相关的事——这个岗位目前最大的挑战是什么",
+   "或者问团队——团队最近在忙什么项目",
+   "不要问工资假期这些HR的事"
+  ],
+  "hints": [
+   "好的问题让面试官觉得你在评估他们而不是在求他们"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc064",
+  "title": "你升职后原来的同事变成了你的下属",
+  "domain": "职场",
+  "act": "坏消息",
+  "relation": "同事",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你刚升职，跟你关系不错的同事现在变成了你的下属。第一次一对一谈话你坐在他对面他表情明显不自然。你俩都还没适应这种新的距离。",
+  "goal": "建立新的工作关系模式同时不破坏原来的信任",
+  "constraint": "不能假装什么都没变也没法继续用以前的方式跟他说话",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc066",
+  "title": "朋友在聚会上当众质疑你的某个观点",
+  "domain": "生活",
+  "act": "澄清",
+  "relation": "朋友",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你们几个朋友在聊一个话题你说了一个自己的看法朋友立刻说不对你这说法有问题。他的语气不是开玩笑是认真的。其他人停下来看你们俩。",
+  "goal": "坚持自己的观点但不把聚会变成辩论赛",
+  "constraint": "不能说你就是不对从观点争论变成人身攻击",
+  "outline": [
+   "先承认他有道理的部分——你这个角度也对但我看到的情况是",
+   "把分歧放在信息源上而不是智商上",
+   "说完就主动结束争论——算了各人有各人的看法"
+  ],
+  "hints": [
+   "朋友之间赢了争论往往输了气氛"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc069",
+  "title": "合租室友带恋人回来住了一个星期",
+  "domain": "生活",
+  "act": "谈判",
+  "relation": "同学",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "这周你室友的恋人几乎每天都住在这里。浴室多了一套洗漱用品客厅多了一个人吃饭你的水电费也在无声上涨。今天他们俩一起窝在沙发上看电视你从旁边走过去。",
+  "goal": "让室友意识到这不是偶尔而是常态需要重新商量规则",
+  "constraint": "不能直接说你对象能不能别来了显得你不近人情",
+  "outline": [
+   "找室友单独在的时候说最近好像家里多了个人我想跟你聊聊这件事我们怎么安排比较合适",
+   "把焦点放在实际问题上空间水电而不是对方感情"
+  ],
+  "hints": [
+   "谈规则不谈感情规则才能持久"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc076",
+  "title": "家庭聚餐时你宣布了一个家人都反对的决定",
+  "domain": "生活",
+  "act": "坏消息",
+  "relation": "家人",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你把筷子放下说我有件事想跟你们说我决定辞职去做一个自己的项目。一桌人安静了三秒然后你爸你妈你姑同时开口。",
+  "goal": "让家人知道你认真考虑过不是在冲动即使他们不赞成",
+  "constraint": "不能说我的人生我自己决定这种话虽然对但说了没用",
+  "outline": [],
+  "hints": [],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc081",
+  "title": "伴侣想养宠物但你不想",
+  "domain": "亲密",
+  "act": "谈判",
+  "relation": "伴侣",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "她在手机上看了一下午宠物领养的照片突然抬头说我们养只猫吧你看这只多可爱。你知道养宠物意味着什么——钱时间精力你不想但她的眼睛在发光。",
+  "goal": "表达你不想养的真实原因但不让她觉得你在否定她的所有愿望",
+  "constraint": "不能说不行养什么养你知道多麻烦吗",
+  "outline": [
+   "先看照片认真看——先接住她的开心",
+   "然后说真的很可爱但我想跟你说说我担心的几个点我们可以一起想想怎么办",
+   "不关门而是打开讨论"
+  ],
+  "hints": [
+   "不是不能养是需要一起想好怎么养"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc082",
+  "title": "伴侣因为工作不顺心把气撒在你身上",
+  "domain": "亲密",
+  "act": "划界限",
+  "relation": "伴侣",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "她今天下班回来脸色不好你问了一句今天怎么样她回了一句语气很冲。你又问了一句要不要吃点东西她说你能不能别烦我。你知道不是冲你但她拿你出气了。",
+  "goal": "让她意识到她在迁怒于你同时表达你愿意陪她",
+  "constraint": "不能说你冲我发什么火也别转身走开说那我不管你",
+  "outline": [
+   "安静五分钟然后坐在她旁边说话是看着我说的生气不是看着我做的",
+   "我不是你的出气口但我可以是你旁边的人"
+  ],
+  "hints": [
+   "你不是她坏情绪的接收器但可以成为她的缓冲区"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc091",
+  "title": "面试官追问你项目细节问到你不愿说的部分",
+  "domain": "求职",
+  "act": "讲清楚",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试官翻着你的项目经历追问某个具体细节，问到了你前公司还在保密期的部分。你不想泄密但也不想说「这个我不能说」显得不配合。他正等着你的回答。",
+  "goal": "保护前公司的信息同时不让面试官觉得你在隐瞒什么",
+  "constraint": "不能说这个我不能说——他可能因此怀疑你简历造假",
+  "outline": [],
+  "hints": [],
+  "source": "V2EX 1230882",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc092",
+  "title": "领导在复盘会上当众说这个事故是你的责任",
+  "domain": "职场",
+  "act": "澄清",
+  "relation": "直属领导",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "周一复盘会上领导在白板上画了事故的时间线指着最后一步说问题出在这里。这一步确实是你经手的但根因在更上游的通知环节。所有同事都在看。",
+  "goal": "让领导了解完整的前因后果而不是只盯着你这一步",
+  "constraint": "不能说是上游的问题推卸责任——那个同事也坐在会议室里",
+  "outline": [],
+  "hints": [],
+  "source": "V2EX 1229615",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc094",
+  "title": "同事在全员会上说有人滥用弹性工作制眼睛看着你",
+  "domain": "职场",
+  "act": "澄清",
+  "relation": "同事",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "全员会上讨论考勤制度同事发言说「有些人利用弹性工作制经常十点半才到工位」。说这话的时候他眼睛扫了你一眼。你确实有几次十点半到但那是因为你前一天加班到凌晨。",
+  "goal": "澄清自己的情况但不变成你们两个在会上互相攻击",
+  "constraint": "不能拍桌子说你说谁呢，也不能沉默因为所有人可能都觉得他在说你",
+  "outline": [],
+  "hints": [],
+  "source": "V2EX 1230124",
+  "sourceSite": "V2EX"
+ },
+ {
+  "id": "sc102",
+  "title": "领导走到你面前问项目进展但你还没整理好",
+  "domain": "职场",
+  "act": "坏消息",
+  "relation": "直属领导",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "领导突然走到你工位前低头问你那个项目现在怎么样了。你一直在埋头做但没总结过进度脑子里是乱的。他站在你旁边等你回答。",
+  "goal": "给出一个清晰的现状说明即使你还没准备好",
+  "constraint": "不能说还——在——做——拖长音",
+  "outline": [
+   "先说结论——目前核心功能完成了大概八成",
+   "再说风险——有一个地方遇到点问题我正在解决预计周五前搞定",
+   "主动说后续——我明天给你发个详细的进度表"
+  ],
+  "hints": [
+   "主动交代现状比被动回答问题看起来专业十倍"
+  ],
+  "source": "豆瓣 220374334",
+  "sourceSite": "豆瓣"
+ },
+ {
+  "id": "sc110",
+  "title": "面试官让你评价自己前一家公司的缺点",
+  "domain": "求职",
+  "act": "表态",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试聊到后半段面试官突然放下笔说你觉得你上一家公司最大的问题是什么。这不是在闲聊——他在评估你会不会在下一家公司也说同样的话。",
+  "goal": "坦诚但不成为那个离职后就到处说前东家坏话的人",
+  "constraint": "不能说前东家一切都好——他不信；也不能开始吐槽——他会想以后你也这么说我",
+  "outline": [
+   "选一个现在已经改善或与你无关的方面——他们当时在某个流程上效率比较低不过后来已经在优化了",
+   "把评价放在过去时而不是永久标签上"
+  ],
+  "hints": [
+   "你对前东家的评价决定了新东家对你的评价"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc111",
+  "title": "面试官说你的期望薪资超预算了",
+  "domain": "求职",
+  "act": "谈判",
+  "relation": "面试官",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "面试官在纸上写了一个数字然后抬头说这是我们的预算范围。你看了一眼比你预期的低了百分之三十。他在等你开口说行还是不行。",
+  "goal": "不让步太多但也不让这个机会直接关上",
+  "constraint": "不能直接说太低了我不接受——可能就没有然后了",
+  "outline": [
+   "先不急着说数字——我想了解一下除了薪资之外这个岗位的其他福利和发展空间是怎样的",
+   "等对方说完再评估——这个差距对我而言有点大有没有中间方案"
+  ],
+  "hints": [
+   "不要在第一轮就接受或拒绝给自己和对方一个喘气的空间"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc115",
+  "title": "你在全员会上被点名分享但你完全没准备",
+  "domain": "职场",
+  "act": "自我介绍",
+  "relation": "同事",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "团队建设环节主持人突然说接下来每人用一分钟介绍一下自己最近在做的一个项目。你是第三个你脑子里所有项目细节突然一片空白。前面的人已经快说完了。",
+  "goal": "在不丢脸的前提下完成这一分钟即使你毫无准备",
+  "constraint": "不能说我没准备然后站着不说话",
+  "outline": [
+   "深呼吸用三段式：我是谁我目前在做什么——最近在跟一个用户体验优化的项目",
+   "这个项目为什么重要——用户反馈某个流程太复杂我们在简化",
+   "这个项目让我学到了什么——我第一次独立负责用户调研还挺有收获的"
+  ],
+  "hints": [
+   "一分钟自我介绍不需要精彩只需要完整"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc116",
+  "title": "面试官看到你简历上有一年空窗期问你干什么去了",
+  "domain": "求职",
+  "act": "澄清",
+  "relation": "面试官",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "面试官指着你简历上的时间线说去年这段时间你好像没有工作经历能说一下吗。你知道这段空窗期其实是在备考但你怕说了显得不稳定。",
+  "goal": "诚实说明空窗期同时让他觉得这段经历对这份工作有加分",
+  "constraint": "不能说我在家躺了一年也不能编一段假工作经历",
+  "outline": [
+   "如实说在准备某个方向的提升——那段时间我在系统学习某个技能虽然没有正式工作但每天是有目标地在做事",
+   "把空窗期包装成充电期"
+  ],
+  "hints": [
+   "简历上的空白不是污点是你可以重新定义的故事"
+  ],
+  "source": "模式提取",
+  "sourceSite": "通用"
+ },
+ {
+  "id": "sc121",
+  "title": "行业活动上有人问你是做什么的",
+  "domain": "职场",
+  "act": "自我介绍",
+  "relation": "陌生人",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "公司让你来参加一个行业交流活动，说是去认识人。茶歇时一个陌生人端着杯子走过来，问你是做什么的。你知道说完职位他大概率就「哦」一声走开了，但你手上确实有个正在做的东西希望被人知道。你只有他站在这里的这一分钟，说完他就会去找下一个人。",
+  "goal": "让他听完之后记得住你在做什么，并且愿意跟你交换联系方式",
+  "constraint": "不能只报公司名和职位就完事",
+  "outline": [
+   "先给一个他能立刻听懂的说法，不要用内部黑话",
+   "再讲一件具体的事，说明你们在解决什么问题",
+   "最后留一个跟他有关的钩子，把话头递回去"
+  ],
+  "hints": [
+   "「我们在解决什么问题」比「我在某某公司做某某」好记",
+   "举一个具体的例子，比讲三句概括管用"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc122",
+  "title": "剐蹭之后向交警陈述事发经过",
+  "domain": "生活",
+  "act": "讲清楚",
+  "relation": "陌生人",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "路口剐蹭，交警到了，让你先说。对方司机就站在旁边听。你确实占理，但事情发生在三秒之内，你脑子里全是画面没有顺序。你知道你现在说的每一句都会被记下来，而且说完对方就会开始反驳，你没有第二次机会。",
+  "goal": "把经过按顺序讲清楚，让交警能据此判断责任",
+  "constraint": "不能说对方「乱开」「一看就不会开车」这类评价",
+  "outline": [
+   "先交代时间地点和你的行驶方向",
+   "再按发生顺序讲，一步一个动作，不跳",
+   "最后说明你判断的依据，不下结论"
+  ],
+  "hints": [
+   "只说你看到的和你做的，不说你猜他想干什么",
+   "「我当时在第几车道、时速大概多少」这种可核实的信息最有用"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc123",
+  "title": "窗口办事材料差一份你要争取通融",
+  "domain": "生活",
+  "act": "请求",
+  "relation": "陌生人",
+  "emotionalCost": "中",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你请了半天假来办事，排到窗口才被告知少一份材料。那份材料在老家，办下来要两周，而这件事下周就要用。窗口后面的人不认识你，也没有义务帮你，他后面还排着二十个人。你有一次把情况讲清楚的机会。",
+  "goal": "让他愿意告诉你有没有别的路子，或者先受理后补交",
+  "constraint": "不能说「你们这规定不合理」，也不能哭穷卖惨",
+  "outline": [
+   "先说明你已经准备了什么，让他知道你不是没做功课",
+   "再讲清楚为什么这份材料短期内拿不到",
+   "最后问他有没有替代方案，把决定权留给他"
+  ],
+  "hints": [
+   "先承认规则，再问例外，比先质疑规则有用",
+   "「您看有没有什么别的办法」比「你就通融一下」更容易得到回应"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc124",
+  "title": "相亲第一次见面对方说你先介绍下自己",
+  "domain": "亲密",
+  "act": "自我介绍",
+  "relation": "陌生人",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "坐下点完单，对方喝了口水说「那你先说说你自己吧」。你们之前只在微信上对过几句话。你知道简历式的自报家门会让接下来两小时都很尴尬，但你也不想一上来就交底。对方在认真听，你说完就轮到他了。",
+  "goal": "让对方觉得你是个具体的人而不是一份条件清单，同时给他接话的空间",
+  "constraint": "不能只讲年龄工作房车这类条件",
+  "outline": [
+   "先给一个不那么正式的开场，把气氛拉平",
+   "再讲一件最近让你有感觉的具体的事",
+   "最后把问题递回去，问一个他能答的"
+  ],
+  "hints": [
+   "讲你最近在忙什么、在意什么，比讲你是谁更有信息量",
+   "留一个他能顺着聊下去的口子，别把话说完"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc125",
+  "title": "业主群里你要说明一件大家吵翻了的事",
+  "domain": "生活",
+  "act": "表态",
+  "relation": "陌生人",
+  "emotionalCost": "中",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "小区要不要装门禁在群里吵了三天，两边都在刷屏。你是少数看过完整方案和报价的人，你的看法跟吵得最凶的那一方不一致。群里两百个人你只认识三个。你打算发一段语音，说完之后大概率会被两边同时怼。",
+  "goal": "把你掌握的事实讲清楚，让还没站队的人有判断依据",
+  "constraint": "不能点名针对群里任何一个人",
+  "outline": [
+   "先说明你是基于什么信息在说，来源是什么",
+   "再把双方争的那个点拆开，说清楚哪些是事实哪些是猜测",
+   "最后给出你的看法和它的前提，允许别人不同意"
+  ],
+  "hints": [
+   "「我看到的材料上写的是」比「我觉得」更难被吵掉",
+   "主动说出你这个看法在什么情况下会不成立，反而更可信"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc126",
+  "title": "看房时房东同时约了另外两组人",
+  "domain": "消费",
+  "act": "争取",
+  "relation": "陌生人",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "这套房你找了两个月，位置和价格都合适。到了才发现房东把三组人约在同一个时间段，另外两组已经看完在门口聊。房东明显在比较。他不认识你，也不在乎你找了多久，他只想快点租出去且别出事。轮到你说话了。",
+  "goal": "让房东在三组人里优先考虑你",
+  "constraint": "不能靠加价，也不能承诺你做不到的事",
+  "outline": [
+   "先说清楚你的基本情况，让他判断你是不是省心的租客",
+   "再说明你能配合的地方，比如签约时间和付款方式",
+   "最后给一个明确的下一步，别让他等你想"
+  ],
+  "hints": [
+   "房东最怕的是麻烦和空置，不是少收那点钱",
+   "「我今天就能定」这种确定性，比多出两百块管用"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc127",
+  "title": "小组作业有人全程没出力要在组会上摊开",
+  "domain": "生活",
+  "act": "讲清楚",
+  "relation": "同学",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "小组作业下周交，五个人里有一个从头到尾没交过东西，群里@他也不回。这次组会他来了，坐在那里刷手机。这门课的分数是全组一样的，你和另外两个人已经熬了两个通宵。你还要跟他同班一年半，而且指导老师就在隔壁办公室。",
+  "goal": "让他接下未完成的那部分并给出时间点，同时不把组会变成批斗会",
+  "constraint": "不能说「你什么都没干」这类总结性指控",
+  "outline": [
+   "先摆出可核对的事实，谁在什么时候交了什么",
+   "再说明剩下哪些没人做、卡在哪里",
+   "最后当场把这部分指给他，并要一个具体的时间"
+  ],
+  "hints": [
+   "用交付记录说话，不用态度说话",
+   "把「你没做」换成「这块还空着，你什么时候能给」"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc128",
+  "title": "跟合租三年的室友说毕业后不再一起住",
+  "domain": "生活",
+  "act": "坏消息",
+  "relation": "同学",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "你们从大二开始合租，处得不错，他一直默认毕业后继续一起住，上周还转给你两套房源。你已经决定一个人住了，原因不是他做错了什么，只是你受够了永远有人在客厅。他今晚做了饭等你回来聊租房的事。",
+  "goal": "让他明白这不是因为他哪里不好，同时把话说死不留回旋余地",
+  "constraint": "不能编工作调动、家里安排这类假理由",
+  "outline": [
+   "先谢这三年，说一件具体的事，不要空泛",
+   "再说明你的决定和真实原因，把原因放在自己身上",
+   "最后讲清楚你希望之后的关系是什么样"
+  ],
+  "hints": [
+   "「我需要一个人待着」是真理由，不用包装成别的",
+   "先把决定说完再解释，别让他在解释里以为还有商量"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc129",
+  "title": "要退出筹备了半年的社团项目",
+  "domain": "生活",
+  "act": "坏消息",
+  "relation": "同学",
+  "emotionalCost": "高",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "这个活动你们六个人筹备了半年，你负责的是最核心的那块。上周你拿到了一个实习offer，时间完全冲突。今天例会你要说这件事。距离活动还有五周，你退出意味着有人要接你的活，而这几个人是你最好的朋友。",
+  "goal": "让他们理解你的决定，并且交接不至于崩掉",
+  "constraint": "不能说「你们不用管我这块也能行」",
+  "outline": [
+   "先直接说结论和时间，不要铺垫太久",
+   "再说明你手上的进度到哪、还差什么、谁接最合适",
+   "最后讲清楚你退出后还能做什么，别只留一个坑"
+  ],
+  "hints": [
+   "先给交接方案再说抱歉，比先道歉有诚意",
+   "把「对不起」换成「这是我能补的部分」"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc130",
+  "title": "跟室友重新谈一整套作息规则",
+  "domain": "生活",
+  "act": "谈判",
+  "relation": "同学",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "你早八他凌晨睡，这学期已经为这事别扭过好几次，每次都是就事论事说一句然后不了了之。上周你考试没睡好。你决定不再一次次提醒，而是坐下来把整套规则一次谈定。他人不坏，只是从来没意识到这件事对你的影响有多大。",
+  "goal": "让他同意一套写下来的、双方都能执行的作息规则",
+  "constraint": "不能翻旧账，不能列举他过去哪几次吵到你",
+  "outline": [
+   "先说明你要谈的是规则不是某一次",
+   "再讲清楚影响，用具体的后果而不是感受",
+   "最后给出一套你已经想好的方案，留出让他改的余地"
+  ],
+  "hints": [
+   "带着方案来谈，比带着情绪来谈快得多",
+   "主动给出你愿意让的那一条，对方才好接"
+  ],
+  "source": "",
+  "sourceSite": ""
+ }
 ];
 /* ─────────── 小星动画数据与引擎 ─────────── */
 const KD = {
@@ -1813,6 +2578,19 @@ const FILLERS = ["然后","就是","呃","嗯","那个","这个","其实","可�
 const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
 
 let kid1, kid2, cur = null, diffFilter = "all";
+
+/* ---- 题库 = 自带的 + 用户自己上传的 ---- */
+const KEY_MINE = 'xiaoxing:mycards';
+let MY_CARDS = [];
+try{ MY_CARDS = JSON.parse(localStorage.getItem(KEY_MINE) || '[]'); }catch(e){ MY_CARDS = []; }
+if(!Array.isArray(MY_CARDS)) MY_CARDS = [];
+let CARDS = SEED_CARDS.concat(MY_CARDS);
+function saveMine(){
+  try{ localStorage.setItem(KEY_MINE, JSON.stringify(MY_CARDS)); }catch(e){}
+  CARDS = SEED_CARDS.concat(MY_CARDS);
+}
+const cardSrc = c => c.src === 'mine' ? 'mine' : 'seed';
+
 let approved = new Set(CARDS.map(c => c.id));
 let timer=null, rafMic=null, stream=null, audioCtx=null, analyser=null, rec=null;
 let curRecId=null;
@@ -1829,13 +2607,33 @@ function go(name){
   if(name==='record') renderRecord();
   if(name==='wheel') buildWheel();
   if(name==='wheel') setKid('idle','今天想对谁说？');
+  if(typeof paintKid === 'function') paintKid();
 }
 
 /* ---- 小星 ---- */
 function setKid(state, cap){
   if(kid1) kid1.set(state);
-  if(kid2) kid2.set(state);
+  if(kid2 && kid2 !== kid1) kid2.set(state);
   if(cap !== undefined) $('#kidcap').textContent = cap;
+}
+
+/* 悬浮小人：右下角常驻，可以关掉；关掉后留一个小按钮请它回来。
+   转盘首页保持安静，不出现小人。 */
+const KEY_KID = 'kid_hidden';
+let kidWanted = true;
+function paintKid(){
+  const quiet = $('#s-wheel').classList.contains('on');   // 首页留白，不打扰
+  $('#kidFloat').classList.toggle('off', !(kidWanted && !quiet));
+  $('#kidReopen').classList.toggle('on', !kidWanted && !quiet);
+}
+function showKid(on){
+  kidWanted = on;
+  try{ localStorage.setItem(KEY_KID, on ? '0' : '1'); }catch(e){}
+  paintKid();
+}
+function initKidFloat(){
+  try{ kidWanted = localStorage.getItem(KEY_KID) !== '1'; }catch(e){}
+  paintKid();
 }
 
 /* ---- 抽卡 ---- */
@@ -1853,6 +2651,35 @@ function drawCard(){
   setTimeout(()=>setKid('cheer','就这张吧'), 650);
   setTimeout(()=>setKid('idle','准备好就开麦'), 2000);
 }
+/* 返回当前这张卡对应的那位的场景页，顺便把转盘也转到他那一格 */
+function backToRelation(){
+  const i = cur ? RELS.findIndex(r => r.k === cur.relation) : -1;
+  if(i < 0) return go('wheel');
+  wPos = i;
+  openScene(i, null);
+}
+
+/* 时长：以卡片自带秒数为基准，± 30 秒可以一直点，卡在 30～300 之间 */
+let secAdj = 0;
+const SEC_MIN = 30, SEC_MAX = 300, SEC_STEP = 30;
+function curSeconds(){
+  const base = cur ? cur.seconds : 60;
+  return Math.max(SEC_MIN, Math.min(SEC_MAX, base + secAdj));
+}
+function paintSec(){
+  const s = curSeconds();
+  $('#h-sec').textContent = s;
+  const btns = document.querySelectorAll('.stepper .btn');
+  if(btns[0]) btns[0].disabled = s <= SEC_MIN;
+  if(btns[1]) btns[1].disabled = s >= SEC_MAX;
+}
+function adjustSec(d){
+  const before = curSeconds();
+  secAdj += d;
+  if(curSeconds() === before) secAdj -= d;   // 已经到头了，别让偏移量白涨
+  paintSec();
+}
+
 function cycleDiff(){
   const order = ['all','easy','medium','hard'];
   diffFilter = order[(order.indexOf(diffFilter)+1)%4];
@@ -1861,11 +2688,6 @@ function cycleDiff(){
 }
 const CELLS = [
   {k:'situation',  cls:'sit',  cn:'什么场合', ic:'ti-map-pin'},
-  {k:'facts',      cls:'fac',  cn:'已经发生', ic:'ti-history'},
-  {k:'assets',     cls:'ast',  cn:'你已知的', ic:'ti-bulb'},
-  {k:'blocker',    cls:'blk',  cn:'难在这里', ic:'ti-alert-triangle'},
-  {k:'role',       cls:'who',  cn:'你是谁',   ic:'ti-user'},
-  {k:'audience',   cls:'aud',  cn:'对面是谁', ic:'ti-users'},
   {k:'goal',       cls:'goal', cn:'要拿到',   ic:'ti-target'},
   {k:'constraint', cls:'con',  cn:'不能做',   ic:'ti-ban'}
 ];
@@ -1873,16 +2695,23 @@ const CELLS = [
 function renderCard(){
   const c = cur;
   $('#h-title').textContent = c.title;
-  $('#h-domain').textContent = c.domain;
-  $('#h-act').textContent = c.act;
+  /* 上传的题可能只填了标题，空字段就别摆个空壳子出来 */
+  const tag = (sel, v) => { const el = $(sel); el.textContent = v || ''; el.style.display = v ? '' : 'none'; };
+  tag('#h-domain', c.domain);
+  tag('#h-act', c.act);
   const d = $('#h-diff'); d.textContent = DIFF_CN[c.difficulty]; d.className = 'tag d-'+c.difficulty;
-  $('#h-sec').textContent = c.seconds;
+  const back = $('#h-back');
+  back.textContent = c.relation ? `返回和${c.relation}的交流` : '返回选人';
+  secAdj = 0; paintSec();
 
-  $('#h-canvas').innerHTML = CELLS.map(m => `
+  $('#h-canvas').innerHTML = CELLS.map(m => {
+    const v = (c.brief && c.brief[m.k]) || c[m.k] || '';
+    return `
     <div class="cell ${m.cls}">
       <div class="h"><i class="ti ${m.ic}"></i><span>${m.cn}</span></div>
-      <div class="v">${(c.brief && c.brief[m.k]) || c[m.k]}</div>
-    </div>`).join('');
+      <div class="v">${v || '<span class="blank">这张卡没填这一栏</span>'}</div>
+    </div>`;
+  }).join('');
 
   $('#h-outline').innerHTML = (c.outline && c.outline.length)
     ? `<div class="outline"><div class="lbl" style="color:var(--green)">简单档给提纲</div>
@@ -1894,7 +2723,7 @@ function renderCard(){
 
 /* ---- 开始练习 ---- */
 async function startPractice(override){
-  secTotal = secLeft = override || cur.seconds;
+  secTotal = secLeft = override || curSeconds();
   finalText = ""; interimText = ""; startedAt = Date.now(); lastSpeak = Date.now();
   $('#p-title').textContent = cur.title;
   $('#p-text').innerHTML = '<span style="color:var(--muted)">开口就会出现在这里。口癖词会自动标红。</span>';
@@ -2040,10 +2869,10 @@ function renderReview(text, secs){
   $('#r-sub').textContent = `${cur.domain} / ${cur.act} / ${cur.title}`;
   const dt = $('#r-diffTag'); dt.textContent = DIFF_CN[cur.difficulty]+'档';
   dt.className = 'tag d-'+cur.difficulty;
-  $('#r-blocker').textContent = cur.blocker;
+  $('#r-blocker').textContent = cur.goal || cur.situation || '';
 
   $('#r-fillers').innerHTML = counts.length
-    ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:14px">
+    ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px">
         <span>${c.w}</span><span style="color:var(--red);font-variant-numeric:tabular-nums">${c.n} 次</span></div>`).join('')
     : '<p class="note">这次一个口癖词都没有。</p>';
   $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。
@@ -2086,6 +2915,51 @@ function saveRecords(){ try{ localStorage.setItem(KEY_REC, JSON.stringify(RECORD
 const dayKey = d => { const x=new Date(d); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
 
 function pushRecord(r){ RECORDS.push(r); saveRecords(); paintStreak(); }
+
+/* ---- 翻看某一条历史记录：把当时的复盘原样铺回复盘页 ---- */
+function openRecord(id){
+  const rec = RECORDS.find(x=>x.id===id);
+  if(!rec) return;
+  curRecId = null;                    // 只读，别让 paintAI 回写到别的记录上
+  const text = rec.transcript || '';
+  const secs = rec.secs || 1;
+  const chars = rec.chars || text.length;
+  const d = new Date(rec.at);
+  const stamp = `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+  $('#r-sub').textContent = `${stamp} · ${rec.domain||''}${rec.domain?' / ':''}${rec.act||''}${rec.act?' / ':''}${rec.title||''}`;
+  const dt = $('#r-diffTag'); dt.textContent = DIFF_CN[rec.difficulty]+'档';
+  dt.className = 'tag d-'+rec.difficulty;
+  const card = CARDS.find(c=>c.id===rec.cardId);
+  $('#r-blocker').textContent = card ? (card.goal || card.situation || '') : '这张卡已经不在题库里了。';
+
+  const counts = Object.entries(rec.fillers||{}).map(([w,n])=>({w,n})).sort((a,b)=>b.n-a.n);
+  $('#r-fillers').innerHTML = counts.length
+    ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px">
+        <span>${c.w}</span><span style="color:var(--red);font-variant-numeric:tabular-nums">${c.n} 次</span></div>`).join('')
+    : '<p class="note">这次一个口癖词都没有。</p>';
+  const perMin = secs>0 ? chars/secs*60 : 0;
+  $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。`;
+  $('#r-transcript').innerHTML = text
+    ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
+    : '<span class="note">这次没有录到内容。</span>';
+
+  if(rec.review){
+    paintAI(rec.review);
+    $('#r-overall').textContent = rec.review.overall || rec.overall || '';
+    $('#r-flagtext').textContent = `这是 ${stamp} 那次的复盘存档，不会重新生成。`;
+  }else{
+    paintScores(rec.scores || {});
+    $('#r-overall').innerHTML = rec.overall
+      ? rec.overall
+      : '<span class="note">这次没有 AI 复盘，只有本地统计。</span>';
+    ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>
+      $(k).innerHTML = '<p class="note">这次练习当时没接 AI，没有留下这部分。</p>');
+    $('#r-flagtext').textContent = `这是 ${stamp} 那次的存档。口癖词、字数、语速是当时真算的。`;
+  }
+  go('review');
+  setKid('idle','回头看看那次');
+}
 function updateRecord(id, patch){
   const r = RECORDS.find(x=>x.id===id);
   if(r){ Object.assign(r, patch); saveRecords(); }
@@ -2173,11 +3047,8 @@ const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着�
 
 场景卡：
   情境：${c.situation}
-  他是谁：${c.role}
-  听众：${c.audience}
-  已发生：${c.facts}
-  他手上有：${c.assets}
-  卡点：${c.blocker}
+  对象：${c.relation}
+  说话动作：${c.act}
   要达成：${c.goal}
   限制：${c.constraint}
 
@@ -2196,6 +3067,45 @@ const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着�
 严格返回 JSON，不要 markdown 代码块，结构：
 {"overall":"一句话总评30字内","quotes":[{"said":"原话片段","kind":"问题或亮点","why":"...","better":"可直接替换的说法，亮点留空"}],"diagnosis":{"blocker":{"verdict":"正面处理/绕开了/反被将军","why":"..."},"goal":{"verdict":"达成/部分达成/未达成","why":"..."},"audience":{"verdict":"回应了/答非所问","why":"..."},"constraint":{"verdict":"遵守/越界","why":"..."}},"followUps":[{"q":"对方追问的原话","trigger":"因为你说了「…」","prep":"下次可以这样接"}],"scores":{"结构":7,"内容":8,"表达":7,"用上背景":6,"回应卡点":7},"rewrite":"示范重讲80字左右"}`;
 
+/* 从各家返回体里把正文抠出来。
+   Anthropic 是 content 数组，开了思考模式时第一块是 thinking 不是 text；
+   OpenAI/DeepSeek 是 choices[0].message.content。两边都兜住。 */
+function extractText(data){
+  if(!data) return '';
+  if(Array.isArray(data.content))
+    return data.content.filter(b=>b && typeof b.text === 'string').map(b=>b.text).join('').trim();
+  if(typeof data.content === 'string') return data.content.trim();
+  const m = data.choices && data.choices[0] && (data.choices[0].message || data.choices[0].delta);
+  if(m){
+    if(typeof m.content === 'string' && m.content.trim()) return m.content.trim();
+    if(Array.isArray(m.content))
+      return m.content.filter(b=>b && typeof b.text === 'string').map(b=>b.text).join('').trim();
+  }
+  if(typeof data.output_text === 'string') return data.output_text.trim();
+  return '';
+}
+
+/* 括号配平地找出第一个完整 JSON 对象，比 indexOf/lastIndexOf 稳；
+   截断的返回会返回 null，而不是抛一个看不懂的错。 */
+function extractJSON(raw){
+  const s = raw.replace(/```(?:json)?/gi,'').trim();
+  const start = s.indexOf('{');
+  if(start < 0) return null;
+  let depth = 0, str = false, esc = false;
+  for(let i=start;i<s.length;i++){
+    const ch = s[i];
+    if(esc){ esc = false; continue; }
+    if(ch === '\\'){ esc = true; continue; }
+    if(ch === '"'){ str = !str; continue; }
+    if(str) continue;
+    if(ch === '{') depth++;
+    else if(ch === '}' && --depth === 0){
+      try{ return JSON.parse(s.slice(start, i+1)); }catch(e){ return null; }
+    }
+  }
+  return null;
+}
+
 async function aiReview(text, secs, counts){
   $('#r-overall').innerHTML = '<span class="note">小星正在看你刚才说了什么…</span>';
   ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">生成中</p>');
@@ -2205,15 +3115,15 @@ async function aiReview(text, secs, counts){
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI.key,
                'anthropic-version':'2023-06-01','x-api-key':AI.key},
-      body: JSON.stringify({model:AI.model, max_tokens:2000,
+      body: JSON.stringify({model:AI.model, max_tokens:4000,
         messages:[{role:'user',content:REVIEW_PROMPT(cur,text||'（几乎没说话）')}]})
     });
     if(!res.ok) throw new Error('HTTP '+res.status+' '+(await res.text()).slice(0,200));
     const data = await res.json();
-    let raw = (data.content && data.content[0] && data.content[0].text)
-           || (data.choices && data.choices[0].message.content) || '';
-    raw = raw.replace(/^```(?:json)?/,'').replace(/```$/,'').trim();
-    const r = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}')+1));
+    const raw = extractText(data);
+    if(!raw) throw new Error('模型没返回正文。原始响应：'+JSON.stringify(data).slice(0,300));
+    const r = extractJSON(raw);
+    if(!r) throw new Error('返回的不是完整 JSON，可能被 max_tokens 截断了。模型说：'+raw.slice(0,300));
     paintAI(r);
   }catch(e){
     $('#r-overall').innerHTML = '<span style="color:var(--red)">AI 调用失败：'+String(e.message||e)+'</span>';
@@ -2224,13 +3134,14 @@ async function aiReview(text, secs, counts){
 
 function paintAI(r){
   $('#r-overall').textContent = r.overall || '';
-  if(curRecId) updateRecord(curRecId, {overall:r.overall, ai:true});
+  /* 整份复盘都存进记录，以后点历史能原样看回来 */
+  if(curRecId) updateRecord(curRecId, {overall:r.overall, ai:true, review:r});
   paintScores(r.scores || {});
 
   $('#r-quotes').innerHTML = (r.quotes||[]).map(q=>{
     const good = (q.kind||'').includes('亮点');
-    return `<div style="padding:12px 0;border-bottom:1px dashed var(--border)">
-      <div style="border-left:3px solid ${good?'var(--green)':'var(--red)'};padding-left:11px;margin-bottom:8px">
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
+      <div style="border-left:2px solid ${good?'var(--k-deep)':'var(--red)'};padding-left:11px;margin-bottom:8px">
         <span class="tag ${good?'d-easy':'d-hard'}" style="margin-bottom:5px">${good?'亮点':'可以改'}</span>
         <div style="font-size:15px;line-height:1.7">「${q.said}」</div>
       </div>
@@ -2246,7 +3157,7 @@ function paintAI(r){
   $('#r-diag').innerHTML = rows.map(([cn,k])=>{
     const d = D[k]||{};
     const col = bad(d.verdict)?'var(--red)':mid(d.verdict)?'var(--amber)':'var(--green)';
-    return `<div style="padding:10px 0;border-bottom:1px dashed var(--border)">
+    return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
         <span style="font-size:14px;color:var(--muted)">${cn}</span>
         <b style="font-size:14px;color:${col}">${d.verdict||'未判定'}</b></div>
@@ -2254,7 +3165,7 @@ function paintAI(r){
   }).join('');
 
   $('#r-followups').innerHTML = (r.followUps||[]).map((f,i)=>`
-    <div style="padding:12px 0;${i?'border-top:1px dashed var(--accentMid)':''}">
+    <div style="padding:12px 0;${i?'border-top:1px solid var(--line)':''}">
       <div style="font-size:15px;font-weight:500;line-height:1.6;margin-bottom:6px">「${f.q}」</div>
       <div style="font-size:13px;color:var(--accent);margin-bottom:6px">${f.trigger||''}</div>
       <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${f.prep||''}</div>
@@ -2270,49 +3181,369 @@ function paintAI(r){
 }
 
 /* ---- 题库 ---- */
+/* ═══════════ 上传题库 ═══════════
+   不接 AI，纯格式导入。缺的字段一律留空，不猜、不补。 */
+
+/* 表头别名：中文列名、英文键名都认，去掉空格和括号后比对 */
+const IMPORT_MAP = {
+  title:       ['标题','题目','title','name'],
+  situation:   ['场景描述','什么场合','场合','情境','场景','situation','scene'],
+  goal:        ['目标','要拿到','目的','goal'],
+  constraint:  ['内容限制','不能做','限制','约束','constraint'],
+  relation:    ['人物关系','对象','关系','对方','relation','audience'],
+  act:         ['说话动作','动作','act','action'],
+  difficulty:  ['难度','difficulty','level'],
+  emotionalCost:['情绪成本','emotionalcost','cost'],
+  domain:      ['领域','分类','domain','category'],
+  outline:     ['提纲','大纲','outline'],
+  hints:       ['提示','卡壳提示','hints','hint','tips'],
+  source:      ['来源','出处','source','url','link'],
+  sourceSite:  ['来源平台','平台','sourcesite','site']
+};
+const DIFF_IN = {easy:'easy',medium:'medium',hard:'hard',
+  '简单':'easy','容易':'easy','初级':'easy',
+  '中等':'medium','中':'medium','普通':'medium','中级':'medium',
+  '困难':'hard','难':'hard','高级':'hard'};
+const SEC_BY_DIFF = {easy:60, medium:90, hard:120};
+
+const normKey = s => String(s||'').replace(/[\s　()（）_\-]/g,'').toLowerCase();
+function canonKey(raw){
+  const n = normKey(raw);
+  for(const k in IMPORT_MAP) if(IMPORT_MAP[k].some(a=>normKey(a)===n)) return k;
+  return null;
+}
+const splitList = v => Array.isArray(v) ? v.map(x=>String(x).trim()).filter(Boolean)
+  : String(v||'').split(/[；;\n|]+/).map(x=>x.trim().replace(/^\d+[.、)]\s*/,'')).filter(Boolean);
+
+/* 一行 → 一张卡。只有标题是必填，其余缺了就留空 */
+function rowToCard(row){
+  const o = {};
+  for(const raw in row){
+    const k = canonKey(raw);
+    if(k && o[k] === undefined) o[k] = row[raw];
+  }
+  const s = v => String(v ?? '').trim();
+  const title = s(o.title);
+  if(!title) return null;
+  const diff = DIFF_IN[s(o.difficulty).toLowerCase()] || DIFF_IN[s(o.difficulty)] || 'medium';
+  return {
+    id:'', src:'mine',
+    title,
+    domain:        s(o.domain),
+    act:           s(o.act),
+    relation:      s(o.relation),
+    emotionalCost: s(o.emotionalCost),
+    difficulty:    diff,
+    seconds:       SEC_BY_DIFF[diff],
+    situation:     s(o.situation),
+    goal:          s(o.goal),
+    constraint:    s(o.constraint),
+    outline:       splitList(o.outline),
+    hints:         splitList(o.hints),
+    source:        s(o.source),
+    sourceSite:    s(o.sourceSite)
+  };
+}
+
+/* CSV：自己解析，处理引号包裹、字段内逗号和换行 */
+function parseCSV(text){
+  text = text.replace(/^﻿/,'');
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){
+      if(ch==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; }
+      else cell+=ch;
+    } else if(ch==='"') q=true;
+    else if(ch===','){ row.push(cell); cell=''; }
+    else if(ch==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+    else if(ch!=='\r') cell+=ch;
+  }
+  if(cell!=='' || row.length){ row.push(cell); rows.push(row); }
+  if(!rows.length) return [];
+  const head = rows.shift().map(x=>x.trim());
+  return rows.filter(r=>r.some(x=>String(x).trim()))
+             .map(r=>{ const o={}; head.forEach((k,i)=>o[k]=r[i]??''); return o; });
+}
+
+/* Excel 要临时借一个解析库；断网就退回让用户另存为 CSV */
+let sheetJS = null;
+function loadSheetJS(){
+  if(sheetJS) return Promise.resolve(sheetJS);
+  return new Promise((ok,no)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    s.onload = () => { sheetJS = window.XLSX; sheetJS ? ok(sheetJS) : no(new Error('库没加载成功')); };
+    s.onerror = () => no(new Error('联网失败'));
+    document.head.appendChild(s);
+  });
+}
+
+async function rowsFromFile(file){
+  const name = (file.name||'').toLowerCase();
+  if(name.endsWith('.json')){
+    const data = JSON.parse(await file.text());
+    const arr = Array.isArray(data) ? data : (data.cards || data.data || data.items);
+    if(!Array.isArray(arr)) throw new Error('JSON 最外层要是一个数组，或者 {"cards":[…]}');
+    return arr;
+  }
+  if(name.endsWith('.csv') || name.endsWith('.tsv') || name.endsWith('.txt')) return parseCSV(await file.text());
+  if(name.endsWith('.xlsx') || name.endsWith('.xls')){
+    let XL;
+    try{ XL = await loadSheetJS(); }
+    catch(e){ throw new Error('读 Excel 需要临时联网加载解析库（'+e.message+'）。把表格另存为 CSV 再传就不需要联网。'); }
+    const wb = XL.read(await file.arrayBuffer(), {type:'array'});
+    return XL.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
+  }
+  throw new Error('只认 .csv / .json / .xlsx，这个是 ' + (name.split('.').pop() || '未知格式'));
+}
+
+/* 导入：追加，不动自带的题 */
+async function importFile(file){
+  const msg = $('#upMsg');
+  msg.innerHTML = '<span class="note">正在读 '+file.name+'…</span>';
+  let rows;
+  try{ rows = await rowsFromFile(file); }
+  catch(e){ msg.innerHTML = '<span style="color:var(--red)">读不了：'+String(e.message||e)+'</span>'; return; }
+
+  const cards = [], skipped = [];
+  rows.forEach((r,i)=>{ const c = rowToCard(r); c ? cards.push(c) : skipped.push(i+2); });
+  if(!cards.length){
+    msg.innerHTML = '<span style="color:var(--red)">一条都没读出来。检查一下是不是缺了「标题」这一列——它是唯一必填项。</span>';
+    return;
+  }
+
+  let n = MY_CARDS.length;
+  const used = new Set(CARDS.map(c=>c.id));
+  cards.forEach(c=>{ do{ c.id = 'my' + String(++n).padStart(3,'0'); }while(used.has(c.id)); used.add(c.id); });
+
+  MY_CARDS = MY_CARDS.concat(cards);
+  saveMine();
+  cards.forEach(c=>approved.add(c.id));
+
+  /* 统计哪些字段没填，如实说出来，不替用户补 */
+  const blanks = [];
+  [['situation','什么场合'],['goal','要拿到'],['constraint','不能做'],
+   ['relation','对象'],['act','说话动作'],['outline','提纲'],['hints','提示']].forEach(([k,cn])=>{
+    const miss = cards.filter(c=>!(Array.isArray(c[k]) ? c[k].length : c[k])).length;
+    if(miss) blanks.push(`${cn} 空 ${miss} 条`);
+  });
+  const offWheel = [...new Set(cards.map(c=>c.relation).filter(r=>r && !RELS.some(x=>x.k===r)))];
+
+  msg.innerHTML =
+    `<span style="color:var(--k-deep)">导入了 ${cards.length} 条。</span>` +
+    (skipped.length ? `<br><span class="note">跳过 ${skipped.length} 行（没有标题）：第 ${skipped.slice(0,8).join('、')} 行${skipped.length>8?' 等':''}</span>` : '') +
+    (blanks.length ? `<br><span class="note">留空的：${blanks.join('，')}。留空不影响练习，只是那一格不显示。</span>` : '') +
+    (offWheel.length ? `<br><span class="note">「${offWheel.join('、')}」不在转盘的九类里，这些题只能在题库里找到，转盘上不会出现。</span>` : '');
+
+  renderBank();
+  paintMineCount();
+}
+
+function clearMine(){
+  if(!MY_CARDS.length) return;
+  if(!confirm(`确定清空自己上传的 ${MY_CARDS.length} 条题目？自带的题不受影响。`)) return;
+  MY_CARDS.forEach(c=>approved.delete(c.id));
+  MY_CARDS = []; saveMine();
+  if(cur && cardSrc(cur)==='mine') drawCard();
+  renderBank(); paintMineCount();
+  $('#upMsg').innerHTML = '<span class="note">已清空。自带的题还在。</span>';
+}
+
+function paintMineCount(){
+  const el = $('#upMineCount');
+  if(el) el.textContent = MY_CARDS.length ? `你已经上传了 ${MY_CARDS.length} 条` : '你还没上传过题目';
+}
+
+/* ---- 给 AI 用的提示词 ---- */
+const IMPORT_PROMPT = `你是一个口语表达练习产品的题目撰写者。请帮我写 10 道「难开口的对话」练习题，主题是：【在这里写你想练的主题，比如「跟房东谈退租」「跟父母出柜」】。
+
+输出要求：一个 JSON 数组，不要任何说明文字，不要 markdown 代码块。数组里每个对象包含下面这些字段，字段名必须一字不差：
+
+[
+  {
+    "标题": "一句话概括这个场景，20 字以内，要具体，不要抽象",
+    "场景描述": "80-150 字。写清楚事情发生到哪一步了、对方说了什么、你为什么开不了口。用第二人称「你」。只写事实，不要写建议，不要写心理鸡汤。",
+    "目标": "这次开口要拿到的具体结果，一句话。要可判断有没有达成。",
+    "内容限制": "一句话，说明不能用哪种偷懒说法。比如「不能说『我再想想』」。",
+    "人物关系": "从这九个里选一个：陌生人 / 服务人员 / 面试官 / 直属领导 / 同事 / 同学 / 朋友 / 伴侣 / 家人",
+    "说话动作": "从这些里选一个：拒绝 / 澄清 / 划界限 / 破冰 / 坏消息 / 表态 / 赞美 / 争取 / 自我介绍 / 道歉 / 讲清楚 / 请求 / 谈判 / 安慰",
+    "难度": "简单 / 中等 / 困难 三选一",
+    "情绪成本": "低 / 中 / 高 三选一",
+    "领域": "职场 / 生活 / 消费 / 求职 / 亲密 五选一",
+    "提纲": "三步走的说话思路，用中文分号「；」隔开。困难档留空字符串。",
+    "提示": "卡壳时能救场的两句话，用中文分号「；」隔开。"
+  }
+]
+
+写作要求：
+1. 场景要具体到能想象出画面，写清楚是谁、在哪、已经发生了什么。避免「某天你遇到一件事」这种空话。
+2. 难点必须是真的难——两边都有道理、或者说了会有代价，而不是单纯的懒得开口。
+3. 十道题的难度和人物关系要分散，不要十道都是「跟领导提加薪」。
+4. 「目标」和「内容限制」要互相咬合：限制掉的正好是最容易脱口而出的那句偷懒话。
+5. 全部用中文。不要写「作为一个 AI」之类的话。
+
+如果某一栏你确实想不出内容，就填空字符串 ""，不要编。`;
+
+async function copyPrompt(){
+  const btn = $('#upCopyBtn');
+  try{ await navigator.clipboard.writeText(IMPORT_PROMPT); }
+  catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = IMPORT_PROMPT; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(_){}
+    ta.remove();
+  }
+  btn.textContent = '已复制，去发给 AI';
+  setTimeout(()=>{ btn.textContent = '复制提示词'; }, 2400);
+}
+
+function download(name, text, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿'+text], {type:type+';charset=utf-8'}));
+  a.download = name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+const TPL_HEAD = ['标题','场景描述','目标','内容限制','人物关系','说话动作','难度','情绪成本','领域','提纲','提示'];
+const TPL_ROW = ['跟房东说想提前退租','你租的房子还有四个月到期，工作调动要去外地。合同写了提前退租押金不退。房东人不错，之前帮你修过热水器。你想把押金要回来，但也知道自己确实违约在先。',
+  '争取到押金部分退还，同时不把关系搞僵','不能上来就说「合同不合理」','陌生人','谈判','中等','中','生活',
+  '先承认是自己违约；说明你能做什么来减少他的损失；再提你希望的处理方式','先给方案再提要求；「我帮你找到下一个租客」比「你退我押金」好谈'];
+function downloadTemplate(kind){
+  if(kind==='csv'){
+    const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+    download('题库模板.csv', [TPL_HEAD.map(esc).join(','), TPL_ROW.map(esc).join(',')].join('\n'), 'text/csv');
+  }else{
+    const o = {}; TPL_HEAD.forEach((k,i)=>o[k]=TPL_ROW[i]);
+    download('题库模板.json', JSON.stringify([o], null, 2), 'application/json');
+  }
+}
+
+function openUpload(){ $('#upMask').classList.add('on'); $('#upMsg').innerHTML=''; paintMineCount(); }
+function closeUpload(){ $('#upMask').classList.remove('on'); }
+
+/* ---- 题库：按现成的维度多选筛选 ---- */
+const FGROUPS = [
+  {key:'src',        cn:'来源'},
+  {key:'relation',   cn:'对象'},
+  {key:'difficulty', cn:'难度'},
+  {key:'domain',     cn:'领域'},
+  {key:'act',        cn:'说话动作'}
+];
+const bankSel = {src:new Set(), relation:new Set(), difficulty:new Set(), domain:new Set(), act:new Set()};
+const SRC_CN = {seed:'自带', mine:'我上传的'};
+
+function fValues(key){
+  if(key==='src')        return MY_CARDS.length ? ['seed','mine'] : [];
+  if(key==='relation')   return [...RELS.map(r=>r.k), ...new Set(CARDS.map(c=>c.relation))]
+                                .filter((v,i,a)=>v && a.indexOf(v)===i && CARDS.some(c=>c.relation===v));
+  if(key==='difficulty') return ['easy','medium','hard'];
+  return [...new Set(CARDS.map(c=>c[key]))].filter(Boolean);
+}
+const fLabel = (key,v) => key==='difficulty' ? DIFF_CN[v] : key==='src' ? SRC_CN[v] : v;
+const fVal = (c,key) => key==='src' ? cardSrc(c) : c[key];
+
+/* 组内多选＝或，组与组之间＝且；某组一个都没选＝这一维不限 */
+function bankFiltered(){
+  return CARDS.filter(c => FGROUPS.every(g =>
+    bankSel[g.key].size === 0 || bankSel[g.key].has(fVal(c, g.key))));
+}
+
 function renderBank(){
-  const acts = [...new Set(CARDS.map(c=>c.act))];
-  const doms = [...new Set(CARDS.map(c=>c.domain))];
-  if(!$('#filters').dataset.built){
-    $('#filters').innerHTML =
-      `<button class="chip on" data-f="all">全部</button>` +
-      doms.map(d=>`<button class="chip" data-f="d:${d}">${d}</button>`).join('') +
-      acts.map(a=>`<button class="chip" data-f="a:${a}">${a}</button>`).join('') +
-      ['easy','medium','hard'].map(d=>`<button class="chip" data-f="x:${d}">${DIFF_CN[d]}</button>`).join('');
-    $('#filters').dataset.built = 1;
+  {
+    /* 每次都重建：上传新题之后取值范围会变 */
+    $('#filters').innerHTML = FGROUPS.map(g=>{
+      const vals = fValues(g.key);
+      if(!vals.length) return '';
+      return `
+      <div class="fgroup" data-g="${g.key}">
+        <span class="fgLabel">${g.cn}</span>
+        <button class="chip all" data-g="${g.key}" data-v="">不限</button>
+        ${vals.map(v=>`<button class="chip" data-g="${g.key}" data-v="${v}">${fLabel(g.key,v)}</button>`).join('')}
+      </div>`;
+    }).join('');
     $('#filters').onclick = e => {
-      if(!e.target.dataset.f) return;
-      document.querySelectorAll('#filters .chip').forEach(c=>c.classList.remove('on'));
-      e.target.classList.add('on');
-      paintBank(e.target.dataset.f);
+      const b = e.target.closest('.chip'); if(!b) return;
+      const g = b.dataset.g, v = b.dataset.v;
+      if(v === '') bankSel[g].clear();
+      else bankSel[g].has(v) ? bankSel[g].delete(v) : bankSel[g].add(v);
+      paintBank();
+    };
+    const head = $('#filterHead'), box = head.parentElement;
+    head.onclick = e => {
+      if(e.target.id === 'filterClear'){ clearFilters(); return; }  // 清空不展开
+      const open = box.classList.toggle('open');
+      head.setAttribute('aria-expanded', open);
     };
   }
-  paintBank(document.querySelector('#filters .chip.on').dataset.f);
+  paintBank();
 }
-function paintBank(f){
-  let list = CARDS;
-  if(f && f!=='all'){
-    const [k,v] = f.split(':');
-    list = CARDS.filter(c => k==='d' ? c.domain===v : k==='a' ? c.act===v : c.difficulty===v);
-  }
+
+function paintChips(){
+  document.querySelectorAll('#filters .chip').forEach(b=>{
+    const g = b.dataset.g, v = b.dataset.v;
+    b.classList.toggle('on', v === '' ? bankSel[g].size === 0 : bankSel[g].has(v));
+  });
+  paintFilterHead();
+}
+
+/* 收起时，标题行要能一眼看出现在筛的是什么 */
+function paintFilterHead(){
+  const parts = FGROUPS
+    .filter(g => bankSel[g.key].size)
+    .map(g => [...bankSel[g.key]].map(v => fLabel(g.key, v)).join('/'));
+  const n = FGROUPS.reduce((a,g)=>a+bankSel[g.key].size, 0);
+  $('#filterSummary').textContent = parts.length ? '筛选：' + parts.join(' · ') : '筛选（全部题目）';
+  $('#filterClear').style.display = n ? '' : 'none';
+}
+function clearFilters(){
+  FGROUPS.forEach(g => bankSel[g.key].clear());
+  paintBank();
+}
+
+/* 「这批全开 / 全关」只作用在当前筛出来的这批 */
+function bulkSet(on){
+  bankFiltered().forEach(c => on ? approved.add(c.id) : approved.delete(c.id));
+  paintBank();
+}
+
+function openCard(id){
+  const c = CARDS.find(x=>x.id===id); if(!c) return;
+  cur = c; renderCard(); go('home');
+  setKid('cheer','就讲这张');
+}
+function paintBank(){
+  paintChips();
+  const list = bankFiltered();
+  const onCount = list.filter(c=>approved.has(c.id)).length;
   $('#bankcount').textContent = `共 ${CARDS.length} 张，已开启 ${approved.size} 张`;
-  $('#banklist').innerHTML = list.map(c=>`
-    <div class="bankitem ${approved.has(c.id)?'':'off'}" data-id="${c.id}">
-      <div class="body">
+  $('#bankShown').textContent = `筛出 ${list.length} 张，其中开着 ${onCount} 张`;
+
+  $('#banklist').innerHTML = list.length ? list.map(c=>{
+    const on = approved.has(c.id);
+    return `
+    <div class="bankitem ${on?'':'off'}">
+      <div class="body" data-open="${c.id}" role="button" tabindex="0">
         <div class="t">${c.title}</div>
         <div style="margin:6px 0 8px">
-          <span class="tag">${c.domain}</span><span class="tag">${c.act}</span>
-          <span class="tag">${c.relation}</span><span class="tag d-${c.difficulty}">${DIFF_CN[c.difficulty]}</span>
+          <span class="tag">${c.relation}</span><span class="tag">${c.act}</span>
+          <span class="tag">${c.domain}</span><span class="tag d-${c.difficulty}">${DIFF_CN[c.difficulty]}</span>
         </div>
-        <div class="b">${c.blocker}</div>
+        <div class="b">${(c.situation||'').slice(0,60)}${(c.situation||'').length>60?'…':''}</div>
       </div>
-      <div class="sw ${approved.has(c.id)?'on':''}"></div>
-    </div>`).join('');
-  $('#banklist').querySelectorAll('.bankitem').forEach(el=>{
-    el.onclick = () => {
-      const id = el.dataset.id;
+      <button class="bankSw ${on?'on':''}" data-toggle="${c.id}">${on?'已开启':'已关闭'}</button>
+    </div>`;
+  }).join('') : '<p class="note" style="padding:20px 2px">这几个条件下没有题，松一个试试。</p>';
+
+  $('#banklist').querySelectorAll('[data-open]').forEach(el=>{
+    el.onclick = () => openCard(el.dataset.open);
+    el.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openCard(el.dataset.open); } };
+  });
+  $('#banklist').querySelectorAll('[data-toggle]').forEach(el=>{
+    el.onclick = e => {
+      e.stopPropagation();
+      const id = el.dataset.toggle;
       approved.has(id) ? approved.delete(id) : approved.add(id);
-      paintBank(f);
+      paintBank();
     };
   });
 }
@@ -2338,7 +3569,10 @@ const RELS = [
   {k:'伴侣',     img:'assets/people/partner.png',     face:'💗',    st:'#EDD5D2', in:'#F2EFE9',
    ctx:'最亲近，也最容易积怨。这里的难点不是把道理讲清楚，是让对方觉得你站在他那边。'},
   {k:'家人',     img:'assets/people/family.png',      face:'🏠',    st:'#E0CFC9', in:'#F2EFE9',
-   ctx:'退不出去的关系。这一类的难点从来不是讲不讲得通道理，是情绪。'}
+   ctx:'退不出去的关系。这一类的难点从来不是讲不讲得通道理，是情绪。'},
+  /* 唯一一类对面没有人。full 表示整幅图完整显示，不像人像那样放大裁到脸 */
+  {k:'头脑风暴', img:'assets/people/brainstorming.png', face:'💡', st:'#DDE4E8', in:'#F2EFE9', full:true,
+   ctx:'这一类对面没有人，只有一个你还没想清楚的问题。练的是把脑子里那团东西，说成一条别人能跟得上的线。'}
 ];
 const N = RELS.length;
 const GAP = 330;
@@ -2350,14 +3584,14 @@ const curIdx = () => ((Math.round(wPos) % N) + N) % N;
 function buildWheel(){
   const st = $('#wheelStage');
   st.innerHTML = RELS.map((r,i)=>
-    `<div class="stamp" data-i="${i}" style="--st:${r.st}">
+    `<div class="stamp${r.full?' full':''}" data-i="${i}" style="--st:${r.st}">
        <div class="inner">${r.img
          ? `<img src="${r.img}" alt="${r.k}" draggable="false"
               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'face',textContent:'${r.face}'}))">`
          : `<div class="face">${r.face}</div>`}</div>
      </div>`).join('');
   wEls = [...st.querySelectorAll('.stamp')];
-  wEls.forEach(el => el.onclick = () => { if(!wMoved) enter(+el.dataset.i); });
+  // 点击判定统一放在 stage 的 pointerup 里，见 bindWheel
 
   $('#w-list').innerHTML = RELS.map((r,i)=>`<li data-i="${i}">${r.k}</li>`).join('');
   $('#w-list').querySelectorAll('li').forEach(li => li.onclick = () => {
@@ -2398,9 +3632,11 @@ function openScene(i, clone){
   document.querySelector('nav').style.display = '';
   $('#s-scene').classList.add('on');
   window.scrollTo(0,0);
+  if(typeof paintKid === 'function') paintKid();
 
   // 填充人像（先隐藏，等动画落地再显示）
   const heroEl = $('#sc-hero');
+  heroEl.classList.toggle('full', !!r.full);
   heroEl.style.setProperty('--st', r.st);
   heroEl.style.opacity = '0';
   $('#sc-heroInner').innerHTML = r.img
@@ -2506,11 +3742,14 @@ function layoutWheel(){
     el.style.opacity = 1;                    // 全部常亮，只靠裁切藏起来
     el.style.pointerEvents = 'auto';
 
-    const a  = off * DEG * rad;
+    /* 夹住角度：类目多了以后 off 能到 ±5，再乘 DEG 就绕过半圈又转回画面上来了。
+       超过 ±2.2 的一律停在画面底边以下同一个位置，拖动时照样连续地滑进来。 */
+    const oc = Math.max(-2.2, Math.min(2.2, off));
+    const a  = oc * DEG * rad;
     const x  = A * Math.sin(a);                            // 椭圆轨迹
     const y  = -B * Math.cos(a) + cardH / 2 + DROP;        // 元素本身已贴底
-    const rt = off * TILT;                                 // 只倾一点点
-    const sc = Math.max(.7, 1 - Math.abs(off) * .045);     // 远处微缩
+    const rt = oc * TILT;                                  // 只倾一点点
+    const sc = Math.max(.7, 1 - Math.abs(oc) * .045);      // 远处微缩
 
     el.style.zIndex = 100 - Math.round(Math.abs(off) * 10);
     el.style.transform =
@@ -2550,13 +3789,13 @@ let wMoved = false;
   st.addEventListener('pointerdown', e=>{
     st.setPointerCapture(e.pointerId); st.classList.add('drag');
     wMoved = false;
-    wDrag = {x:e.clientX, base:wPos, t:performance.now(), last:wPos};
+    wDrag = {x:e.clientX, y:e.clientY, base:wPos, t:performance.now(), last:wPos, t0:performance.now()};
     if(wRaf){ cancelAnimationFrame(wRaf); wRaf=null; }
   });
   st.addEventListener('pointermove', e=>{
     if(!wDrag) return;
     const dx = e.clientX - wDrag.x;
-    if(Math.abs(dx) > 4) wMoved = true;
+    if(Math.abs(dx) > 8 || Math.abs(e.clientY - wDrag.y) > 14) wMoved = true;
     wPos = wDrag.base - dx/GAP;
     const now = performance.now();
     if(now - wDrag.t > 16){ wVel = (wPos-wDrag.last)/(now-wDrag.t)*16; wDrag.t = now; wDrag.last = wPos; }
@@ -2564,9 +3803,19 @@ let wMoved = false;
   });
   const end = e => {
     if(!wDrag) return;
-    const moved = wMoved; wDrag = null; st.classList.remove('drag');
+    const moved = wMoved, downAt = wDrag.t0; wDrag = null; st.classList.remove('drag');
     if(e && e.pointerId!=null && st.hasPointerCapture?.(e.pointerId)) st.releasePointerCapture(e.pointerId);
-    if(!moved){ wVel = 0; return; }
+    if(!moved){
+      wVel = 0;
+      /* 指针被 stage 捕获时 click 会打到 stage 而不是邮票上，所以这里自己判定「点了哪张」，
+         不再依赖每张卡的 onclick——那正是之前点了没反应的原因。 */
+      if(e && performance.now() - downAt < 700){
+        const hit = document.elementFromPoint(e.clientX, e.clientY);
+        const card = hit && hit.closest && hit.closest('.stamp');
+        if(card && card.dataset.i != null) enter(+card.dataset.i);
+      }
+      return;
+    }
     const glide = () => {                       // 自然滑行，慢下来再吸附到整格
       wVel *= 0.915;
       if(Math.abs(wVel) < 0.010){
@@ -2628,22 +3877,28 @@ function renderRecord(){
   }
 
   $('#rechist').innerHTML = n
-    ? RECORDS.slice().reverse().slice(0,20).map(r=>{
+    ? RECORDS.slice().reverse().map(r=>{
         const d = new Date(r.at);
         const avg = r.scores ? (Object.values(r.scores).reduce((a,b)=>a+b,0)/Object.values(r.scores).length).toFixed(1) : null;
-        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed var(--border)">
+        return `<div class="recrow" data-rec="${r.id}" role="button" tabindex="0">
           <div style="flex:1;min-width:0">
             <div style="font-size:14px">${r.title}</div>
             <div style="margin-top:5px">
               <span class="tag d-${r.difficulty}">${DIFF_CN[r.difficulty]}档</span>
-              <span class="tag">${r.act}</span>
-              <span class="note">${d.getMonth()+1}月${d.getDate()}日 · ${r.secs}秒 · ${r.chars}字</span>
+              ${r.act?`<span class="tag">${r.act}</span>`:''}
+              <span class="note">${d.getMonth()+1}月${d.getDate()}日 · ${r.secs}秒 · ${r.chars}字${r.review?' · 有 AI 复盘':''}</span>
             </div>
           </div>
           <b style="font-variant-numeric:tabular-nums;color:var(--inkSoft)">${avg || '<span class="note">未评分</span>'}</b>
+          <i class="ti ti-chevron-right" style="color:var(--muted);font-size:16px" aria-hidden="true"></i>
         </div>`;
       }).join('')
     : '<p class="note">还没有记录。回首页讲一次，这里就有了。</p>';
+
+  $('#rechist').querySelectorAll('[data-rec]').forEach(el=>{
+    el.onclick = () => openRecord(el.dataset.rec);
+    el.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openRecord(el.dataset.rec); } };
+  });
 }
 
 function clearRecords(){
@@ -2653,9 +3908,30 @@ function clearRecords(){
 }
 
 /* ---- 启动 ---- */
+/* 小人挂了不能拖垮转盘和卡片，所以单独兜住 */
 document.querySelector('nav').style.display = 'none'; // 初始在转盘页，隐藏顶部导航
-kid1 = mountKid($('#kidhost'), 260);
-kid2 = mountKid($('#kidhost2'), 190);
+try{
+  kid1 = mountKid($('#kidFloatBody'), 186);
+  kid2 = kid1;                                // 全站只有这一个小人，练习时也是它在听
+  $('#kidClose').onclick  = () => showKid(false);
+  $('#kidReopen').onclick = () => showKid(true);
+  initKidFloat();
+}catch(err){ console.error('小星没挂上：', err); }
+
+/* 上传题库：点选 + 拖拽 */
+(function(){
+  const drop = $('#upDrop'), input = $('#upFile');
+  drop.onclick = () => input.click();
+  input.onchange = () => { if(input.files[0]) importFile(input.files[0]); input.value=''; };
+  ['dragenter','dragover'].forEach(t=>drop.addEventListener(t, e=>{
+    e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(t=>drop.addEventListener(t, e=>{
+    e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files[0]; if(f) importFile(f);
+  });
+  $('#upMask').addEventListener('click', e=>{ if(e.target.id==='upMask') closeUpload(); });
+})();
 drawCard();
 buildWheel();
 setKid('idle','今天想讲哪一位？');

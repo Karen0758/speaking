@@ -6,7 +6,8 @@
     "dev": "vite --host 127.0.0.1",
     "server": "node server/index.js",
     "test": "node --test work/xfyun-realtime/**/*.test.js src/**/*.test.js",
-    "build": "vite build"
+    "build": "vite build",
+    "build:site": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

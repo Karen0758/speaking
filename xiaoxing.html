@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>小星 · 演示</title>
+<title>momo · 演示</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-light.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
@@ -291,7 +291,7 @@ h2{font-size:20px;font-weight:500}
 .recrow:last-child{border-bottom:none}
 .dlg{max-height:88vh;overflow-y:auto}
 
-/* 小星：常驻右下角的悬浮小人，可关掉 */
+/* momo：常驻右下角的悬浮小人，可关掉 */
 .kidFloat{position:fixed;right:22px;bottom:20px;z-index:120;width:186px;
   display:flex;flex-direction:column;align-items:center;
   transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.32,1)}
@@ -415,7 +415,7 @@ h2{font-size:20px;font-weight:500}
         <div style="flex:1">
           <div class="lbl" style="margin-bottom:6px">音量</div>
           <div class="meter"><i id="p-mic" style="width:4%"></i></div>
-          <p class="note" style="margin-top:10px">小星的嘴跟着你的音量动。</p>
+          <p class="note" style="margin-top:10px">momo 的嘴跟着你的音量动。</p>
         </div>
       </div>
 
@@ -562,11 +562,11 @@ h2{font-size:20px;font-weight:500}
 
 <!-- 悬浮小人 -->
 <div class="kidFloat" id="kidFloat">
-  <button class="kidClose" id="kidClose" aria-label="收起小星" title="收起小星"><i class="ti ti-x"></i></button>
+  <button class="kidClose" id="kidClose" aria-label="收起 momo" title="收起 momo"><i class="ti ti-x"></i></button>
   <div class="body" id="kidFloatBody"></div>
   <p class="kidcap" id="kidcap">今天想讲哪一位？</p>
 </div>
-<button class="kidReopen" id="kidReopen">叫小星回来</button>
+<button class="kidReopen" id="kidReopen">叫 momo 回来</button>
 
 <div class="mask" id="upMask">
   <div class="dlg" style="max-width:560px">
@@ -601,8 +601,8 @@ h2{font-size:20px;font-weight:500}
 
 <div class="mask" id="aiMask">
   <div class="dlg">
-    <h3>接上 AI</h3>
-    <p class="note">复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。</p>
+    <h3>AI 设置</h3>
+    <p class="note" id="aiIntro">复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。</p>
 
     <div class="fld">
       <label>接口地址（Anthropic Messages 兼容）</label>
@@ -1690,9 +1690,201 @@ const SEED_CARDS = [
   ],
   "source": "",
   "sourceSite": ""
+ },
+ {
+  "id": "sc131",
+  "title": "考编上岸和去闯，到底哪个是在规避风险",
+  "domain": "求职",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "一种看法是，这几年环境变化太快，先拿到一份饿不死的工作，才有资格谈别的，年轻时的所谓自由，很多是拿父母的托底在赌。另一种看法是，二十几岁把自己钉在一个几十年不变的位置上，规避的是短期波动，付出的是往后所有的可能性，等到想动的时候已经动不了了。这两拨人都觉得对方在冒更大的险。",
+  "goal": "给出一个明确的立场，并且用一件你自己或身边人经历过的事把它撑住",
+  "constraint": "不能只说「因人而异」「看个人选择」就收尾",
+  "outline": [
+   "先说清楚你站哪一边，别绕",
+   "再讲一件具体的事，说明你为什么这么想",
+   "最后承认对面那一方说得对的地方在哪"
+  ],
+  "hints": [
+   "先定义你说的「风险」到底指什么，很多分歧其实是定义之争",
+   "讲一个你真的看见过的人，比讲道理有力得多"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc132",
+  "title": "年轻人不走亲戚，是清醒还是冷漠",
+  "domain": "生活",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "越来越多人过年不再挨家串门。支持的人说，那些一年只见一次、见面就打听收入和婚恋的关系，本来就不是亲情，只是血缘上的社交义务，断掉是止损。反对的人说，人不是只靠喜欢维系的，亲戚网络是普通人手上为数不多的托底，等到真出事那天，你会发现自己谁也叫不动。",
+  "goal": "讲清楚你对「哪些关系值得维持」的判断标准，并且承认这个标准的代价",
+  "constraint": "不能把对面说成「愚孝」或者「自私」",
+  "outline": [
+   "先给出你自己的那条线画在哪",
+   "再说明这条线是怎么划出来的，有没有具体的事",
+   "最后说清楚按这条线走，你要付出什么"
+  ],
+  "hints": [
+   "把话题从「该不该」拉到「你的标准是什么」，会好讲很多",
+   "主动说出你这个立场的代价，比只讲好处可信"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc133",
+  "title": "用 AI 写完的东西，还算你的作品吗",
+  "domain": "职场",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "中",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "一派认为工具从来都在变，重点是最后交出来的东西好不好，纠结过程等于当年反对用计算器。另一派认为写作和思考是一回事，把写的过程外包出去，等于把思考也外包了，短期看效率高，长期是把自己的能力抽空。学校和公司现在两种态度都有，规则还没定下来。",
+  "goal": "给出一条你自己能执行的界线，说明什么情况下用是合理的、什么情况下不是",
+  "constraint": "不能停在「合理使用就好」这种正确的废话",
+  "outline": [
+   "先说明你判断的依据是什么，是结果还是过程",
+   "再给出一条具体到可执行的界线，最好能举例",
+   "最后回应对面最强的那个反驳，不是最弱的"
+  ],
+  "hints": [
+   "拿一个具体场景来试你的界线，看它撑不撑得住",
+   "「我自己是这么用的」比「应该怎么用」更有说服力"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc134",
+  "title": "亲密关系里谈钱，是清醒还是伤感情",
+  "domain": "亲密",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "有人主张感情归感情、账目归账目，早点把钱说清楚，反而少了日后互相记账的怨气。也有人认为一进门就分得那么清，本身就是在给退出留后路，两个人从一开始就没打算真的合成一个整体。这个话题在情侣之间往往一提就吵，因为它其实在问：你把这段关系当成什么。",
+  "goal": "说清楚你觉得钱该怎么处理，并且讲明这个安排背后你在保护什么",
+  "constraint": "不能用「爱不爱」来替代具体安排",
+  "outline": [
+   "先讲你的具体主张，越具体越好",
+   "再说明这个安排在防的是什么问题",
+   "最后说清楚什么情况下你愿意改"
+  ],
+  "hints": [
+   "把「AA 还是不 AA」换成「哪些钱怎么算」，更容易说清",
+   "承认你也在保护自己，比假装无所谓真诚"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc135",
+  "title": "三十五岁危机，是真的门槛还是自我设限",
+  "domain": "职场",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "中",
+  "difficulty": "hard",
+  "seconds": 120,
+  "situation": "一种声音说这是结构性的：招聘的年龄偏好摆在那里，体力和试错成本也确实变了，把它说成心态问题是在让个体承担系统的账。另一种声音说，真正卡住人的是十年只积累了一年经验，年龄只是把这件事显影出来，而那些一直在长的人并没有被卡住。两边都能举出一堆例子。",
+  "goal": "讲清楚你认为这件事里有多少是结构的、多少是个人的，并给出你自己的应对",
+  "constraint": "不能只喊「打破年龄歧视」这类口号",
+  "outline": [
+   "先把这两种解释各自成立的部分说出来",
+   "再讲你自己的判断，说明依据",
+   "最后落到你打算怎么办，具体到一件事"
+  ],
+  "hints": [
+   "能同时承认结构问题和个人责任，比只认一边更难也更有说服力",
+   "落到「我准备怎么做」，整段话才不会悬空"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc136",
+  "title": "情绪价值算不算一种真本事",
+  "domain": "生活",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "中",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "一种看法是，让人舒服是稀缺能力，能在团队里降低摩擦、在关系里托住对方，这本身就是硬实力，只是长期没被计价。另一种看法是，这个词被用得太滥，很多时候是把讨好、忍让和情绪劳动包装成美德，最后压力都落在最会照顾人的那个人身上。",
+  "goal": "给出你对这个词的定义，并说明在什么条件下它是能力、什么条件下它是消耗",
+  "constraint": "不能只说「要看情况」",
+  "outline": [
+   "先给出你自己的定义，把词说清楚",
+   "再区分你认为是能力的那种和是消耗的那种",
+   "最后举一个你见过的例子落地"
+  ],
+  "hints": [
+   "先定义再表态，能避掉一半的鸡同鸭讲",
+   "「是不是双向的」通常是那条分界线"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc137",
+  "title": "留在大城市还是回去，什么才算想清楚了",
+  "domain": "生活",
+  "act": "讲清楚",
+  "relation": "头脑风暴",
+  "emotionalCost": "高",
+  "difficulty": "medium",
+  "seconds": 90,
+  "situation": "留下的人说大城市给的是选择权：行业密度、见识、以及可以不按别人的时间表活。回去的人说所谓选择权很多是幻觉，扣掉通勤和房租后剩下的生活并不比老家宽，而且父母正在老。这些年两个方向的人都在互相劝，也都在互相羡慕。",
+  "goal": "说清楚你在用什么标准做这个判断，让别人听完知道你的取舍是什么",
+  "constraint": "不能只比房价和收入这两项",
+  "outline": [
+   "先说明你最在意的那一两件事是什么",
+   "再说明现在这个选择在这几件事上给了你什么、拿走了什么",
+   "最后说清楚什么情况下你会改主意"
+  ],
+  "hints": [
+   "说出「我愿意用什么换什么」，比罗列优缺点清楚",
+   "给一个会让你改主意的条件，反而显得你真的想过"
+  ],
+  "source": "",
+  "sourceSite": ""
+ },
+ {
+  "id": "sc138",
+  "title": "善意的谎言，到底是体贴还是不尊重",
+  "domain": "生活",
+  "act": "表态",
+  "relation": "头脑风暴",
+  "emotionalCost": "中",
+  "difficulty": "easy",
+  "seconds": 60,
+  "situation": "有人认为在对方无力承受的时候讲全部事实，是拿诚实当武器，体贴本来就包含选择说什么和什么时候说。也有人认为替别人决定他能承受什么，本身就是一种居高临下，成年人有权拿到完整信息、自己判断。医院里、家庭里、朋友之间，这个分歧每天都在发生。",
+  "goal": "给出你自己的一条判断规则，让人听完知道你什么时候会说、什么时候不会",
+  "constraint": "不能只举一个特例就当成通则",
+  "outline": [
+   "先给出你的规则，一句话",
+   "再用两个方向相反的例子检验它",
+   "最后承认这条规则失效的情况"
+  ],
+  "hints": [
+   "「谁有权知道」比「说不说」更好切入",
+   "主动给出反例，比举一堆支持自己的例子可信"
+  ],
+  "source": "",
+  "sourceSite": ""
  }
 ];
-/* ─────────── 小星动画数据与引擎 ─────────── */
+/* ─────────── momo 动画数据与引擎 ─────────── */
 const KD = {
  "name": "星星小人",
  "viewBox": "-60 -80 640 420",
@@ -2378,7 +2570,7 @@ const KD = {
  }
 };
 </script>
-<script>/* 小星动画引擎（原生版，由 StarKid.jsx 改写）
+<script>/* momo 动画引擎（原生版，由 StarKid.jsx 改写）
    逐路径策略检测 + 渲染一次只改 d + 待机幅度混合 */
 (function(){
 "use strict";
@@ -2606,15 +2798,61 @@ function go(name){
   if(name==='bank') renderBank();
   if(name==='record') renderRecord();
   if(name==='wheel') buildWheel();
-  if(name==='wheel') setKid('idle','今天想对谁说？');
+  if(name==='wheel') setKidMood('pickPerson');
   if(typeof paintKid === 'function') paintKid();
 }
 
-/* ---- 小星 ---- */
+/* ---- momo ---- */
 function setKid(state, cap){
   if(kid1) kid1.set(state);
   if(kid2 && kid2 !== kid1) kid2.set(state);
   if(cap !== undefined) $('#kidcap').textContent = cap;
+}
+
+/* momo 的台词库：每个时刻多备几句，随机挑，连着两次不重样。
+   状态一共九种：idle sing cheer cast wink surprise shy sad sleepy */
+const KID_LINES = {
+  boot:      {s:'idle',  t:['今天想讲哪一位？','想好跟谁说了吗','挑一个人，开始']},
+  pickPerson:{s:'idle',  t:['今天想对谁说？','跟谁的那句话最难开口','先选人，再选题']},
+  draw:      {s:'cast',  t:['抽到这张','来看看这张','就它了','翻到这一张']},
+  drawYes:   {s:'cheer', t:['就这张吧','这张有意思','我觉得可以','试试这个']},
+  ready:     {s:'idle',  t:['准备好就开麦','不急，看完再开口','把「要拿到」读一遍','想好第一句就行','深呼吸，然后开始']},
+  fromBank:  {s:'cheer', t:['就讲这张','好，这张','那就开始吧']},
+  fromList:  {s:'idle',  t:['这张我陪你','看完场景再开口','准备好了叫我']},
+  start:     {s:'idle',  t:['等你开口','我在这儿','慢慢来','第一句说慢一点','不用一次说好']},
+  listening: {s:'sing',  t:['我在听','嗯，继续','听着呢','继续说','别停']},
+  stuck:     {s:'shy',   t:['要不要提个醒','卡住了？','给你递一句？','需要提示就停一下']},
+  reviewing: {s:'cast',  t:['正在看你刚才说了什么','让我理一理','在看了','等我一下']},
+  high:      {s:'cheer', t:['这次讲得真好','稳','比我想的还清楚','这段可以留着','有条理']},
+  mid:       {s:'wink',  t:['比上次稳','有进步','中间那段挺好','越说越顺了']},
+  low:       {s:'shy',   t:['已经开口了，就是进步','开口比讲得好更重要','下次会顺一点','第一遍都这样']},
+  empty:     {s:'sad',   t:['这次没读出来','没听到声音','麦克风好像没进来']},
+  history:   {s:'idle',  t:['回头看看那次','看看那天说了什么','翻翻旧的']},
+  needAI:    {s:'shy',   t:['先把 AI 接上吧','复盘要接了 AI 才有','接上 AI 我才看得懂']},
+  sleepy:    {s:'sleepy',t:['我先眯一会儿','困了，你忙','需要我就点我一下']},
+  wake:      {s:'surprise',t:['醒了醒了','我在','来了']},
+  poke:      {s:['wink','cheer','surprise','shy'],
+              t:['干嘛呀','在呢','要开始了吗','别戳了，痒','今天也要开口哦','我一直在这儿','讲一张吧']}
+};
+let lastLine = {};
+function setKidMood(key, cap){
+  const m = KID_LINES[key]; if(!m) return setKid('idle', cap);
+  let t = cap;
+  if(t === undefined){
+    const pool = m.t.filter(x => x !== lastLine[key]);
+    t = pool[Math.floor(Math.random()*pool.length)] || m.t[0];
+    lastLine[key] = t;
+  }
+  const s = Array.isArray(m.s) ? m.s[Math.floor(Math.random()*m.s.length)] : m.s;
+  setKid(s, t);
+}
+
+/* 一分钟没动静就打个盹，练习中不打盹；有任何操作就醒 */
+let kidIdleTimer = null;
+function kidWake(){
+  clearTimeout(kidIdleTimer);
+  if(kid1 && kid1.state && kid1.state() === 'sleepy') setKidMood('wake');
+  kidIdleTimer = setTimeout(()=>{ if(!timer) setKidMood('sleepy'); }, 60000);
 }
 
 /* 悬浮小人：右下角常驻，可以关掉；关掉后留一个小按钮请它回来。
@@ -2647,9 +2885,9 @@ function drawCard(){
   if(p.length>1) while(cur && next.id===cur.id) next = p[Math.floor(Math.random()*p.length)];
   cur = next;
   renderCard();
-  setKid('cast','抽到这张');
-  setTimeout(()=>setKid('cheer','就这张吧'), 650);
-  setTimeout(()=>setKid('idle','准备好就开麦'), 2000);
+  setKidMood('draw');
+  setTimeout(()=>setKidMood('drawYes'), 650);
+  setTimeout(()=>setKidMood('ready'), 2000);
 }
 /* 返回当前这张卡对应的那位的场景页，顺便把转盘也转到他那一格 */
 function backToRelation(){
@@ -2704,11 +2942,14 @@ function renderCard(){
   back.textContent = c.relation ? `返回和${c.relation}的交流` : '返回选人';
   secAdj = 0; paintSec();
 
+  /* 头脑风暴不是情境题，是议论题，三格的抬头换个说法 */
+  const BRAIN_CN = {situation:'议题', goal:'要讲清楚', constraint:'不能做'};
+  const isBrain = c.relation === '头脑风暴';
   $('#h-canvas').innerHTML = CELLS.map(m => {
     const v = (c.brief && c.brief[m.k]) || c[m.k] || '';
     return `
     <div class="cell ${m.cls}">
-      <div class="h"><i class="ti ${m.ic}"></i><span>${m.cn}</span></div>
+      <div class="h"><i class="ti ${isBrain&&m.k==='situation'?'ti-messages':m.ic}"></i><span>${isBrain?BRAIN_CN[m.k]:m.cn}</span></div>
       <div class="v">${v || '<span class="blank">这张卡没填这一栏</span>'}</div>
     </div>`;
   }).join('');
@@ -2732,7 +2973,7 @@ async function startPractice(override){
     ? '困难档不提供卡壳提示。' : '停顿超过几秒会自动给一句。';
   $('#wcount').textContent = '0 字';
   go('prac');
-  setKid('idle','等你开口');
+  setKidMood('start');
 
   timer = setInterval(tick, 1000);
   await initMic();
@@ -2745,7 +2986,7 @@ function tick(){
   const prog = 1 - secLeft/secTotal;
   $('#ringP').setAttribute('stroke-dashoffset', (301.6*prog).toFixed(1));
   $('#ringP').setAttribute('stroke', secLeft<=10 ? 'var(--red)' : 'var(--accent)');
-  if(secLeft<=10 && secLeft>0) setKid('surprise', `还剩 ${secLeft} 秒`);
+  if(secLeft<=10 && secLeft>0) setKid('surprise', secLeft<=3 ? `${secLeft}` : secLeft<=6 ? `${secLeft} 秒，收个尾` : `还剩 ${secLeft} 秒`);
   if(secLeft<=0) finish();
 
   const quiet = (Date.now()-lastSpeak)/1000;
@@ -2753,12 +2994,12 @@ function tick(){
   if(quiet > trig && cur.hints && cur.hints.length && secLeft>8){
     const h = cur.hints[Math.floor(Math.random()*cur.hints.length)];
     $('#p-hint').textContent = h;
-    setKid('shy','要不要提个醒');
+    setKidMood('stuck');
     lastSpeak = Date.now();
   }
 }
 
-/* ---- 麦克风：真实音量驱动小星的嘴 ---- */
+/* ---- 麦克风：真实音量驱动 momo 的嘴 ---- */
 async function initMic(){
   try{
     stream = await navigator.mediaDevices.getUserMedia({audio:true});
@@ -2778,7 +3019,7 @@ async function initMic(){
       if(kid2) kid2.mic(lvl);
       if(lvl > 0.06){
         lastSpeak = Date.now();
-        if(kid2 && kid2.state() !== 'sing' && secLeft>10) setKid('sing','我在听');
+        if(kid2 && kid2.state() !== 'sing' && secLeft>10) setKidMood('listening');
       }
       rafMic = requestAnimationFrame(loop);
     };
@@ -2819,7 +3060,7 @@ function simulate(){
     if(secLeft<=0 || i>=SIM.length){ clearInterval(iv); return; }
     finalText += SIM.slice(i, i+2); i += 2;
     lastSpeak = Date.now();
-    if(kid2 && secLeft>10) setKid('sing','我在听');
+    if(kid2 && secLeft>10) setKidMood('listening');
     paintText();
   }, 180);
 }
@@ -2852,7 +3093,7 @@ function finish(){
                domain:cur.domain, act:cur.act, difficulty:cur.difficulty,
                secs, chars:text.length, transcript:text, fillers:fill });
 
-  setKid('cast','正在看你刚才说了什么');
+  setKidMood('reviewing');
   go('review');
   setTimeout(()=>renderReview(text, secs), 900);
 }
@@ -2881,7 +3122,7 @@ function renderReview(text, secs){
     ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
     : '<span class="note">这次没有录到内容。</span>';
 
-  if(AI.key){ aiReview(text, secs, counts); }
+  if(aiReady()){ aiReview(text, secs, counts); }
   else { fakeReview(text, secs, totalFiller, chars); }
 }
 
@@ -2897,7 +3138,7 @@ function fakeReview(text, secs, totalFiller, chars){
   $('#r-followups').innerHTML = '<p class="note">追问预演需要 AI。</p>';
   $('#r-rewrite').innerHTML = '<p class="note">示范重讲需要 AI。</p>';
   $('#r-flagtext').textContent = '口癖词、字数、语速是真算的。总评、逐句点评、诊断、追问预演都必须由 AI 生成，当前未接入，所以是空的。';
-  setKid('shy','先把 AI 接上吧');
+  setKidMood('needAI');
 }
 
 function paintScores(sc){
@@ -2958,7 +3199,7 @@ function openRecord(id){
     $('#r-flagtext').textContent = `这是 ${stamp} 那次的存档。口癖词、字数、语速是当时真算的。`;
   }
   go('review');
-  setKid('idle','回头看看那次');
+  setKidMood('history');
 }
 function updateRecord(id, patch){
   const r = RECORDS.find(x=>x.id===id);
@@ -2985,6 +3226,17 @@ function paintStreak(){
 }
 
 const AI = { url:'', key:'', model:'', persist:false };
+
+/* 线上部署时服务端有一个 /api/ai 代理，密钥在服务器上，访客不用填。
+   本地用 file:// 打开时没有这个接口，就退回让用户自己填密钥。 */
+const HAS_PROXY = location.protocol === 'http:' || location.protocol === 'https:';
+const aiReady = () => !!AI.key || HAS_PROXY;
+const aiEndpoint = () => AI.key ? AI.url : '/api/ai';
+function aiHeaders(){
+  if(!AI.key) return {'Content-Type':'application/json'};
+  return {'Content-Type':'application/json', 'Authorization':'Bearer '+AI.key,
+          'anthropic-version':'2023-06-01', 'x-api-key':AI.key};
+}
 (function loadAI(){
   const src = localStorage.getItem('ai_cfg') ? localStorage : sessionStorage;
   try{
@@ -2999,8 +3251,12 @@ function setupAI(){
   $('#aiKey').value = AI.key;
   $('#aiModel').value = AI.model;
   $('#aiRemember').checked = AI.persist;
+  $('#aiIntro').textContent = HAS_PROXY
+    ? '复盘默认走这个站点自己的 AI，你不用填任何东西。想用自己的密钥再填下面三项——填了就以你的为准，请求从这台电脑直接发出。'
+    : '复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。';
   $('#aiMsg').innerHTML = AI.key
-    ? '<span style="color:var(--green)">当前已接入，密钥 ****'+AI.key.slice(-4)+'</span>' : '';
+    ? '<span style="color:var(--k-deep)">正在用你自己的密钥 ****'+AI.key.slice(-4)+'</span>'
+    : HAS_PROXY ? '<span class="note">当前用的是站点自带的 AI。</span>' : '';
   $('#aiMask').classList.add('on');
   setTimeout(()=>$('#aiKey').focus(), 60);
 }
@@ -3037,11 +3293,11 @@ async function testAI(){
 }
 function paintAIBtn(){
   const b=$('#aiBtn');
-  if(AI.key){ b.textContent='AI 已接入'; b.classList.add('pri'); }
+  if(AI.key){ b.textContent='用我的密钥'; b.classList.add('pri'); }
+  else if(HAS_PROXY){ b.textContent='AI 设置'; b.classList.remove('pri'); }
   else { b.textContent='接上 AI'; b.classList.remove('pri'); }
 }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAI(); });
-$('#aiMask').addEventListener('click', e=>{ if(e.target.id==='aiMask') closeAI(); });
+/* 弹窗只能靠里面的按钮关掉：点框外和按 Esc 都太容易误触，填了一半的东西没了 */
 
 const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着下面这张场景卡讲了一段话，请给出复盘。
 
@@ -3107,14 +3363,13 @@ function extractJSON(raw){
 }
 
 async function aiReview(text, secs, counts){
-  $('#r-overall').innerHTML = '<span class="note">小星正在看你刚才说了什么…</span>';
+  $('#r-overall').innerHTML = '<span class="note">momo 正在看你刚才说了什么…</span>';
   ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">生成中</p>');
   $('#r-flagtext').textContent = '这一页的总评、逐句点评、诊断、追问预演由你接入的 AI 实时生成。口癖词、字数、语速为本地统计。';
   try{
-    const res = await fetch(AI.url,{
+    const res = await fetch(aiEndpoint(),{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI.key,
-               'anthropic-version':'2023-06-01','x-api-key':AI.key},
+      headers: aiHeaders(),
       body: JSON.stringify({model:AI.model, max_tokens:4000,
         messages:[{role:'user',content:REVIEW_PROMPT(cur,text||'（几乎没说话）')}]})
     });
@@ -3128,7 +3383,7 @@ async function aiReview(text, secs, counts){
   }catch(e){
     $('#r-overall').innerHTML = '<span style="color:var(--red)">AI 调用失败：'+String(e.message||e)+'</span>';
     ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">没拿到结果。</p>');
-    setKid('sad','这次没读出来');
+    setKidMood('empty');
   }
 }
 
@@ -3175,9 +3430,9 @@ function paintAI(r){
 
   const vals = Object.values(r.scores||{});
   const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
-  if(avg>=8) setKid('cheer','这次讲得真好');
-  else if(avg>=6) setKid('wink','比上次稳');
-  else setKid('shy','已经开口了，就是进步');
+  if(avg>=8) setKidMood('high');
+  else if(avg>=6) setKidMood('mid');
+  else setKidMood('low');
 }
 
 /* ---- 题库 ---- */
@@ -3509,7 +3764,7 @@ function bulkSet(on){
 function openCard(id){
   const c = CARDS.find(x=>x.id===id); if(!c) return;
   cur = c; renderCard(); go('home');
-  setKid('cheer','就讲这张');
+  setKidMood('fromBank');
 }
 function paintBank(){
   paintChips();
@@ -3916,7 +4171,7 @@ try{
   $('#kidClose').onclick  = () => showKid(false);
   $('#kidReopen').onclick = () => showKid(true);
   initKidFloat();
-}catch(err){ console.error('小星没挂上：', err); }
+}catch(err){ console.error('momo 没挂上：', err); }
 
 /* 上传题库：点选 + 拖拽 */
 (function(){
@@ -3930,11 +4185,16 @@ try{
   drop.addEventListener('drop', e=>{
     const f = e.dataTransfer.files[0]; if(f) importFile(f);
   });
-  $('#upMask').addEventListener('click', e=>{ if(e.target.id==='upMask') closeUpload(); });
 })();
+
+/* 戳一下 momo 会有反应；有任何操作就把打盹的计时重置 */
+$('#kidFloatBody').addEventListener('click', ()=>setKidMood('poke'));
+$('#kidFloatBody').style.cursor = 'pointer';
+['pointerdown','keydown'].forEach(t=>document.addEventListener(t, kidWake, {passive:true}));
 drawCard();
 buildWheel();
-setKid('idle','今天想讲哪一位？');
+setKidMood('boot');
+kidWake();
 paintAIBtn();
 </script>
 </body>

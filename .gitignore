@@ -9,3 +9,7 @@ server/.env
 outputs/
 work/
 .claude/settings.local.json
+
+# 部署产物
+public/
+.vercel/

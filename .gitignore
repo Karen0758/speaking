@@ -8,3 +8,4 @@ server/.env
 *.bak
 outputs/
 work/
+.claude/settings.local.json

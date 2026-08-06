@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>星星小人 · 多状态动画</title>
+<style>
+  :root{--ink:#2c2519;--dim:#9a8f7c;--line:#e6ded0;--card:#fffdf8}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font:14px/1.6 system-ui,-apple-system,"PingFang SC",sans-serif;
+       color:var(--ink);background:#f4efe6;display:flex;gap:22px;padding:26px;flex-wrap:wrap}
+  .canvas{flex:1 1 460px;min-width:340px;background:var(--stage,#fffaf0);border-radius:20px;
+          display:grid;place-items:center;padding:18px;transition:background .3s;
+          box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  svg{width:100%;height:auto;overflow:visible;display:block}
+  .panel{flex:0 0 316px;display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+  h3{margin:0 0 10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .states{display:flex;flex-wrap:wrap;gap:7px}
+  button{font:inherit;padding:7px 13px;border-radius:9px;border:1px solid var(--line);
+         background:#fff;cursor:pointer;transition:.15s}
+  button:hover{border-color:#c9b78f}
+  button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0;font-size:13px}
+  select,input[type=range]{font:inherit;flex:1;min-width:0}
+  select{padding:5px;border-radius:7px;border:1px solid var(--line);background:#fff}
+  .sw{display:flex;gap:6px;margin-top:8px}
+  .sw i{width:24px;height:24px;border-radius:7px;cursor:pointer;border:1px solid rgba(0,0,0,.12)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  td{padding:3px 0;border-bottom:1px dashed var(--line)}
+  td:last-child{text-align:right;font-family:ui-monospace,monospace;font-size:11px}
+  .tag{padding:1px 6px;border-radius:5px;background:#e8f5ea;color:#2f7a45}
+  .tag.m{background:#fdeee6;color:#a75f2c}
+  .hint{font-size:12px;color:var(--dim);margin:0}
+</style>
+</head>
+<body>
+
+<div class="canvas" id="stage">
+<svg id="svg" viewBox="-60 -80 640 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 身体：水一样不规则流动的边缘 -->
+    <filter id="liquid" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.013" numOctaves="3" seed="3" result="n">
+        <animate attributeName="baseFrequency" dur="10s" repeatCount="indefinite"
+                 values="0.009 0.013;0.018 0.007;0.006 0.017;0.009 0.013"/>
+        <animate attributeName="seed" dur="13.3s" repeatCount="indefinite" values="3;9;3"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" result="d">
+        <animate attributeName="scale" dur="6.7s" repeatCount="indefinite" values="25;60;38;25"/>
+      </feDisplacementMap>
+      <feGaussianBlur in="d" stdDeviation="7.5"/>
+    </filter>
+    <filter id="softblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="wandtex" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="8982"/>
+      <feDisplacementMap in="b" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="facetex" x="-90%" y="-90%" width="280%" height="280%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="6601"/>
+      <feDisplacementMap in="SourceGraphic" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="0.5"/>
+    </filter>
+    <filter id="mouthtex" x="-90%" y="-90%" width="280%" height="280%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="7318"/>
+      <feDisplacementMap in="SourceGraphic" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <path id="ministar" transform="translate(-58,-52) scale(1)"
+      d="M85.887 9.196C90.921 16.751 78.446 42.886 78.446 42.886C73.778 42.722 97.410 47.726 106.708 55.553C116.007 63.379 74.620 64.267 74.620 64.267C74.620 64.267 77.864 97.327 71.994 95.365C66.125 93.404 49.367 66.934 49.367 66.934C49.367 66.934 13.541 74.263 8.507 71.250C3.473 68.237 37.585 47.202 37.585 47.202C37.585 47.202 12.939 18.766 18.522 15.273C24.105 11.781 55.557 32.339 55.557 32.339C55.557 32.339 80.854 1.641 85.887 9.196Z"/>
+  </defs>
+  <!-- idleRoot 承载整体待机动画；shared 里的路径只渲染一次，之后只改 d -->
+  <g id="idleRoot">
+    <g id="shared"></g>
+    <g id="sparkles" filter="url(#softblur)"></g>
+  </g>
+</svg>
+</div>
+
+<div class="panel">
+  <div class="card">
+    <h3>状态</h3>
+    <div class="states" id="btns"></div>
+    <label style="margin-top:10px">自动循环<input type="checkbox" id="auto" style="flex:0"></label>
+  </div>
+
+  <div class="card">
+    <h3>过渡</h3>
+    <label>缓动
+      <select id="ease">
+        <option value="ease-in-out" selected>ease-in-out</option>
+        <option value="snappy">snappy</option>
+        <option value="bouncy">bouncy</option>
+        <option value="dreamy">dreamy</option>
+        <option value="linear">linear</option>
+      </select>
+    </label>
+    <label>时长 <input type="range" id="dur" min="200" max="2600" step="50" value="800">
+      <span id="durv" style="flex:0;width:52px;text-align:right;font-family:monospace">800ms</span></label>
+    <p class="hint">形变期间待机幅度降到 0.1，用 40% 时长的 sine 斜坡淡出淡入。</p>
+  </div>
+
+  <div class="card">
+    <h3>背景</h3>
+    <div class="sw" id="sw"></div>
+  </div>
+
+  <div class="card">
+    <h3>逐路径策略</h3>
+    <table id="strat"></table>
+    <p class="hint" style="margin-top:8px">TRANSFORM＝控制点精确插值（保留贝塞尔曲线）；MORPH＝结构不一致，退回采样插值。</p>
+  </div>
+</div>
+
+<script src="starkid.states.js"></script>
+<script>
+(function(){
+"use strict";
+const D = window.STATES_DATA, SVGNS='http://www.w3.org/2000/svg';
+const ORDER = D.order, ANCHOR = D.idleAnchor;
+
+/* ---------------- 1. 路径解析 + 归一化（H/V → L，相对 → 绝对） -------------- */
+function parsePath(d){
+  const toks = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [];
+  const segs=[]; let i=0, cmd=null, cx=0, cy=0, sx=0, sy=0;
+  const num = ()=>parseFloat(toks[i++]);
+  while(i<toks.length){
+    if(/[a-zA-Z]/.test(toks[i])) cmd = toks[i++];
+    const up = cmd.toUpperCase(), rel = cmd !== up;
+    let pts=[];
+    if(up==='M'||up==='L'){ let x=num(),y=num(); if(rel){x+=cx;y+=cy;} pts=[[x,y]]; cx=x;cy=y; if(up==='M'){sx=x;sy=y;} }
+    else if(up==='H'){ let x=num(); if(rel)x+=cx; pts=[[x,cy]]; cx=x; }        // H → L
+    else if(up==='V'){ let y=num(); if(rel)y+=cy; pts=[[cx,y]]; cy=y; }        // V → L
+    else if(up==='C'){ const a=[]; for(let k=0;k<3;k++){let x=num(),y=num(); if(rel){x+=cx;y+=cy;} a.push([x,y]);} pts=a; cx=a[2][0];cy=a[2][1]; }
+    else if(up==='Z'){ cx=sx;cy=sy; }
+    else { continue; }
+    segs.push({c: (up==='H'||up==='V')?'L':up, p:pts});
+  }
+  return segs;
+}
+const fingerprint = segs => segs.map(s=>s.c).join('');
+const emit = segs => segs.map(s => s.c==='Z' ? 'Z'
+    : s.c+' '+s.p.map(p=>p[0].toFixed(2)+' '+p[1].toFixed(2)).join(' ')).join(' ');
+
+/* 结构一致 → 控制点逐点线性插值（TRANSFORM 策略） */
+function lerpSegs(A,B,t){
+  return emit(A.map((s,i)=>({c:s.c, p:s.p.map((p,j)=>{
+    const q=B[i].p[j];
+    return [p[0]+(q[0]-p[0])*t, p[1]+(q[1]-p[1])*t];
+  })})));
+}
+/* 结构不一致 → 按弧长重采样成等点数折线再插值（MORPH 兜底，无需外部库） */
+function flatten(segs,N){
+  const pts=[]; let cur=[0,0], start=[0,0];
+  for(const s of segs){
+    if(s.c==='M'){cur=s.p[0];start=cur;pts.push(cur);}
+    else if(s.c==='L'){cur=s.p[0];pts.push(cur);}
+    else if(s.c==='C'){
+      const [c1,c2,e]=s.p;
+      for(let k=1;k<=12;k++){const u=k/12,v=1-u;
+        pts.push([v*v*v*cur[0]+3*v*v*u*c1[0]+3*v*u*u*c2[0]+u*u*u*e[0],
+                  v*v*v*cur[1]+3*v*v*u*c1[1]+3*v*u*u*c2[1]+u*u*u*e[1]]);}
+      cur=e;
+    } else if(s.c==='Z'){ pts.push(start); cur=start; }
+  }
+  const L=[0]; let tot=0;
+  for(let k=1;k<pts.length;k++){tot+=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);L.push(tot);}
+  const out=[];
+  for(let k=0;k<N;k++){
+    const target=tot*k/N; let j=1; while(j<L.length-1&&L[j]<target)j++;
+    const f=(target-L[j-1])/((L[j]-L[j-1])||1);
+    out.push([pts[j-1][0]+(pts[j][0]-pts[j-1][0])*f, pts[j-1][1]+(pts[j][1]-pts[j-1][1])*f]);
+  }
+  return out;
+}
+function lerpPoly(A,B,t){
+  return 'M '+A.map((p,i)=>{
+    const q=B[i]; return (p[0]+(q[0]-p[0])*t).toFixed(2)+' '+(p[1]+(q[1]-p[1])*t).toFixed(2);
+  }).join(' L ')+' Z';
+}
+
+/* ---------------- 2. 逐路径策略检测 ---------------- */
+const IDS = Object.keys(D.states[ORDER[0]].paths);
+const PARSED = {}, STRAT = {}, POLY = {};
+IDS.forEach(id=>{
+  PARSED[id]={}; const fps=new Set();
+  ORDER.forEach(s=>{ const g=parsePath(D.states[s].paths[id].d); PARSED[id][s]=g; fps.add(fingerprint(g)); });
+  STRAT[id] = fps.size===1 ? 'TRANSFORM' : 'MORPH';
+  if(STRAT[id]==='MORPH'){ POLY[id]={}; ORDER.forEach(s=>POLY[id][s]=flatten(PARSED[id][s],120)); }
+});
+
+/* ---------------- 3. 渲染一次，之后只改 d ---------------- */
+const shared=document.getElementById('shared'), EL={};
+IDS.forEach(id=>{
+  const a=D.states[ORDER[0]].paths[id];
+  const el=document.createElementNS(SVGNS,'path');
+  el.setAttribute('id','p-'+id);
+  el.setAttribute('d',a.d);
+  el.setAttribute('fill',a.fill||'none');
+  if(a.opacity!=null) el.setAttribute('fill-opacity',a.opacity);
+  if(a.stroke){el.setAttribute('stroke',a.stroke);el.setAttribute('stroke-width',a.strokeWidth);}
+  if(a.filter) el.setAttribute('filter','url(#'+a.filter+')');
+  shared.appendChild(el); EL[id]=el;
+});
+
+/* 环绕小星星（装饰层，随状态淡入淡出） */
+const spark=document.getElementById('sparkles'), SP=[];
+for(let i=0;i<25;i++){
+  const ang=(i/25)*Math.PI*2+(i%3)*0.21, r=62+((i*37)%5)*22, sc=0.13+((i*53)%7)*0.032;
+  const g=document.createElementNS(SVGNS,'g');
+  const u=document.createElementNS(SVGNS,'use');
+  u.setAttribute('href','#ministar');
+  u.setAttribute('fill', i%2 ? '#5DDAEE' : '#FFC96B');
+  u.setAttribute('transform',`scale(${sc.toFixed(3)})`);
+  g.appendChild(u); spark.appendChild(g);
+  SP.push({g, ang0:ang, r, spin:3.4+((i*29)%6)*0.9, tw:(i*0.17)%1.3, ph:i/25});
+}
+
+/* ---------------- 4. 缓动 ---------------- */
+const EASE={
+  'linear':      {f:t=>t,                                        d:800},
+  'ease-in-out': {f:t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,         d:800},
+  'snappy':      {f:t=>1-Math.pow(1-t,3),                         d:400},
+  'bouncy':      {f:t=>1+2.70158*Math.pow(t-1,3)+1.70158*Math.pow(t-1,2), d:800},
+  'dreamy':      {f:t=>-(Math.cos(Math.PI*t)-1)/2,                d:2500},
+};
+const sineInOut = t => -(Math.cos(Math.PI*t)-1)/2;
+const hex2rgb = h => [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const rgb2hex = c => '#'+c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+
+/* ---------------- 5. 待机动画（持续运行，形变期间只降幅度不销毁） ------------ */
+let amp=1, ampTween=null;
+const idleRoot=document.getElementById('idleRoot');
+idleRoot.style.transformBox='view-box';
+idleRoot.style.transformOrigin=ANCHOR[0]+'px '+ANCHOR[1]+'px';
+['eyeL','eyeR','mouth'].forEach(id=>{EL[id].style.transformBox='fill-box';EL[id].style.transformOrigin='center';});
+['wand','star'].forEach(id=>{EL[id].style.transformBox='view-box';EL[id].style.transformOrigin='374.2px 168.9px';});
+
+function runIdle(now){
+  const t=now/1000, st=D.states[curRef], parts=(st.idle&&st.idle.parts)||[];
+  let ry=1, dy=0, rot=0;
+  const elT={};
+  for(const p of parts){
+    if(p.kind==='breathe-y') ry += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+    else if(p.kind==='bob')   dy += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+    else if(p.kind==='sway')  rot += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+    else if(p.kind==='shake') rot += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+    else if(p.kind==='blink'){
+      const ph=(t%p.every)/p.every, k=ph>0.94?Math.abs(Math.cos((ph-0.94)/0.06*Math.PI)):1;
+      const s=1-(1-Math.max(k,0.08))*amp;
+      p.selector.forEach(id=>elT[id]=(elT[id]||'')+` scaleY(${s.toFixed(3)})`);
+    }
+    else if(p.kind==='pulse'){
+      const s=1+Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+      p.selector.forEach(id=>elT[id]=(elT[id]||'')+` scale(${s.toFixed(3)})`);
+    }
+    else if(p.kind==='rotate-around-point'){
+      const a=Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+      p.selector.forEach(id=>elT[id]=(elT[id]||'')+` rotate(${a.toFixed(2)}deg)`);
+    }
+  }
+  idleRoot.style.transform=`translate(0px,${dy.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scaleY(${ry.toFixed(4)})`;
+  ['eyeL','eyeR','mouth','wand','star'].forEach(id=>{EL[id].style.transform=elT[id]||'';});
+
+  // 小星星：绕当前星星位置公转 + 闪烁
+  const c=sparkPos, vis=sparkOp;
+  spark.setAttribute('transform',`translate(${c[0].toFixed(1)},${c[1].toFixed(1)})`);
+  spark.style.opacity=vis;
+  if(vis>0.01) SP.forEach(s=>{
+    if(sparkMode==='burst'){
+      // 施法：星星沿各自径向向外喷射，越远越小越淡，循环重生
+      const ph=((t/1.9)+s.ph)%1, rr=s.r*(0.18+1.05*ph), k=(1-ph)*Math.min(ph*6,1);
+      s.g.setAttribute('transform',
+        `translate(${(Math.cos(s.ang0)*rr).toFixed(1)},${(Math.sin(s.ang0)*rr).toFixed(1)}) scale(${(0.5+0.8*(1-ph)).toFixed(3)})`);
+      s.g.style.opacity=k.toFixed(2);
+    } else {
+      const rot=(t/s.spin*360)%360, a=s.ang0+rot*Math.PI/180;
+      s.g.setAttribute('transform',`translate(${(Math.cos(a)*s.r).toFixed(1)},${(Math.sin(a)*s.r).toFixed(1)})`);
+      s.g.style.opacity=(0.35+0.65*(0.5+0.5*Math.sin((t+s.tw)/1.3*2*Math.PI))).toFixed(2);
+    }
+  });
+  requestAnimationFrame(runIdle);
+}
+
+/* ---------------- 6. 状态机 ---------------- */
+let curRef=ORDER[0], active=null;
+let sparkPos=D.states[curRef].sparkleCenter.slice(), sparkOp=D.states[curRef].sparkles?1:0;
+let sparkMode=D.states[curRef].sparkleMode||'orbit';
+
+function transitionTo(to){
+  if(to===curRef) return;
+  if(active) cancelAnimationFrame(active);
+  const from=curRef, dur=+document.getElementById('dur').value;
+  const ez=EASE[document.getElementById('ease').value].f;
+  const fFrom={}, fTo={};
+  IDS.forEach(id=>{ fFrom[id]=D.states[from].paths[id].fill; fTo[id]=D.states[to].paths[id].fill; });
+  const pFrom=D.states[from].sparkleCenter, pTo=D.states[to].sparkleCenter;
+  const oFrom=D.states[from].sparkles?1:0, oTo=D.states[to].sparkles?1:0;
+  const t0=performance.now();
+  if(D.states[to].sparkles) sparkMode=D.states[to].sparkleMode||'orbit';
+  curRef=to; paint();
+
+  (function step(now){
+    const raw=Math.min((now-t0)/dur,1), t=ez(raw);
+    IDS.forEach(id=>{
+      EL[id].setAttribute('d', STRAT[id]==='TRANSFORM'
+        ? lerpSegs(PARSED[id][from],PARSED[id][to],t)
+        : lerpPoly(POLY[id][from],POLY[id][to],t));
+      if(fFrom[id]&&fTo[id]&&fFrom[id]!==fTo[id]&&fFrom[id][0]==='#'){
+        const a=hex2rgb(fFrom[id]),b=hex2rgb(fTo[id]);
+        EL[id].setAttribute('fill', rgb2hex(a.map((v,k)=>v+(b[k]-v)*t)));
+      }
+    });
+    sparkPos=[pFrom[0]+(pTo[0]-pFrom[0])*t, pFrom[1]+(pTo[1]-pFrom[1])*t];
+    sparkOp = oFrom + (oTo-oFrom)*t;
+
+    // idle 幅度：前 40% 降到 0.1，后 40% 升回 1（sine.inOut）
+    amp = raw<0.4 ? 1-0.9*sineInOut(raw/0.4)
+        : raw>0.6 ? 0.1+0.9*sineInOut((raw-0.6)/0.4)
+        : 0.1;
+    if(raw<1) active=requestAnimationFrame(step); else {active=null;amp=1;}
+  })(t0);
+}
+
+/* ---------------- 7. UI ---------------- */
+const btns=document.getElementById('btns');
+ORDER.forEach(s=>{
+  const b=document.createElement('button');
+  b.textContent=D.states[s].label; b.dataset.s=s;
+  b.onclick=()=>{document.getElementById('auto').checked=false; transitionTo(s);};
+  btns.appendChild(b);
+});
+function paint(){ [...btns.children].forEach(b=>b.classList.toggle('on', b.dataset.s===curRef)); }
+paint();
+
+document.getElementById('dur').oninput = e => document.getElementById('durv').textContent = e.target.value+'ms';
+document.getElementById('ease').onchange = e => {
+  const d=EASE[e.target.value].d;
+  document.getElementById('dur').value=d; document.getElementById('durv').textContent=d+'ms';
+};
+const stage=document.getElementById('stage');
+[['#fffaf0','纸'],['#ffffff','白'],['#16203a','午夜'],['#f6e2d3','暖'],['#dff2e6','薄荷'],['#e7e1f7','薰衣草'],['#1d1d1d','墨']]
+  .forEach(([c,n])=>{const i=document.createElement('i');i.style.background=c;i.title=n;
+    i.onclick=()=>stage.style.setProperty('--stage',c);document.getElementById('sw').appendChild(i);});
+
+const strat=document.getElementById('strat');
+IDS.forEach(id=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${id}</td><td><span class="tag${STRAT[id]==='MORPH'?' m':''}">${STRAT[id]}</span></td>`;
+  strat.appendChild(tr);
+});
+
+let autoT=null;
+document.getElementById('auto').onchange=e=>{
+  clearInterval(autoT);
+  if(e.target.checked) autoT=setInterval(()=>{
+    transitionTo(ORDER[(ORDER.indexOf(curRef)+1)%ORDER.length]);
+  }, +document.getElementById('dur').value+1900);
+};
+
+requestAnimationFrame(runIdle);
+})();
+</script>
+</body>
+</html>

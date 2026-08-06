@@ -1,0 +1,2665 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小星 · 演示</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-light.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
+<style>
+:root{
+  --bg:#F7F4EE; --pg:#F7F4EE; --surface:#FFFFFF; --ink:#2A2521; --inkSoft:#5C5349; --muted:#837868;
+  --accent:#A85D00; --accentLight:#FFF4E0; --accentMid:#F5CE8B;
+  --green:#2F7A3E; --greenBg:#EEF7EC; --red:#B3392F; --redBg:#FDF0EC;
+  --amber:#96650A; --amberBg:#FFF6E3;
+  --border:#E7DFD2; --borderSoft:#F3EEE5;
+  /* 莫兰迪：低饱和灰调，画布靠色块区分，不用边框 */
+  --m-sit:#DDE3E5; --m-fac:#C9D2D6; --m-ast:#D1D9CD; --m-blk:#DDC3B2;
+  --m-who:#EBE5DB; --m-aud:#DCD4C8; --m-goal:#E5D9BB; --m-con:#E0CFC9;
+  --m-ink:#463F37; --m-lbl:#5A5248; --m-blkink:#6B4030;
+  --m-btn:#96604A; --m-btnHover:#8A5741;
+  --rMicro:6px; --rCtl:10px; --rCard:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font:16px/1.75 'LXGW WenKai','Xiaolai SC','PingFang SC','Noto Sans SC',system-ui,sans-serif;
+     color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:9px;font-weight:500;font-size:15px;cursor:pointer}
+.brand img{height:38px;width:auto;display:block}
+.brand i{width:26px;height:26px;border-radius:var(--rMicro);background:var(--m-btn);display:grid;place-items:center;color:#fff;font-size:13px;font-style:normal}
+.navr{display:flex;align-items:center;gap:8px}
+button,input,textarea,select{font-family:inherit}
+button{font:inherit;border:none;cursor:pointer;transition:transform .1s,opacity .15s}
+button:active{transform:scale(.98)}
+.btn{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:var(--rCtl);padding:9px 15px;font-size:14px}
+.btn:hover{border-color:var(--accentMid)}
+.btn.pri{background:var(--m-btn);color:#fff;border-color:var(--m-btn)}
+.btn.ghost{background:none;border:none;color:var(--muted);padding:7px 10px;font-size:13px}
+.streak{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--accent);background:var(--accentLight);
+        padding:5px 11px;border-radius:999px;font-weight:500}
+.card{background:#FFFDFA;border:1px solid var(--border);border-radius:var(--rCard);padding:24px}
+.tag{display:inline-block;font-size:12px;padding:3px 9px;border-radius:var(--rMicro);
+     background:var(--borderSoft);color:var(--inkSoft);margin-right:6px}
+.tag.d-easy{background:var(--greenBg);color:var(--green)}
+.tag.d-medium{background:var(--amberBg);color:var(--amber)}
+.tag.d-hard{background:var(--redBg);color:var(--red)}
+.lbl{font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--muted)}
+h1{font-size:30px;font-weight:500;letter-spacing:-.02em;line-height:1.3}
+h2{font-size:20px;font-weight:500}
+.screen{display:none;animation:fu .35s ease-out}
+.screen.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+.demo-flag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:var(--rMicro);
+  background:var(--redBg);color:var(--red);margin-left:6px;vertical-align:2px}
+
+/* 场景画布：无边框，靠莫兰迪色块拼接 */
+.canvasBox{margin-top:18px;border-radius:var(--rCard);overflow:hidden;
+  display:grid;gap:0;
+  grid-template-columns:1fr 1.2fr 1fr;
+  grid-template-areas:
+    "sit blk who"
+    "fac blk aud"
+    "ast blk goal"
+    "con con con";}
+@media(max-width:760px){
+  .canvasBox{grid-template-columns:1fr;
+    grid-template-areas:"blk" "sit" "who" "aud" "fac" "ast" "goal" "con";}
+}
+.cell{padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-height:84px;color:var(--m-ink)}
+.cell .h{display:flex;align-items:center;gap:6px}
+.cell .h i{font-size:15px;color:var(--m-lbl);line-height:1;opacity:.85}
+.cell .h span{font-size:11px;color:var(--m-lbl);letter-spacing:.08em}
+.cell .v{font-size:15px;line-height:1.55;font-weight:500}
+.cell.sit{grid-area:sit;background:var(--m-sit)}
+.cell.fac{grid-area:fac;background:var(--m-fac)}
+.cell.ast{grid-area:ast;background:var(--m-ast)}
+.cell.who{grid-area:who;background:var(--m-who)}
+.cell.aud{grid-area:aud;background:var(--m-aud)}
+.cell.goal{grid-area:goal;background:var(--m-goal)}
+.cell.blk{grid-area:blk;background:var(--m-blk);justify-content:center;padding:24px 22px;color:var(--m-blkink)}
+.cell.blk .h i,.cell.blk .h span{color:var(--m-blkink);opacity:.75}
+.cell.blk .v{font-size:20px;line-height:1.45;font-weight:500}
+.cell.con{grid-area:con;background:var(--m-con);flex-direction:row;align-items:center;gap:10px;min-height:0;padding:13px 18px}
+.cell.con .v{font-size:14px;font-weight:400}
+
+/* 首屏：打开即练 */
+.hero{display:grid;grid-template-columns:1fr 300px;gap:36px;align-items:start;padding:8px 0 40px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.fields{display:grid;gap:14px;margin-top:18px}
+.field{display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:start}
+.field .k{font-size:12px;color:var(--muted);padding-top:3px;letter-spacing:.03em}
+.field .v{font-size:15px;line-height:1.65}
+.field.hot .v{color:var(--ink);font-weight:500}
+.field.hot{background:var(--accentLight);margin:0 -14px;padding:12px 14px;border-radius:var(--rCtl)}
+.outline{background:var(--greenBg);border-radius:var(--rCtl);padding:14px 16px;margin-top:18px}
+.outline ol{margin:8px 0 0 18px;font-size:14px;line-height:1.9;color:var(--inkSoft)}
+.bigbtn{width:100%;background:var(--m-btn);color:#fff;border-radius:var(--rCard);padding:20px;
+        font-size:17px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;
+        margin-top:18px;transition:background .18s}
+.bigbtn:hover{background:var(--m-btnHover)}
+.subrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* 练习 */
+.prac{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.prac{grid-template-columns:1fr}}
+.ring{position:relative;width:104px;height:104px;display:grid;place-items:center;flex-shrink:0}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring b{font-size:30px;font-weight:500;font-variant-numeric:tabular-nums}
+.meter{height:6px;border-radius:3px;background:var(--borderSoft);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .08s}
+.tarea{min-height:300px;font-size:17px;line-height:2;color:var(--ink)}
+.tarea .interim{color:var(--muted)}
+.filler{background:var(--redBg);color:var(--red);border-radius:3px;padding:0 3px}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pl 1.6s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 复盘 */
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rCard);padding:16px 10px;text-align:center}
+.sc .n{font-size:28px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
+.sc .k{font-size:12px;color:var(--muted);margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+
+/* 题库 */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:13px;color:var(--inkSoft)}
+.chip.on{background:var(--m-btn);color:#fff;border-color:var(--m-btn)}
+.banklist{display:grid;gap:10px}
+.bankitem{background:var(--surface);border:1px solid var(--border);border-radius:var(--rCard);
+          padding:16px 18px;display:flex;gap:14px;align-items:flex-start;cursor:pointer}
+.bankitem:hover{border-color:var(--accentMid)}
+.bankitem.off{opacity:.42}
+.bankitem .body{flex:1;min-width:0}
+.bankitem .t{font-weight:500;font-size:15px;margin-bottom:5px}
+.bankitem .b{font-size:13px;color:var(--muted);line-height:1.6}
+.sw{width:38px;height:22px;border-radius:999px;background:var(--border);position:relative;flex-shrink:0;margin-top:2px;transition:.2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on{background:var(--green)}
+.sw.on::after{transform:translateX(16px)}
+
+/* 人物转盘：邮票沿一条扁椭圆的上半段排开，圆心在 stage 底边中点。
+   始终只看到 3 张，其余 6 张转到底边以下被 stage 裁掉，不淡出。 */
+/* 转盘页顶部导航是隐藏的，所以这里占满整屏，底边就是窗口底边 */
+.wheelPage{position:relative;height:100dvh;
+  background-image:radial-gradient(circle,#E8E1D5 1.1px,transparent 1.1px);
+  background-size:26px 26px;margin:0 -28px;padding:0 28px;overflow:hidden}
+.wheelLogo{position:absolute;left:26px;top:22px;z-index:3;height:42px;width:auto;
+  cursor:pointer;opacity:0;animation:inviteIn 1.4s ease-out .1s forwards}
+.wheelStage{position:absolute;left:50%;width:min(1280px,100%);margin-left:0;
+  transform:translateX(-50%);top:30px;bottom:0;
+  overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.wheelStage.drag{cursor:grabbing}
+.stamp{position:absolute;left:50%;bottom:0;width:238px;height:290px;margin-left:-119px;
+  transform-origin:50% 50%;
+  background:var(--st,#DCD4C8);padding:12px;border-radius:5px;
+  transition:transform .55s cubic-bezier(.24,1,.32,1);
+  will-change:transform}
+.wheelStage.drag .stamp{transition:none}
+/* 相框：一条很淡的手绘感细线，不投影、不做内嵌高光 */
+.stamp::after,.hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  border:1px solid rgba(102,88,72,.16);border-radius:5px}
+.stamp .inner{position:relative;z-index:2;width:100%;height:100%;overflow:hidden}
+.stamp .inner img{position:relative;z-index:3;width:100%;height:100%;object-fit:cover;
+  display:block;transform:scale(1.25);transform-origin:center 42%}
+.stamp .face{font-size:96px;line-height:1;
+  width:100%;height:100%;display:grid;place-items:center}
+/* 左侧邀请语：像云散开一样慢慢浮上来 */
+.wheelInvite{position:absolute;left:30px;top:15%;z-index:2;max-width:540px;pointer-events:none;
+  font-family:'LXGW WenKai','Xiaolai SC','PingFang SC','Noto Serif SC',serif}
+.wheelInvite h1{font-size:38px;font-weight:300;line-height:1.55;letter-spacing:.02em;
+  color:#8C8175;margin:0;
+  opacity:0;transform:translateY(16px);animation:inviteIn 1.4s cubic-bezier(.22,1,.32,1) .25s forwards}
+.wheelInvite p{font-size:19px;line-height:1.95;color:#B0A597;margin:22px 0 0;
+  opacity:0;transform:translateY(12px);animation:inviteIn 1s cubic-bezier(.22,1,.32,1) .6s forwards}
+@keyframes inviteIn{to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .wheelInvite h1,.wheelInvite p{animation:none;opacity:1;transform:none}
+}
+@media(max-width:1100px){
+  .wheelInvite{position:static;margin:0 auto;padding:38px 0 0;text-align:center;max-width:none}
+  .wheelInvite h1{font-size:29px}
+}
+.wheelList{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:3;text-align:left;
+  max-height:70vh;overflow-y:auto;scrollbar-width:none;padding:6px 2px}
+.wheelList::-webkit-scrollbar{display:none}
+.wheelList li{list-style:none;font-size:16px;line-height:2.2;color:#B8AFA4;
+  cursor:pointer;white-space:nowrap;transition:color .25s,font-weight .25s}
+.wheelList li::before{content:"· ";opacity:.5}
+.wheelList li:hover{color:#8A8074}
+.wheelList li.on{color:var(--m-btn);font-weight:600;font-size:17px}
+.wheelList li.on::before{opacity:1;content:"● "}
+@media(max-width:900px){
+  .wheelList{display:none}
+  .wheelStage{width:100%;left:0;margin-left:0;transform:none}
+  .stamp{width:176px;height:214px;margin-left:-88px}
+}
+
+/* 对话场景页：上背景 / 左问题 / 右人像 */
+.scenePage{position:relative;min-height:calc(100dvh - 96px);
+  background-image:radial-gradient(circle,#E8E1D5 1.1px,transparent 1.1px);
+  background-size:26px 26px;margin:0 -28px;padding:34px 28px 40px;overflow:hidden}
+.sceneTop{max-width:640px;margin-bottom:34px}
+.sceneTop .who{font-size:38px;font-weight:500;letter-spacing:-.01em;color:var(--m-ink);margin-bottom:12px}
+.sceneTop .ctx{font-size:16px;line-height:1.85;color:var(--inkSoft);max-width:560px}
+.sceneBody{display:grid;grid-template-columns:minmax(0,1fr) 322px;gap:44px;align-items:start}
+@media(max-width:860px){.sceneBody{grid-template-columns:1fr}}
+.qList{display:grid;gap:0}
+.qList .lbl{margin-bottom:14px}
+.qItem{padding:16px 2px;border-bottom:1px solid rgba(90,82,72,.14);cursor:pointer;
+  font-size:17px;line-height:1.55;color:var(--m-ink);
+  display:flex;align-items:baseline;gap:12px;transition:color .2s,padding-left .25s}
+.qItem:hover{padding-left:8px;color:var(--m-btn)}
+.qItem .no{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:18px}
+.qEmpty{font-size:15px;color:var(--muted);padding:16px 0}
+
+/* 人物大图：FLIP 的落点 */
+.heroWrap{position:relative;justify-self:end}
+.hero{position:relative;width:322px;height:392px;background:var(--st,#DCD4C8);padding:12px;
+  filter:drop-shadow(0 12px 30px rgba(70,63,55,.14))}
+.hero .inner{position:relative;z-index:2;width:100%;height:100%;overflow:hidden}
+.hero .inner img{position:relative;z-index:3;width:100%;height:100%;object-fit:cover;display:block;
+  transform:scale(1.25);transform-origin:center 42%}
+.hero .inner .face{font-size:120px;line-height:1}
+.flipping{transform-origin:top left;will-change:transform}
+.sceneFade{opacity:0;transform:translateY(14px)}
+.sceneFade.in{opacity:1;transform:none;transition:opacity .55s ease .28s,transform .55s cubic-bezier(.22,1,.3,1) .28s}
+@media(max-width:860px){.heroWrap{justify-self:start}.hero{width:238px;height:290px}}
+
+/* 设置面板 *//* 设置面板 */
+.mask{position:fixed;inset:0;background:rgba(42,37,33,.42);display:none;
+  align-items:center;justify-content:center;padding:24px;z-index:200}
+.mask.on{display:flex}
+.dlg{background:#FFFDFA;border-radius:var(--rCard);width:100%;max-width:460px;
+  padding:26px 28px;box-shadow:0 18px 48px rgba(42,37,33,.2);animation:dlgin .22s cubic-bezier(.2,1,.4,1)}
+@keyframes dlgin{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.dlg h3{font-size:18px;font-weight:500;margin-bottom:6px}
+.fld{margin-top:16px}
+.fld label{display:block;font-size:12px;color:var(--muted);letter-spacing:.05em;margin-bottom:6px}
+.fld input{width:100%;font:inherit;font-size:14px;padding:10px 12px;border-radius:var(--rCtl);
+  border:1px solid var(--border);background:#fff;color:var(--ink)}
+.fld input:focus{outline:none;border-color:var(--m-btn);box-shadow:0 0 0 3px rgba(150,96,74,.12)}
+.dlgrow{display:flex;gap:9px;margin-top:22px;align-items:center}
+.chkline{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--inkSoft)}
+.dlgmsg{font-size:13px;margin-top:12px;line-height:1.6}
+
+/* 小星 */
+#kidhost{width:100%}
+#kidhost svg{width:100%;height:auto;overflow:visible;display:block}
+.kidcap{text-align:center;font-size:14px;color:var(--inkSoft);margin-top:2px;min-height:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="brand" onclick="go('wheel')"><img src="assets/logo-h.png" alt="momo"></div>
+  <div class="navr">
+    <span class="streak" id="streakBadge">连续 6 天</span>
+    <button class="btn ghost" onclick="go('bank')">我的题库</button>
+    <button class="btn ghost" onclick="go('record')">记录</button>
+    <button class="btn" id="aiBtn" onclick="setupAI()">接上 AI</button>
+  </div>
+</nav>
+
+<!-- ═══════ 首屏：打开即练 ═══════ -->
+<section id="s-home" class="screen">
+  <div class="hero">
+    <div>
+      <div style="margin-bottom:14px">
+        <span class="tag" id="h-domain">生活</span>
+        <span class="tag" id="h-act">拒绝</span>
+        <span class="tag d-easy" id="h-diff">简单</span>
+      </div>
+      <h1 id="h-title">健身房教练第三次问你办不办年卡</h1>
+
+      <div class="canvasBox" id="h-canvas"></div>
+      <div id="h-outline"></div>
+
+      <button class="bigbtn" onclick="startPractice()">开麦，<span id="h-sec">60</span> 秒</button>
+      <div class="subrow">
+        <button class="btn" onclick="drawCard()">换一张</button>
+        <button class="btn" onclick="go('scene')">换个题</button>
+        <button class="btn" onclick="startPractice(30)">今天只讲 30 秒</button>
+        <button class="btn" onclick="cycleDiff()">难度：<span id="h-diffbtn">全部</span></button>
+      </div>
+
+      <p class="note" style="margin-top:16px">一屏看完，不用点开任何东西。中间那块是这次真正难的地方。</p>
+    </div>
+
+    <aside>
+      <div id="kidhost"></div>
+      <p class="kidcap" id="kidcap">今天想讲哪一张？</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════ 人物转盘 ═══════ -->
+<section id="s-wheel" class="screen on">
+  <div class="wheelPage">
+    <img class="wheelLogo" src="assets/logo-h.png" alt="momo">
+    <div class="wheelInvite">
+      <h1>今天，你想和谁聊一聊？</h1>
+      <p>momo 会陪你练习每一次重要的表达。</p>
+    </div>
+    <ul class="wheelList" id="w-list"></ul>
+    <div class="wheelStage" id="wheelStage"></div>
+  </div>
+</section>
+
+<!-- ═══════ 对话场景 ═══════ -->
+<section id="s-scene" class="screen">
+  <div class="scenePage">
+    <button class="btn ghost" style="position:absolute;top:22px;right:28px;z-index:4" onclick="go('wheel')">换个人</button>
+
+    <div class="sceneTop sceneFade" id="sc-top">
+      <div class="who" id="sc-who"></div>
+      <div class="ctx" id="sc-ctx"></div>
+    </div>
+
+    <div class="sceneBody">
+      <div class="qList sceneFade" id="sc-qwrap">
+        <div class="lbl">可以练的题</div>
+        <div id="sc-qs"></div>
+      </div>
+      <div class="heroWrap">
+        <div class="hero" id="sc-hero"><div class="inner" id="sc-heroInner"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 练习 ═══════ -->
+<section id="s-prac" class="screen">
+  <div class="prac">
+    <aside class="card" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="rec-dot"></span>
+        <span style="font-size:12px;color:var(--red);font-weight:500">录音中</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:auto" id="asrState">正在听</span>
+      </div>
+
+      <div style="padding:13px 15px;border-radius:var(--rCtl);background:var(--bg);border-left:3px solid var(--accent)">
+        <div style="font-size:14px;font-weight:500;line-height:1.55" id="p-title"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="ring">
+          <svg width="104" height="104"><circle cx="52" cy="52" r="48" fill="none" stroke="var(--border)" stroke-width="3"/>
+          <circle id="ringP" cx="52" cy="52" r="48" fill="none" stroke="var(--accent)" stroke-width="3"
+                  stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="0"/></svg>
+          <b id="p-time">60</b>
+        </div>
+        <div style="flex:1">
+          <div class="lbl" style="margin-bottom:6px">音量</div>
+          <div class="meter"><i id="p-mic" style="width:4%"></i></div>
+          <p class="note" style="margin-top:10px">小星的嘴跟着你的音量动。</p>
+        </div>
+      </div>
+
+      <div id="p-hintbox" style="padding:14px;border-radius:var(--rCtl);background:var(--accentLight);min-height:70px">
+        <div class="lbl" style="color:var(--accent);margin-bottom:6px">卡壳提示</div>
+        <div style="font-size:14px;line-height:1.6;color:var(--inkSoft)" id="p-hint">停顿超过几秒会自动给一句。</div>
+      </div>
+
+      <div id="kidhost2"></div>
+
+      <button class="btn pri" onclick="finish()">讲完了</button>
+    </aside>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="lbl">实时转写</div>
+        <div class="note" id="wcount">0 字</div>
+      </div>
+      <div class="tarea" id="p-text"><span style="color:var(--muted)">开口就会出现在这里。口癖词会自动标红。</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 复盘 ═══════ -->
+<section id="s-review" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:6px 0 22px">
+    <div>
+      <h2>复盘</h2>
+      <p class="note" id="r-sub" style="margin-top:4px"></p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn pri" onclick="drawCard();go('home')">再练一张</button>
+      <button class="btn" onclick="go('record')">看记录</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <div class="lbl" style="margin-bottom:8px">总评</div>
+        <div style="font-size:16px;line-height:1.6" id="r-overall"></div>
+        <div style="margin-top:10px"><span class="tag" id="r-diffTag"></span></div>
+      </div>
+      <div class="scores" id="r-scores"></div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:10px">这张卡想练的是</div>
+        <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)" id="r-blocker"></div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:12px">口癖词<span class="note" style="margin-left:8px">真实统计</span></div>
+        <div id="r-fillers"></div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:8px">语速<span class="note" style="margin-left:8px">真实统计</span></div>
+        <div id="r-rate" style="font-size:15px"></div>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="card" id="r-quotesCard">
+        <div class="lbl" style="margin-bottom:12px">逐句点评</div>
+        <div id="r-quotes"></div>
+      </div>
+      <div class="card" id="r-diagCard">
+        <div class="lbl" style="margin-bottom:12px">诊断</div>
+        <div id="r-diag"></div>
+      </div>
+      <div class="card" id="r-fuCard" style="background:var(--accentLight);border-color:var(--accentMid)">
+        <div class="lbl" style="margin-bottom:4px;color:var(--accent)">对方接下来会问</div>
+        <p class="note" style="margin-bottom:12px">每一条都追溯到你的哪句话</p>
+        <div id="r-followups"></div>
+      </div>
+      <div class="card" id="r-rewriteCard">
+        <div class="lbl" style="margin-bottom:10px">示范重讲</div>
+        <div style="font-size:15px;line-height:1.8" id="r-rewrite"></div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:10px">你说了什么</div>
+        <div style="font-size:15px;line-height:1.9;max-height:240px;overflow:auto" id="r-transcript"></div>
+      </div>
+      <div class="card" id="r-flag" style="background:var(--amberBg);border-color:#F0DDB4">
+        <div class="lbl" style="margin-bottom:8px;color:var(--amber)">演示说明</div>
+        <p class="note" style="color:var(--amber)" id="r-flagtext"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 题库 ═══════ -->
+<section id="s-bank" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin:6px 0 4px">
+    <div>
+      <h2>我的题库</h2>
+      <p class="note" style="margin-top:4px" id="bankcount"></p>
+    </div>
+    <button class="btn" onclick="go('home')">直接开练</button>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="banklist" id="banklist"></div>
+  <p class="note" style="margin:18px 0 40px">默认全部开启，直接可练。不想要的关掉就行，不必现在就看完。</p>
+</section>
+
+<!-- ═══════ 记录 ═══════ -->
+<section id="s-record" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin:6px 0 18px">
+    <h2>记录</h2>
+    <button class="btn ghost" onclick="clearRecords()">清空记录</button>
+  </div>
+  <div class="scores" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:16px">
+    <div class="sc"><div class="k">连续天数</div><div class="n" style="color:var(--m-btn)" id="m-streak">0</div></div>
+    <div class="sc"><div class="k">本周分钟</div><div class="n" id="m-min">0</div></div>
+    <div class="sc"><div class="k">累计练习</div><div class="n" id="m-cnt">0</div></div>
+    <div class="sc"><div class="k">总字数</div><div class="n" id="m-chars">0</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="lbl" style="margin-bottom:14px">口癖词频次<span class="note" style="margin-left:8px">每分钟，真实统计</span></div>
+    <div id="m-trend"></div>
+  </div>
+  <div class="card" style="margin-bottom:40px">
+    <div class="lbl" style="margin-bottom:12px">练过的题</div>
+    <div id="rechist"></div>
+  </div>
+</section>
+
+</div>
+
+<div class="mask" id="aiMask">
+  <div class="dlg">
+    <h3>接上 AI</h3>
+    <p class="note">复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。</p>
+
+    <div class="fld">
+      <label>接口地址（Anthropic Messages 兼容）</label>
+      <input id="aiUrl" placeholder="https://…/v1/messages" spellcheck="false">
+    </div>
+    <div class="fld">
+      <label>API Key</label>
+      <input id="aiKey" type="password" placeholder="填入后只显示后四位" spellcheck="false">
+    </div>
+    <div class="fld">
+      <label>模型 ID</label>
+      <input id="aiModel" placeholder="模型标识" spellcheck="false">
+    </div>
+
+    <label class="chkline"><input type="checkbox" id="aiRemember"> 记住密钥（存在这台电脑上，否则关掉标签页就清除）</label>
+    <div class="dlgmsg" id="aiMsg"></div>
+
+    <div class="dlgrow">
+      <button class="btn" onclick="testAI()">测试连接</button>
+      <span style="flex:1"></span>
+      <button class="btn" onclick="closeAI()">取消</button>
+      <button class="btn pri" onclick="saveAI()">保存</button>
+    </div>
+    <p class="note" style="margin-top:14px">这是本地 demo 的临时做法。正式版密钥只存服务端，浏览器永远拿不到。</p>
+  </div>
+</div>
+
+<script>
+/* ─────────── 场景卡数据 ─────────── */
+const CARDS = [
+  {
+    "id": "sc001",
+    "title": "健身房教练第三次问你办不办年卡",
+    "domain": "消费",
+    "act": "拒绝",
+    "relation": "服务人员",
+    "emotionalCost": "低",
+    "difficulty": "easy",
+    "seconds": 60,
+    "situation": "周三晚上，你刚跑完步准备走，教练在门口拦住你",
+    "role": "你是这家健身房的月卡会员，来了两个月",
+    "audience": "教练小李，他有业绩指标，这个月还差两单",
+    "facts": "他前两次问你都说「再想想」，这次他直接把优惠单页递到你手里",
+    "assets": "你觉得他人不错，也确实不想办年卡，但你还得继续来这家健身房",
+    "blocker": "说「太贵了」他会给你算折扣，说「再想想」你已经用过两次了",
+    "goal": "把话说死，让他不再问，同时以后见面不尴尬",
+    "constraint": "一分钟内，不能撒谎说自己要搬家",
+    "outline": [
+      "先谢他，承认他推荐的东西不差",
+      "直接说不办，给一个不可反驳的理由",
+      "把话头引到以后还会来这件事上"
+    ],
+    "hints": [
+      "「不需要」比「太贵了」更难被反驳",
+      "给一个和钱无关的理由",
+      "说完主动换话题"
+    ],
+    "brief": {
+      "situation": "健身房门口、你正要走",
+      "role": "月卡会员、来了两个月",
+      "audience": "教练小李、这月差两单",
+      "facts": "前两次都说「再想想」",
+      "assets": "还得继续来这家",
+      "blocker": "说贵、他就给你算折扣",
+      "goal": "让他不再问、还不尴尬",
+      "constraint": "不能撒谎说要搬家"
+    }
+  },
+  {
+    "id": "sc002",
+    "title": "朋友第三次约你周末爬山",
+    "domain": "生活",
+    "act": "拒绝",
+    "relation": "朋友",
+    "emotionalCost": "中",
+    "difficulty": "easy",
+    "seconds": 60,
+    "situation": "周四晚上，他在微信上发来这周末的路线图和天气预报",
+    "role": "你是他大学时的室友，现在住同一个城市",
+    "audience": "他，一个很热心的人，组局从来都是他张罗",
+    "facts": "前两次你都答应了，一次临时说加班放了他鸽子，一次去了但全程在拍照没走完",
+    "assets": "你是真的不喜欢爬山，但你确实想跟他保持来往",
+    "blocker": "再找借口他会看出来，直说不喜欢又怕他觉得前两次你是在敷衍他",
+    "goal": "让他知道以后爬山别叫你，但别让他觉得你是在疏远他",
+    "constraint": "一分钟内，不能用「最近很忙」这种理由",
+    "outline": [
+      "先承认前两次是自己没说实话",
+      "说清楚不是不想见他，是不喜欢这个活动",
+      "主动提一个你真的想去的替代方案"
+    ],
+    "hints": [
+      "把「不去」和「不想见你」明确分开",
+      "承认前两次的敷衍，反而更可信",
+      "结尾要给一个具体的下次"
+    ],
+    "brief": {
+      "situation": "周四晚、他发来路线图",
+      "role": "他大学室友、同城",
+      "audience": "很热心、局都他张罗",
+      "facts": "放过他一次鸽子",
+      "assets": "真的不喜欢爬山",
+      "blocker": "再找借口、他会看出来",
+      "goal": "以后别叫我、但别疏远",
+      "constraint": "不能说「最近忙」"
+    }
+  },
+  {
+    "id": "sc003",
+    "title": "刚失业的朋友深夜发消息说想聊聊",
+    "domain": "生活",
+    "act": "安慰",
+    "relation": "朋友",
+    "emotionalCost": "中",
+    "difficulty": "easy",
+    "seconds": 60,
+    "situation": "晚上十一点，他打来语音电话，第一句是「你睡了吗」",
+    "role": "你是他工作后还常联系的少数几个朋友之一",
+    "audience": "他，上周被裁，还没跟家里说",
+    "facts": "他没有直接说难过，只是反复说「其实还好」「早就想休息了」",
+    "assets": "你自己两年前也被裁过，但你当时的处境比他好，有存款也很快找到了下家",
+    "blocker": "讲自己的经历容易变成说教，说「会好起来的」又太轻",
+    "goal": "让他愿意把真话说出来，而不是继续说「其实还好」",
+    "constraint": "一分钟内，不能给任何找工作的建议",
+    "outline": [
+      "先接住他此刻的状态，不急着解决问题",
+      "说一句让他知道不用硬撑的话",
+      "把话头交回给他"
+    ],
+    "hints": [
+      "问题比结论管用",
+      "不要说「我懂」，说一个具体的细节",
+      "允许沉默"
+    ],
+    "brief": {
+      "situation": "夜里十一点、他打来电话",
+      "role": "他为数不多的老朋友",
+      "audience": "上周被裁、没跟家里说",
+      "facts": "反复说「其实还好」",
+      "assets": "你自己也被裁过",
+      "blocker": "讲自己、容易变说教",
+      "goal": "让他愿意说真话",
+      "constraint": "不能给找工作建议"
+    }
+  },
+  {
+    "id": "sc004",
+    "title": "同事又把他的活推给你，这次是当着组长的面",
+    "domain": "职场",
+    "act": "拒绝",
+    "relation": "同事",
+    "emotionalCost": "中",
+    "difficulty": "medium",
+    "seconds": 60,
+    "situation": "周会快结束时，他说「这块小王比我熟，让他来吧」，组长看向你",
+    "role": "你和他同级，入职时间差不多",
+    "audience": "组长，他只想尽快把活派下去散会；以及在场另外五个同事",
+    "facts": "这是这个季度第三次，前两次你都接了，其中一次做到凌晨两点",
+    "assets": "你手上有两个正在做的事，但都没有明确的截止日期",
+    "blocker": "当众说不会显得不合作，说「我手上还有事」他会说「那个不急」",
+    "goal": "把这件事推回去，同时不让组长觉得你在推诿",
+    "constraint": "一分钟内，不能提前两次的旧账",
+    "outline": [],
+    "hints": [
+      "把话题从「谁做」转到「怎么排」",
+      "让组长做决定，而不是你和他对峙",
+      "给一个具体的时间冲突，不要笼统说忙"
+    ],
+    "brief": {
+      "situation": "周会末尾、他当众点你",
+      "role": "和他同级、同期入职",
+      "audience": "组长只想快点散会",
+      "facts": "这季度第三次",
+      "assets": "手上的事、都没死线",
+      "blocker": "当众说不、像不合作",
+      "goal": "推回去、又不显推诿",
+      "constraint": "不能提旧账"
+    }
+  },
+  {
+    "id": "sc005",
+    "title": "跟主管说项目要延期两周",
+    "domain": "职场",
+    "act": "坏消息",
+    "relation": "直属领导",
+    "emotionalCost": "中",
+    "difficulty": "medium",
+    "seconds": 60,
+    "situation": "周一早上的一对一，你有十分钟，这是第一个话题",
+    "role": "你是这个项目的负责人，入职一年半",
+    "audience": "主管，他下午要向上汇报，需要一个能转述出去的说法",
+    "facts": "原定这个月底上线，现在进度七成，延两周基本确定",
+    "assets": "延期是因为对接的部门临时改了要求，你有他们的书面确认；但你上上周的周报里写的是「进展顺利」",
+    "blocker": "主管很可能会问「上上周怎么说顺利」，而那确实是你写的",
+    "goal": "让他接受延期，并且同意你去要一个人手支援",
+    "constraint": "一分钟内，不能把责任全推给对接部门",
+    "outline": [],
+    "hints": [
+      "先给结论和新日期，再讲原因",
+      "主动交代周报那件事，别等他问",
+      "把「要人」包装成缩短延期的方案"
+    ],
+    "brief": {
+      "situation": "周一一对一、十分钟",
+      "role": "项目负责人、入职一年半",
+      "audience": "主管下午要往上汇报",
+      "facts": "进度七成、延两周",
+      "assets": "周报写过「进展顺利」",
+      "blocker": "他会问、周报怎么说的顺",
+      "goal": "让他接受、还给你加人",
+      "constraint": "不能全推给对接部门"
+    }
+  },
+  {
+    "id": "sc006",
+    "title": "面试官问你中间空了八个月在干什么",
+    "domain": "求职",
+    "act": "澄清",
+    "relation": "面试官",
+    "emotionalCost": "中",
+    "difficulty": "medium",
+    "seconds": 90,
+    "situation": "面试进行到二十分钟，他翻到简历第二页，抬头问你",
+    "role": "你工作五年，去年主动离职后休息了八个月",
+    "audience": "用人部门负责人，他手上还有两个候选人在面",
+    "facts": "那八个月你确实没上班，前三个月在休息，后五个月在准备转方向但没做出成品",
+    "assets": "你在那五个月里系统学了新东西，也做了两个没上线的小项目",
+    "blocker": "说「在学习」听起来像托词，说实话承认前三个月什么都没干又怕被判定为不稳定",
+    "goal": "把这八个月讲成一个有意识的选择，而不是一段找不到工作的空白",
+    "constraint": "九十秒内，不能编造任何没发生过的经历",
+    "outline": [],
+    "hints": [
+      "把八个月切成两段，分别交代",
+      "用产出说话，哪怕没上线",
+      "结尾落到「所以我现在想找的是什么」"
+    ],
+    "brief": {
+      "situation": "面试二十分钟、他抬头问",
+      "role": "工作五年、去年主动离职",
+      "audience": "他手上还有两个候选人",
+      "facts": "中间空了八个月",
+      "assets": "后五个月学了新东西",
+      "blocker": "说「在学习」、像托词",
+      "goal": "讲成有意识的选择",
+      "constraint": "不能编造经历"
+    }
+  },
+  {
+    "id": "sc007",
+    "title": "房东说明年要涨租八百",
+    "domain": "生活",
+    "act": "谈判",
+    "relation": "陌生人",
+    "emotionalCost": "中",
+    "difficulty": "medium",
+    "seconds": 60,
+    "situation": "合同还有一个月到期，他打电话来通知，语气是通知不是商量",
+    "role": "你在这里住了两年，一直按时交租",
+    "audience": "房东，他说隔壁小区都涨了",
+    "facts": "同小区确实有房子挂到了他说的价，但挂了三个月还没租出去",
+    "assets": "你不想搬，搬家成本比涨的租金还高，而他大概率不知道这一点",
+    "blocker": "说「太贵了我就搬走」是虚张声势，他要是接了你就骑虎难下",
+    "goal": "把涨幅压到四百以内，或者换成签两年不涨",
+    "constraint": "一分钟内，不能说任何你自己做不到的威胁",
+    "outline": [],
+    "hints": [
+      "先说你想继续住，把立场摆正",
+      "用那套挂了三个月的房子说话",
+      "给他一个比涨租更划算的选择"
+    ],
+    "brief": {
+      "situation": "合同剩一个月、他来电",
+      "role": "住了两年、从没拖欠",
+      "audience": "房东说隔壁都涨了",
+      "facts": "他要涨八百",
+      "assets": "搬家比涨的租金还贵",
+      "blocker": "威胁搬走、他接了怎么办",
+      "goal": "压到四百、或签两年",
+      "constraint": "不能说做不到的威胁"
+    }
+  },
+  {
+    "id": "sc008",
+    "title": "饭桌上有人半开玩笑说你们做这个的在砸别人饭碗",
+    "domain": "生活",
+    "act": "表态",
+    "relation": "朋友",
+    "emotionalCost": "中",
+    "difficulty": "medium",
+    "seconds": 60,
+    "situation": "六个人的聚餐，菜过半，气氛本来很轻松",
+    "role": "你是在座唯一在互联网公司做人工智能相关工作的人",
+    "audience": "四个不同行业的朋友，其中一个上个月刚被公司用新工具替掉了一部分工作",
+    "facts": "说这话的是另一个人，语气是开玩笑，但那位被替掉工作的朋友没接话，低头在吃菜",
+    "assets": "你确实了解这个行业，也确实见过因为这个被裁的人",
+    "blocker": "说「技术是中立的」太轻飘，说「确实会」会让那位朋友更难受",
+    "goal": "给一个真诚的、不回避也不说教的回答，让气氛别僵掉",
+    "constraint": "一分钟内，这是饭桌不是辩论赛",
+    "outline": [],
+    "hints": [
+      "先承认这件事是真的在发生",
+      "把话题从「技术好不好」转到「人怎么办」",
+      "别看向那位被替掉工作的朋友"
+    ],
+    "brief": {
+      "situation": "六人聚餐、气氛本来很好",
+      "role": "在座唯一做这行的",
+      "audience": "一个朋友刚被工具替掉",
+      "facts": "有人玩笑说你砸饭碗",
+      "assets": "你确实见过被裁的人",
+      "blocker": "说中立太轻、说会更扎心",
+      "goal": "不回避、也不说教",
+      "constraint": "饭桌、不是辩论赛"
+    }
+  },
+  {
+    "id": "sc009",
+    "title": "亲戚在饭桌上第五次问你什么时候结婚",
+    "domain": "亲密",
+    "act": "划界限",
+    "relation": "家人",
+    "emotionalCost": "高",
+    "difficulty": "medium",
+    "seconds": 60,
+    "situation": "过年家宴，一桌十二个人，她刚给你夹了一筷子菜",
+    "role": "你三十一岁，单身，工作在外地",
+    "audience": "姑姑，她是真心觉得在帮你，而且她说完全桌都在等你回答",
+    "facts": "前四次你都笑笑说「快了快了」，所以她认为这个话题是可以聊的",
+    "assets": "你确实不打算近几年结婚，但你不想跟她吵，明年还得回来",
+    "blocker": "再笑笑带过明年还会问第六次，直接说「别问了」会让一桌人下不来台",
+    "goal": "让她以后不再问，同时这顿饭能吃完",
+    "constraint": "一分钟内，不能说任何指责她的话",
+    "outline": [],
+    "hints": [
+      "先接住她的好意，那是真的",
+      "把「别问了」换成一个明确的、关于你自己的陈述",
+      "说完主动给她递个台阶"
+    ],
+    "brief": {
+      "situation": "过年家宴、一桌十二人",
+      "role": "三十一岁、单身、在外地",
+      "audience": "姑姑、真心觉得在帮你",
+      "facts": "前四次都笑笑带过",
+      "assets": "明年还得回来",
+      "blocker": "再带过、明年问第六次",
+      "goal": "让她不再问、饭还能吃完",
+      "constraint": "不能指责她"
+    }
+  },
+  {
+    "id": "sc010",
+    "title": "朋友开口借五万，说三个月就还",
+    "domain": "生活",
+    "act": "拒绝",
+    "relation": "朋友",
+    "emotionalCost": "高",
+    "difficulty": "hard",
+    "seconds": 90,
+    "situation": "他约你出来喝咖啡，聊了半小时家常之后突然说到这件事",
+    "role": "你们认识八年，他在你最难的时候帮过你一次",
+    "audience": "他，最近生意周转不开，已经找过别人但没借到",
+    "facts": "他说三个月就还，但没说清楚三个月后钱从哪来",
+    "assets": "你账上确实有这笔钱，那是你给家里备的应急钱",
+    "blocker": "说没钱他知道你有，说「我要留着应急」显得你把他排在家人之后；而且他当年确实帮过你",
+    "goal": "不借这笔钱，同时不让八年的交情断在这句话上",
+    "constraint": "九十秒内，不能说谎，也不能只说「我考虑一下」拖延",
+    "outline": [],
+    "hints": [],
+    "brief": {
+      "situation": "咖啡馆、聊半小时才说",
+      "role": "认识八年、他帮过你",
+      "audience": "周转不开、别处没借到",
+      "facts": "要借五万、说三个月还",
+      "assets": "那是家里的应急钱",
+      "blocker": "说没钱、他知道你有",
+      "goal": "不借、也不断交情",
+      "constraint": "不能说谎、不能拖延"
+    }
+  },
+  {
+    "id": "sc011",
+    "title": "同事在群里说这个问题是你没沟通清楚",
+    "domain": "职场",
+    "act": "澄清",
+    "relation": "同事",
+    "emotionalCost": "高",
+    "difficulty": "hard",
+    "seconds": 90,
+    "situation": "五十多人的项目大群，他刚发完，几个领导都在群里，你正好在开会",
+    "role": "你是这件事的对接人",
+    "audience": "群里的五十多人，包括你和他的共同上级",
+    "facts": "你确实在两周前的会上说过这件事，但只是口头说的，会后没有发纪要",
+    "assets": "当时有四个人在场可以作证，但让他们出来说话等于把事情闹大",
+    "blocker": "不回应等于默认，回应了就是当众对峙，而你手上确实没有白纸黑字",
+    "goal": "把事实说清楚，同时不把这件事变成两个人的公开撕扯",
+    "constraint": "九十秒内，不能要求任何人替你作证",
+    "outline": [],
+    "hints": [],
+    "brief": {
+      "situation": "五十人大群、领导都在",
+      "role": "这件事的对接人",
+      "audience": "群里五十多人在看",
+      "facts": "他说是你没沟通清楚",
+      "assets": "当时四个人可作证",
+      "blocker": "不回应、等于默认",
+      "goal": "说清事实、别公开撕",
+      "constraint": "不能要求别人作证"
+    }
+  },
+  {
+    "id": "sc012",
+    "title": "朋友当着一桌人问你为什么没去他的婚礼",
+    "domain": "生活",
+    "act": "澄清",
+    "relation": "朋友",
+    "emotionalCost": "高",
+    "difficulty": "hard",
+    "seconds": 90,
+    "situation": "六个人的聚餐，菜刚上齐，他放下筷子看着你问",
+    "role": "你和他认识十二年，是他最早的几个朋友之一",
+    "audience": "他，以及在座另外四个共同朋友，他们都去了婚礼",
+    "facts": "婚礼在三个月前，你当天说临时出差没去，其实那天你在家",
+    "assets": "你没去是因为前一年你妈住院时找他借钱，他没回消息",
+    "blocker": "说实话会当众揭穿他，说谎他已经不信了，而另外四个人正在听",
+    "goal": "既不撒谎也不当众翻旧账，把这件事留到只有你们两个人的时候",
+    "constraint": "九十秒内，不能说「我们私下聊」这种明显的推脱",
+    "outline": [],
+    "hints": [],
+    "brief": {
+      "situation": "六人聚餐、他放下筷子",
+      "role": "认识十二年的老友",
+      "audience": "另外四人都去了婚礼",
+      "facts": "三个月前你说出差没去",
+      "assets": "你妈住院、他没回消息",
+      "blocker": "说实话、当众揭穿他",
+      "goal": "留到只有你们俩的时候",
+      "constraint": "不能说「私下聊」"
+    }
+  }
+];
+/* ─────────── 小星动画数据与引擎 ─────────── */
+const KD = {
+ "name": "星星小人",
+ "viewBox": "-60 -80 640 420",
+ "idleAnchor": [
+  192,
+  292
+ ],
+ "order": [
+  "idle",
+  "sing",
+  "cheer",
+  "cast",
+  "wink",
+  "surprise",
+  "shy",
+  "sad",
+  "sleepy"
+ ],
+ "states": {
+  "idle": {
+   "label": "待机",
+   "paths": {
+    "body": {
+     "d": "M 192.09 268.83 C 235.97 311.21 321.90 221.07 394.89 196.40 C 467.89 171.73 282.92 15.00 192.09 15.00 C 101.25 15.00 -27.69 139.38 28.86 196.40 C 85.40 253.42 148.20 226.46 192.09 268.83 Z",
+     "fill": "#FFC96B",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 109.00 C 161.28 114.43 158.69 118.84 155.50 118.84 C 152.31 118.84 149.72 114.43 149.72 109.00 C 149.72 103.57 152.31 99.16 155.50 99.16 C 158.69 99.16 161.28 103.57 161.28 109.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 109.80 C 275.21 114.78 272.70 118.81 269.60 118.81 C 266.50 118.81 263.99 114.78 263.99 109.80 C 263.99 104.82 266.50 100.79 269.60 100.79 C 272.70 100.79 275.21 104.82 275.21 109.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 222.43 191.10 C 222.43 198.20 215.21 203.95 206.30 203.95 C 197.39 203.95 190.17 198.20 190.17 191.10 C 190.17 184.00 197.39 178.25 206.30 178.25 C 215.21 178.25 222.43 184.00 222.43 191.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 451.21 66.89",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 487.20 9.81 C 492.23 17.36 479.76 43.50 479.76 43.50 C 475.09 43.33 498.72 48.34 508.02 56.16 C 517.32 63.99 475.93 64.88 475.93 64.88 C 475.93 64.88 479.18 97.94 473.31 95.97 C 467.44 94.01 450.68 67.54 450.68 67.54 C 450.68 67.54 414.85 74.87 409.82 71.86 C 404.78 68.85 438.90 47.81 438.90 47.81 C 438.90 47.81 414.25 19.38 419.83 15.88 C 425.42 12.39 456.87 32.95 456.87 32.95 C 456.87 32.95 482.17 2.25 487.20 9.81 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    463.0,
+    50.0
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 3.4,
+      "amplitude": 0.022
+     },
+     {
+      "kind": "bob",
+      "duration": 3.4,
+      "amplitude": 7
+     },
+     {
+      "kind": "blink",
+      "selector": [
+       "eyeL",
+       "eyeR"
+      ],
+      "every": 4.2
+     }
+    ]
+   }
+  },
+  "sing": {
+   "label": "唱歌",
+   "paths": {
+    "body": {
+     "d": "M 192.09 267.67 C 235.53 312.17 320.60 217.52 392.87 191.62 C 465.13 165.72 282.01 1.15 192.09 1.15 C 102.16 1.15 -25.49 131.75 30.49 191.62 C 86.47 251.49 148.64 223.18 192.09 267.67 Z",
+     "fill": "#FFD27A",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 109.00 C 161.28 111.28 158.69 113.13 155.50 113.13 C 152.31 113.13 149.72 111.28 149.72 109.00 C 149.72 106.72 152.31 104.87 155.50 104.87 C 158.69 104.87 161.28 106.72 161.28 109.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 109.80 C 275.21 111.89 272.70 113.58 269.60 113.58 C 266.50 113.58 263.99 111.89 263.99 109.80 C 263.99 107.71 266.50 106.02 269.60 106.02 C 272.70 106.02 275.21 107.71 275.21 109.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 231.30 197.10 C 231.30 213.78 220.11 227.29 206.30 227.29 C 192.49 227.29 181.30 213.78 181.30 197.10 C 181.30 180.42 192.49 166.91 206.30 166.91 C 220.11 166.91 231.30 180.42 231.30 197.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 407.39 45.47",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 419.38 -20.94 C 426.87 -15.82 425.10 13.09 425.10 13.09 C 420.71 14.68 444.49 10.47 456.05 14.24 C 467.60 18.02 429.56 34.34 429.56 34.34 C 429.56 34.34 444.95 63.78 438.77 64.16 C 432.60 64.54 407.14 46.28 407.14 46.28 C 407.14 46.28 376.67 66.49 370.88 65.58 C 365.08 64.68 388.83 32.39 388.83 32.39 C 388.83 32.39 355.32 15.26 359.19 9.93 C 363.06 4.60 399.92 11.88 399.92 11.88 C 399.92 11.88 411.88 -26.06 419.38 -20.94 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    412.0,
+    25.4
+   ],
+   "sparkles": true,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 1.3,
+      "amplitude": 0.035
+     },
+     {
+      "kind": "bob",
+      "duration": 1.3,
+      "amplitude": 5
+     },
+     {
+      "kind": "sway",
+      "duration": 2.6,
+      "amplitude": 2.5
+     },
+     {
+      "kind": "pulse",
+      "selector": [
+       "mouth"
+      ],
+      "duration": 2.5,
+      "amplitude": 0.34
+     },
+     {
+      "kind": "rotate-around-point",
+      "selector": [
+       "wand",
+       "star"
+      ],
+      "pivot": [
+       374.2,
+       168.9
+      ],
+      "duration": 2.1,
+      "amplitude": 16
+     }
+    ]
+   }
+  },
+  "sleepy": {
+   "label": "困倦",
+   "paths": {
+    "body": {
+     "d": "M 192.09 272.31 C 239.93 308.33 333.59 231.71 413.16 210.74 C 492.72 189.77 291.11 56.55 192.09 56.55 C 93.08 56.55 -47.46 162.28 14.17 210.74 C 75.81 259.21 144.26 236.29 192.09 272.31 Z",
+     "fill": "#F2C58E",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 113.00 C 161.28 113.54 158.69 113.98 155.50 113.98 C 152.31 113.98 149.72 113.54 149.72 113.00 C 149.72 112.46 152.31 112.02 155.50 112.02 C 158.69 112.02 161.28 112.46 161.28 113.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 113.80 C 275.21 114.30 272.70 114.70 269.60 114.70 C 266.50 114.70 263.99 114.30 263.99 113.80 C 263.99 113.30 266.50 112.90 269.60 112.90 C 272.70 112.90 275.21 113.30 275.21 113.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 216.30 201.10 C 216.30 204.29 211.82 206.88 206.30 206.88 C 200.78 206.88 196.30 204.29 196.30 201.10 C 196.30 197.91 200.78 195.32 206.30 195.32 C 211.82 195.32 216.30 197.91 216.30 201.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 498.76 140.25",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 563.02 119.65 C 562.02 128.68 535.67 140.68 535.67 140.68 C 532.20 137.55 547.08 156.58 549.17 168.55 C 551.27 180.52 518.99 154.60 518.99 154.60 C 518.99 154.60 500.23 182.01 496.99 176.73 C 493.75 171.46 497.93 140.41 497.93 140.41 C 497.93 140.41 465.78 122.99 463.86 117.45 C 461.94 111.91 501.59 117.72 501.59 117.72 C 501.59 117.72 500.99 80.09 507.51 81.01 C 514.03 81.92 524.91 117.89 524.91 117.89 C 524.91 117.89 564.02 110.63 563.02 119.65 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    518.6,
+    134.9
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 5.6,
+      "amplitude": 0.04
+     },
+     {
+      "kind": "bob",
+      "duration": 5.6,
+      "amplitude": 4
+     },
+     {
+      "kind": "sway",
+      "duration": 7.0,
+      "amplitude": 1.4
+     }
+    ]
+   }
+  },
+  "surprise": {
+   "label": "惊讶",
+   "paths": {
+    "body": {
+     "d": "M 192.08 265.82 C 232.89 313.71 312.81 211.85 380.69 183.97 C 448.58 156.10 276.56 -21.01 192.08 -21.01 C 107.60 -21.01 -12.31 119.54 40.28 183.97 C 92.86 248.40 151.27 217.94 192.08 265.82 Z",
+     "fill": "#FFDE96",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 164.18 105.00 C 164.18 112.34 160.29 118.28 155.50 118.28 C 150.71 118.28 146.82 112.34 146.82 105.00 C 146.82 97.66 150.71 91.72 155.50 91.72 C 160.29 91.72 164.18 97.66 164.18 105.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 278.02 105.80 C 278.02 112.52 274.25 117.96 269.60 117.96 C 264.95 117.96 261.18 112.52 261.18 105.80 C 261.18 99.08 264.95 93.64 269.60 93.64 C 274.25 93.64 278.02 99.08 278.02 105.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 224.04 199.10 C 224.04 211.87 216.10 222.23 206.30 222.23 C 196.50 222.23 188.56 211.87 188.56 199.10 C 188.56 186.33 196.50 175.97 206.30 175.97 C 216.10 175.97 224.04 186.33 224.04 199.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 389.89 42.06",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 392.52 -25.38 C 400.65 -21.35 402.92 7.52 402.92 7.52 C 398.79 9.71 421.76 2.23 433.73 4.36 C 445.69 6.49 410.30 27.95 410.30 27.95 C 410.30 27.95 429.63 54.96 423.57 56.19 C 417.51 57.43 389.76 42.89 389.76 42.89 C 389.76 42.89 362.40 67.15 356.53 67.05 C 350.66 66.96 369.69 31.69 369.69 31.69 C 369.69 31.69 334.13 19.38 337.22 13.57 C 340.30 7.75 377.82 9.83 377.82 9.83 C 377.82 9.83 384.38 -29.40 392.52 -25.38 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    391.7,
+    21.5
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "shake",
+      "duration": 0.28,
+      "amplitude": 0.9
+     },
+     {
+      "kind": "breathe-y",
+      "duration": 2.0,
+      "amplitude": 0.012
+     }
+    ]
+   }
+  },
+  "cheer": {
+   "label": "欢呼",
+   "paths": {
+    "body": {
+     "d": "M 189.52 267.57 C 237.86 307.65 313.33 203.65 383.19 170.01 C 453.05 136.38 251.73 -9.52 161.39 -0.02 C 71.05 9.47 -43.40 154.08 19.16 208.27 C 81.71 262.47 141.18 227.48 189.52 267.57 Z",
+     "fill": "#FFC14E",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 106.00 C 161.28 108.72 158.69 110.92 155.50 110.92 C 152.31 110.92 149.72 108.72 149.72 106.00 C 149.72 103.28 152.31 101.08 155.50 101.08 C 158.69 101.08 161.28 103.28 161.28 106.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 106.80 C 275.21 109.29 272.70 111.31 269.60 111.31 C 266.50 111.31 263.99 109.29 263.99 106.80 C 263.99 104.31 266.50 102.29 269.60 102.29 C 272.70 102.29 275.21 104.31 275.21 106.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 236.14 195.10 C 236.14 203.26 222.78 209.88 206.30 209.88 C 189.82 209.88 176.46 203.26 176.46 195.10 C 176.46 186.94 189.82 180.32 206.30 180.32 C 222.78 180.32 236.14 186.94 236.14 195.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 354.32 42.65",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 338.26 -22.90 C 347.19 -21.27 357.33 5.86 357.33 5.86 C 353.97 9.10 373.98 -4.42 386.07 -5.67 C 398.16 -6.93 370.05 23.46 370.05 23.46 C 370.05 23.46 396.08 44.09 390.59 46.95 C 385.11 49.81 354.43 43.48 354.43 43.48 C 354.43 43.48 334.81 74.34 329.15 75.87 C 323.48 77.40 332.05 38.25 332.05 38.25 C 332.05 38.25 294.47 36.22 295.84 29.78 C 297.20 23.34 333.84 15.00 333.84 15.00 C 333.84 15.00 329.33 -24.53 338.26 -22.90 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    350.4,
+    22.4
+   ],
+   "sparkles": true,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 1.1,
+      "amplitude": 0.03
+     },
+     {
+      "kind": "bob",
+      "duration": 1.1,
+      "amplitude": 9
+     },
+     {
+      "kind": "sway",
+      "duration": 2.2,
+      "amplitude": 4
+     },
+     {
+      "kind": "blink",
+      "selector": [
+       "eyeL",
+       "eyeR"
+      ],
+      "every": 3.0
+     },
+     {
+      "kind": "rotate-around-point",
+      "selector": [
+       "wand",
+       "star"
+      ],
+      "pivot": [
+       374.2,
+       168.9
+      ],
+      "duration": 1.03,
+      "amplitude": 15
+     }
+    ]
+   }
+  },
+  "cast": {
+   "label": "施法",
+   "paths": {
+    "body": {
+     "d": "M 192.08 266.52 C 233.77 313.13 315.40 213.98 384.75 186.84 C 454.09 159.71 278.38 -12.70 192.08 -12.70 C 105.79 -12.70 -16.71 124.12 37.01 186.84 C 90.73 249.56 150.39 219.90 192.08 266.52 Z",
+     "fill": "#FFE2A4",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 163.31 107.00 C 163.31 113.79 159.81 119.30 155.50 119.30 C 151.19 119.30 147.69 113.79 147.69 107.00 C 147.69 100.21 151.19 94.70 155.50 94.70 C 159.81 94.70 163.31 100.21 163.31 107.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 277.17 107.80 C 277.17 114.02 273.78 119.06 269.60 119.06 C 265.42 119.06 262.03 114.02 262.03 107.80 C 262.03 101.58 265.42 96.54 269.60 96.54 C 273.78 96.54 277.17 101.58 277.17 107.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 217.91 197.10 C 217.91 206.32 212.71 213.80 206.30 213.80 C 199.89 213.80 194.69 206.32 194.69 197.10 C 194.69 187.88 199.89 180.40 206.30 180.40 C 212.71 180.40 217.91 187.88 217.91 197.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 374.76 41.09",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 369.39 -26.18 C 377.94 -23.14 383.61 5.26 383.61 5.26 C 379.77 7.92 401.69 -2.23 413.83 -1.53 C 425.96 -0.83 393.35 24.67 393.35 24.67 C 393.35 24.67 415.75 49.20 409.88 51.14 C 404.01 53.09 374.73 41.93 374.73 41.93 C 374.73 41.93 350.43 69.26 344.60 69.86 C 338.76 70.47 353.48 33.19 353.48 33.19 C 353.48 33.19 316.71 25.18 319.09 19.04 C 321.46 12.90 358.96 10.52 358.96 10.52 C 358.96 10.52 360.83 -29.21 369.39 -26.18 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    374.1,
+    20.5
+   ],
+   "sparkles": true,
+   "sparkleMode": "burst",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 1.7,
+      "amplitude": 0.03
+     },
+     {
+      "kind": "bob",
+      "duration": 1.7,
+      "amplitude": 5
+     },
+     {
+      "kind": "pulse",
+      "selector": [
+       "star"
+      ],
+      "duration": 0.9,
+      "amplitude": 0.14
+     },
+     {
+      "kind": "rotate-around-point",
+      "selector": [
+       "wand",
+       "star"
+      ],
+      "pivot": [
+       374.2,
+       168.9
+      ],
+      "duration": 1.7,
+      "amplitude": 5
+     }
+    ]
+   }
+  },
+  "wink": {
+   "label": "俏皮",
+   "paths": {
+    "body": {
+     "d": "M 193.73 268.43 C 234.50 314.61 326.63 228.89 401.20 208.88 C 475.77 188.87 302.41 16.49 211.79 10.15 C 121.18 3.82 -16.30 121.38 36.06 183.35 C 88.41 245.31 152.97 222.25 193.73 268.43 Z",
+     "fill": "#FFCB74",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 108.00 C 161.28 108.43 158.69 108.79 155.50 108.79 C 152.31 108.79 149.72 108.43 149.72 108.00 C 149.72 107.57 152.31 107.21 155.50 107.21 C 158.69 107.21 161.28 107.57 161.28 108.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 276.22 109.80 C 276.22 115.37 273.26 119.89 269.60 119.89 C 265.94 119.89 262.98 115.37 262.98 109.80 C 262.98 104.23 265.94 99.71 269.60 99.71 C 273.26 99.71 276.22 104.23 276.22 109.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 236.27 193.10 C 236.27 199.63 226.88 204.92 215.30 204.92 C 203.72 204.92 194.33 199.63 194.33 193.10 C 194.33 186.57 203.72 181.28 215.30 181.28 C 226.88 181.28 236.27 186.57 236.27 193.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 422.18 50.44",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 442.17 -14.02 C 448.99 -8.02 443.71 20.45 443.71 20.45 C 439.15 21.50 463.28 20.22 474.28 25.37 C 485.29 30.52 445.54 42.09 445.54 42.09 C 445.54 42.09 457.23 73.19 451.06 72.81 C 444.88 72.44 421.84 51.21 421.84 51.21 C 421.84 51.21 389.13 67.56 383.49 65.95 C 377.85 64.34 405.35 35.19 405.35 35.19 C 405.35 35.19 374.19 14.11 378.68 9.29 C 383.17 4.47 418.87 16.19 418.87 16.19 C 418.87 16.19 435.36 -20.01 442.17 -14.02 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    429.2,
+    31.1
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 2.4,
+      "amplitude": 0.025
+     },
+     {
+      "kind": "bob",
+      "duration": 2.4,
+      "amplitude": 6
+     },
+     {
+      "kind": "sway",
+      "duration": 3.2,
+      "amplitude": 3
+     },
+     {
+      "kind": "rotate-around-point",
+      "selector": [
+       "wand",
+       "star"
+      ],
+      "pivot": [
+       374.2,
+       168.9
+      ],
+      "duration": 1.9,
+      "amplitude": 11
+     }
+    ]
+   }
+  },
+  "shy": {
+   "label": "害羞",
+   "paths": {
+    "body": {
+     "d": "M 192.08 271.15 C 230.70 309.29 306.31 228.16 370.55 205.96 C 434.78 183.76 272.01 42.70 192.08 42.70 C 112.14 42.70 -1.33 154.64 48.43 205.96 C 98.19 257.28 153.46 233.01 192.08 271.15 Z",
+     "fill": "#FFB8A6",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 112.00 C 161.28 113.85 158.69 115.35 155.50 115.35 C 152.31 115.35 149.72 113.85 149.72 112.00 C 149.72 110.15 152.31 108.65 155.50 108.65 C 158.69 108.65 161.28 110.15 161.28 112.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 112.80 C 275.21 114.49 272.70 115.86 269.60 115.86 C 266.50 115.86 263.99 114.49 263.99 112.80 C 263.99 111.11 266.50 109.74 269.60 109.74 C 272.70 109.74 275.21 111.11 275.21 112.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 215.17 198.10 C 215.17 202.22 211.20 205.55 206.30 205.55 C 201.40 205.55 197.43 202.22 197.43 198.10 C 197.43 193.98 201.40 190.65 206.30 190.65 C 211.20 190.65 215.17 193.98 215.17 198.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 481.45 99.38",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 534.79 58.05 C 536.94 66.87 516.28 87.16 516.28 87.16 C 511.95 85.41 532.44 98.19 538.50 108.73 C 544.57 119.26 505.37 105.94 505.37 105.94 C 505.37 105.94 497.11 138.12 492.27 134.27 C 487.42 130.42 480.73 99.81 480.73 99.81 C 480.73 99.81 444.56 94.44 440.86 89.89 C 437.16 85.34 476.41 77.24 476.41 77.24 C 476.41 77.24 462.97 42.09 469.41 40.72 C 475.85 39.34 498.38 69.42 498.38 69.42 C 498.38 69.42 532.65 49.22 534.79 58.05 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    498.3,
+    87.5
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 2.0,
+      "amplitude": 0.04
+     },
+     {
+      "kind": "bob",
+      "duration": 2.0,
+      "amplitude": 4
+     },
+     {
+      "kind": "shake",
+      "duration": 0.5,
+      "amplitude": 0.5
+     }
+    ]
+   }
+  },
+  "sad": {
+   "label": "伤心",
+   "paths": {
+    "body": {
+     "d": "M 192.10 273.47 C 242.13 307.37 340.09 235.26 423.30 215.52 C 506.51 195.79 295.65 70.40 192.10 70.40 C 88.54 70.40 -58.45 169.91 6.02 215.52 C 70.48 261.14 142.07 239.57 192.10 273.47 Z",
+     "fill": "#E4C7AC",
+     "filter": "liquid"
+    },
+    "eyeL": {
+     "d": "M 161.28 116.00 C 161.28 118.99 158.69 121.41 155.50 121.41 C 152.31 121.41 149.72 118.99 149.72 116.00 C 149.72 113.01 152.31 110.59 155.50 110.59 C 158.69 110.59 161.28 113.01 161.28 116.00 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "eyeR": {
+     "d": "M 275.21 116.80 C 275.21 119.54 272.70 121.76 269.60 121.76 C 266.50 121.76 263.99 119.54 263.99 116.80 C 263.99 114.06 266.50 111.84 269.60 111.84 C 272.70 111.84 275.21 114.06 275.21 116.80 Z",
+     "fill": "#1E1E1E",
+     "opacity": 1,
+     "filter": "facetex"
+    },
+    "mouth": {
+     "d": "M 227.59 206.10 C 227.59 208.51 218.06 210.47 206.30 210.47 C 194.54 210.47 185.01 208.51 185.01 206.10 C 185.01 203.69 194.54 201.73 206.30 201.73 C 218.06 201.73 227.59 203.69 227.59 206.10 Z",
+     "fill": "#FFEBDA",
+     "opacity": 0.82,
+     "filter": "mouthtex"
+    },
+    "wand": {
+     "d": "M 374.21 168.89 L 373.65 296.69",
+     "stroke": "#A4A4A4",
+     "strokeWidth": 7,
+     "fill": "none",
+     "filter": "wandtex"
+    },
+    "star": {
+     "d": "M 379.03 363.96 C 370.47 360.93 364.80 332.53 364.80 332.53 C 368.64 329.86 346.72 340.01 334.59 339.31 C 322.45 338.62 355.06 313.11 355.06 313.11 C 355.06 313.11 332.66 288.59 338.53 286.64 C 344.41 284.69 373.68 295.85 373.68 295.85 C 373.68 295.85 397.98 268.52 403.82 267.92 C 409.65 267.32 394.94 304.59 394.94 304.59 C 394.94 304.59 431.71 312.60 429.33 318.74 C 426.95 324.88 389.45 327.26 389.45 327.26 C 389.45 327.26 387.58 366.99 379.03 363.96 Z",
+     "fill": "#5DDAEE",
+     "filter": "softblur"
+    }
+   },
+   "sparkleCenter": [
+    374.3,
+    317.3
+   ],
+   "sparkles": false,
+   "sparkleMode": "orbit",
+   "idle": {
+    "kind": "compound",
+    "parts": [
+     {
+      "kind": "breathe-y",
+      "duration": 5.0,
+      "amplitude": 0.05
+     },
+     {
+      "kind": "bob",
+      "duration": 5.0,
+      "amplitude": 3
+     },
+     {
+      "kind": "sway",
+      "duration": 6.4,
+      "amplitude": 1.0
+     }
+    ]
+   }
+  }
+ }
+};
+</script>
+<script>/* 小星动画引擎（原生版，由 StarKid.jsx 改写）
+   逐路径策略检测 + 渲染一次只改 d + 待机幅度混合 */
+(function(){
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+const IDS = Object.keys(KD.states[KD.order[0]].paths);
+
+function parsePath(d){
+  const toks = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [];
+  const segs=[]; let i=0,cmd=null,cx=0,cy=0,sx=0,sy=0;
+  const num=()=>parseFloat(toks[i++]);
+  while(i<toks.length){
+    if(/[a-zA-Z]/.test(toks[i])) cmd=toks[i++];
+    const up=cmd.toUpperCase(), rel=cmd!==up; let pts=[];
+    if(up==='M'||up==='L'){let x=num(),y=num();if(rel){x+=cx;y+=cy}pts=[[x,y]];cx=x;cy=y;if(up==='M'){sx=x;sy=y}}
+    else if(up==='H'){let x=num();if(rel)x+=cx;pts=[[x,cy]];cx=x}
+    else if(up==='V'){let y=num();if(rel)y+=cy;pts=[[cx,y]];cy=y}
+    else if(up==='C'){const a=[];for(let k=0;k<3;k++){let x=num(),y=num();if(rel){x+=cx;y+=cy}a.push([x,y])}pts=a;cx=a[2][0];cy=a[2][1]}
+    else if(up==='Z'){cx=sx;cy=sy}
+    else continue;
+    segs.push({c:(up==='H'||up==='V')?'L':up,p:pts});
+  }
+  return segs;
+}
+const fp = s => s.map(x=>x.c).join('');
+const emit = s => s.map(x => x.c==='Z' ? 'Z'
+  : x.c+' '+x.p.map(p=>p[0].toFixed(2)+' '+p[1].toFixed(2)).join(' ')).join(' ');
+const lerpSegs = (A,B,t) => emit(A.map((s,i)=>({c:s.c,p:s.p.map((p,j)=>{
+  const q=B[i].p[j]; return [p[0]+(q[0]-p[0])*t, p[1]+(q[1]-p[1])*t];
+})})));
+
+const PARSED={}, STRAT={};
+IDS.forEach(id=>{
+  PARSED[id]={}; const set=new Set();
+  KD.order.forEach(s=>{ const g=parsePath(KD.states[s].paths[id].d); PARSED[id][s]=g; set.add(fp(g)); });
+  STRAT[id]= set.size===1 ? 'TRANSFORM' : 'MORPH';
+});
+
+const ez = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+const sIO = t => -(Math.cos(Math.PI*t)-1)/2;
+const h2r = h => [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const r2h = c => '#'+c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+
+let uid=0;
+
+window.mountKid = function(host, size){
+  const fid = 'k'+(++uid);
+  host.innerHTML =
+   '<svg viewBox="'+KD.viewBox+'" xmlns="'+NS+'"><defs>'+
+   '<filter id="'+fid+'-liquid" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">'+
+   '<feTurbulence type="fractalNoise" baseFrequency="0.009 0.013" numOctaves="3" seed="3" result="n">'+
+   '<animate attributeName="baseFrequency" dur="10s" repeatCount="indefinite" values="0.009 0.013;0.018 0.007;0.006 0.017;0.009 0.013"/>'+
+   '<animate attributeName="seed" dur="13.3s" repeatCount="indefinite" values="3;9;3"/></feTurbulence>'+
+   '<feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" result="dp">'+
+   '<animate attributeName="scale" dur="6.7s" repeatCount="indefinite" values="25;60;38;25"/></feDisplacementMap>'+
+   '<feGaussianBlur in="dp" stdDeviation="7.5"/></filter>'+
+   '<filter id="'+fid+'-softblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="4"/></filter>'+
+   '<filter id="'+fid+'-wandtex" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">'+
+   '<feGaussianBlur stdDeviation="2.5" result="b"/><feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="8982"/>'+
+   '<feDisplacementMap in="b" scale="8" xChannelSelector="R" yChannelSelector="G"/></filter>'+
+   '<filter id="'+fid+'-facetex" x="-90%" y="-90%" width="280%" height="280%" color-interpolation-filters="sRGB">'+
+   '<feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="6601"/>'+
+   '<feDisplacementMap in="SourceGraphic" scale="8" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="0.5"/></filter>'+
+   '<filter id="'+fid+'-mouthtex" x="-90%" y="-90%" width="280%" height="280%" color-interpolation-filters="sRGB">'+
+   '<feTurbulence type="fractalNoise" baseFrequency="0.25 0.25" numOctaves="3" seed="7318"/>'+
+   '<feDisplacementMap in="SourceGraphic" scale="8" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="2.5"/></filter>'+
+   '<path id="'+fid+'-ministar" transform="translate(-58,-52)" d="M85.887 9.196C90.921 16.751 78.446 42.886 78.446 42.886C73.778 42.722 97.410 47.726 106.708 55.553C116.007 63.379 74.620 64.267 74.620 64.267C74.620 64.267 77.864 97.327 71.994 95.365C66.125 93.404 49.367 66.934 49.367 66.934C49.367 66.934 13.541 74.263 8.507 71.250C3.473 68.237 37.585 47.202 37.585 47.202C37.585 47.202 12.939 18.766 18.522 15.273C24.105 11.781 55.557 32.339 55.557 32.339C55.557 32.339 80.854 1.641 85.887 9.196Z"/>'+
+   '</defs><g data-root><g data-shared></g><g data-sp filter="url(#'+fid+'-softblur)"></g></g></svg>';
+  if(size) host.style.width = size+'px';
+
+  const root = host.querySelector('[data-root]');
+  const shared = host.querySelector('[data-shared]');
+  const sp = host.querySelector('[data-sp]');
+  const EL = {};
+  let cur = KD.order[0], amp = 1, morphRaf = null, mic = 0;
+  let spPos = KD.states[cur].sparkleCenter.slice();
+  let spOp = KD.states[cur].sparkles ? 1 : 0;
+  let spMode = KD.states[cur].sparkleMode || 'orbit';
+
+  IDS.forEach(id=>{
+    const a = KD.states[cur].paths[id];
+    const el = document.createElementNS(NS,'path');
+    el.setAttribute('d', a.d);
+    el.setAttribute('fill', a.fill||'none');
+    if(a.opacity!=null) el.setAttribute('fill-opacity', a.opacity);
+    if(a.stroke){ el.setAttribute('stroke', a.stroke); el.setAttribute('stroke-width', a.strokeWidth); }
+    if(a.filter) el.setAttribute('filter','url(#'+fid+'-'+a.filter+')');
+    shared.appendChild(el); EL[id]=el;
+  });
+
+  const STARS = [];
+  for(let i=0;i<25;i++){
+    const ang=(i/25)*Math.PI*2+(i%3)*0.21, r=62+((i*37)%5)*22, sc=0.13+((i*53)%7)*0.032;
+    const g=document.createElementNS(NS,'g'), u=document.createElementNS(NS,'use');
+    u.setAttribute('href','#'+fid+'-ministar');
+    u.setAttribute('fill', i%2 ? '#5DDAEE' : '#FFC96B');
+    u.setAttribute('transform','scale('+sc.toFixed(3)+')');
+    g.appendChild(u); sp.appendChild(g);
+    STARS.push({g,ang0:ang,r,spin:3.4+((i*29)%6)*0.9,tw:(i*0.17)%1.3,ph:i/25});
+  }
+
+  root.style.transformBox='view-box';
+  root.style.transformOrigin=KD.idleAnchor[0]+'px '+KD.idleAnchor[1]+'px';
+  ['eyeL','eyeR','mouth'].forEach(id=>{EL[id].style.transformBox='fill-box';EL[id].style.transformOrigin='center'});
+  ['wand','star'].forEach(id=>{EL[id].style.transformBox='view-box';EL[id].style.transformOrigin='374.2px 168.9px'});
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function set(state){
+    if(!KD.states[state] || state===cur) return;
+    const from=cur, to=state; cur=to;
+    if(morphRaf) cancelAnimationFrame(morphRaf);
+    if(reduce){
+      IDS.forEach(id=>{ EL[id].setAttribute('d', KD.states[to].paths[id].d);
+        if(KD.states[to].paths[id].fill) EL[id].setAttribute('fill', KD.states[to].paths[id].fill); });
+      spPos = KD.states[to].sparkleCenter.slice();
+      spOp = KD.states[to].sparkles?1:0; spMode = KD.states[to].sparkleMode||'orbit';
+      return;
+    }
+    if(KD.states[to].sparkles) spMode = KD.states[to].sparkleMode || 'orbit';
+    const pF=KD.states[from].sparkleCenter, pT=KD.states[to].sparkleCenter;
+    const oF=KD.states[from].sparkles?1:0, oT=KD.states[to].sparkles?1:0;
+    const t0=performance.now(), dur=800;
+    (function step(now){
+      const raw=Math.min((now-t0)/dur,1), t=ez(raw);
+      IDS.forEach(id=>{
+        if(STRAT[id]==='TRANSFORM') EL[id].setAttribute('d', lerpSegs(PARSED[id][from],PARSED[id][to],t));
+        const fa=KD.states[from].paths[id].fill, fb=KD.states[to].paths[id].fill;
+        if(fa&&fb&&fa!==fb&&fa[0]==='#'){
+          const a=h2r(fa), b=h2r(fb);
+          EL[id].setAttribute('fill', r2h(a.map((v,k)=>v+(b[k]-v)*t)));
+        }
+      });
+      spPos=[pF[0]+(pT[0]-pF[0])*t, pF[1]+(pT[1]-pF[1])*t];
+      spOp = oF+(oT-oF)*t;
+      amp = raw<0.4 ? 1-0.9*sIO(raw/0.4) : raw>0.6 ? 0.1+0.9*sIO((raw-0.6)/0.4) : 0.1;
+      if(raw<1) morphRaf=requestAnimationFrame(step); else { morphRaf=null; amp=1; }
+    })(t0);
+  }
+
+  if(!reduce){
+    (function tick(now){
+      const t=now/1000, st=KD.states[cur], parts=(st.idle&&st.idle.parts)||[];
+      let ry=1,dy=0,rot=0; const T={};
+      for(const p of parts){
+        if(p.kind==='breathe-y') ry += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+        else if(p.kind==='bob') dy += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+        else if(p.kind==='sway'||p.kind==='shake') rot += Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+        else if(p.kind==='blink'){
+          const ph=(t%p.every)/p.every;
+          const k=ph>0.94?Math.abs(Math.cos((ph-0.94)/0.06*Math.PI)):1;
+          const s=1-(1-Math.max(k,0.08))*amp;
+          p.selector.forEach(id=>T[id]=(T[id]||'')+' scaleY('+s.toFixed(3)+')');
+        }
+        else if(p.kind==='pulse'){
+          const s=1+Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+          p.selector.forEach(id=>T[id]=(T[id]||'')+' scale('+s.toFixed(3)+')');
+        }
+        else if(p.kind==='rotate-around-point'){
+          const d=Math.sin(t/p.duration*2*Math.PI)*p.amplitude*amp;
+          p.selector.forEach(id=>T[id]=(T[id]||'')+' rotate('+d.toFixed(2)+'deg)');
+        }
+      }
+      if(mic>0.01){
+        const m=Math.pow(mic,0.6);
+        T.mouth=(T.mouth||'')+' scale('+(1+m*0.35).toFixed(3)+','+(1+m*1.5).toFixed(3)+')';
+      }
+      root.style.transform='translate(0px,'+dy.toFixed(2)+'px) rotate('+rot.toFixed(2)+'deg) scaleY('+ry.toFixed(4)+')';
+      IDS.forEach(id=>{ EL[id].style.transform=T[id]||''; });
+
+      sp.setAttribute('transform','translate('+spPos[0].toFixed(1)+','+spPos[1].toFixed(1)+')');
+      sp.style.opacity=spOp;
+      if(spOp>0.01){
+        for(const s of STARS){
+          if(spMode==='burst'){
+            const ph=(t/1.9+s.ph)%1, rr=s.r*(0.18+1.05*ph);
+            s.g.setAttribute('transform','translate('+(Math.cos(s.ang0)*rr).toFixed(1)+','+(Math.sin(s.ang0)*rr).toFixed(1)+') scale('+(0.5+0.8*(1-ph)).toFixed(3)+')');
+            s.g.style.opacity=((1-ph)*Math.min(ph*6,1)).toFixed(2);
+          } else {
+            const a=s.ang0+((t/s.spin)*2*Math.PI)%(2*Math.PI);
+            s.g.setAttribute('transform','translate('+(Math.cos(a)*s.r).toFixed(1)+','+(Math.sin(a)*s.r).toFixed(1)+')');
+            s.g.style.opacity=(0.35+0.65*(0.5+0.5*Math.sin((t+s.tw)/1.3*2*Math.PI))).toFixed(2);
+          }
+        }
+      }
+      requestAnimationFrame(tick);
+    })(performance.now());
+  }
+
+  return { set, mic(v){ mic = Math.max(0, Math.min(1, v||0)); }, state(){ return cur; } };
+};
+})();
+</script>
+<script>
+/* ═══════════ 应用逻辑 ═══════════ */
+const $ = s => document.querySelector(s);
+const FILLERS = ["然后","就是","呃","嗯","那个","这个","其实","可能","大概","对吧","啊"];
+const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
+
+let kid1, kid2, cur = null, diffFilter = "all";
+let approved = new Set(CARDS.map(c => c.id));
+let timer=null, rafMic=null, stream=null, audioCtx=null, analyser=null, rec=null;
+let curRecId=null;
+let secLeft=60, secTotal=60, finalText="", interimText="", startedAt=0, hintTimer=null, lastSpeak=0;
+
+/* ---- 屏幕切换 ---- */
+function go(name){
+  document.querySelectorAll('.screen').forEach(e => e.classList.remove('on'));
+  $('#s-'+name).classList.add('on');
+  window.scrollTo(0,0);
+  // 转盘页隐藏顶部导航，以右侧目录栏为主要引导
+  document.querySelector('nav').style.display = (name==='wheel') ? 'none' : '';
+  if(name==='bank') renderBank();
+  if(name==='record') renderRecord();
+  if(name==='wheel') buildWheel();
+  if(name==='wheel') setKid('idle','今天想对谁说？');
+}
+
+/* ---- 小星 ---- */
+function setKid(state, cap){
+  if(kid1) kid1.set(state);
+  if(kid2) kid2.set(state);
+  if(cap !== undefined) $('#kidcap').textContent = cap;
+}
+
+/* ---- 抽卡 ---- */
+function pool(){
+  const p = CARDS.filter(c => approved.has(c.id) && (diffFilter==='all' || c.difficulty===diffFilter));
+  return p.length ? p : CARDS;
+}
+function drawCard(){
+  const p = pool();
+  let next = p[Math.floor(Math.random()*p.length)];
+  if(p.length>1) while(cur && next.id===cur.id) next = p[Math.floor(Math.random()*p.length)];
+  cur = next;
+  renderCard();
+  setKid('cast','抽到这张');
+  setTimeout(()=>setKid('cheer','就这张吧'), 650);
+  setTimeout(()=>setKid('idle','准备好就开麦'), 2000);
+}
+function cycleDiff(){
+  const order = ['all','easy','medium','hard'];
+  diffFilter = order[(order.indexOf(diffFilter)+1)%4];
+  $('#h-diffbtn').textContent = diffFilter==='all' ? '全部' : DIFF_CN[diffFilter];
+  drawCard();
+}
+const CELLS = [
+  {k:'situation',  cls:'sit',  cn:'什么场合', ic:'ti-map-pin'},
+  {k:'facts',      cls:'fac',  cn:'已经发生', ic:'ti-history'},
+  {k:'assets',     cls:'ast',  cn:'你已知的', ic:'ti-bulb'},
+  {k:'blocker',    cls:'blk',  cn:'难在这里', ic:'ti-alert-triangle'},
+  {k:'role',       cls:'who',  cn:'你是谁',   ic:'ti-user'},
+  {k:'audience',   cls:'aud',  cn:'对面是谁', ic:'ti-users'},
+  {k:'goal',       cls:'goal', cn:'要拿到',   ic:'ti-target'},
+  {k:'constraint', cls:'con',  cn:'不能做',   ic:'ti-ban'}
+];
+
+function renderCard(){
+  const c = cur;
+  $('#h-title').textContent = c.title;
+  $('#h-domain').textContent = c.domain;
+  $('#h-act').textContent = c.act;
+  const d = $('#h-diff'); d.textContent = DIFF_CN[c.difficulty]; d.className = 'tag d-'+c.difficulty;
+  $('#h-sec').textContent = c.seconds;
+
+  $('#h-canvas').innerHTML = CELLS.map(m => `
+    <div class="cell ${m.cls}">
+      <div class="h"><i class="ti ${m.ic}"></i><span>${m.cn}</span></div>
+      <div class="v">${(c.brief && c.brief[m.k]) || c[m.k]}</div>
+    </div>`).join('');
+
+  $('#h-outline').innerHTML = (c.outline && c.outline.length)
+    ? `<div class="outline"><div class="lbl" style="color:var(--green)">简单档给提纲</div>
+       <ol>${c.outline.map(o=>`<li>${o}</li>`).join('')}</ol></div>`
+    : (c.difficulty==='hard'
+        ? `<p class="note" style="margin-top:16px">困难档不给提纲，也不给卡壳提示。</p>`
+        : `<p class="note" style="margin-top:16px">中等档不给提纲，卡壳时会给一句方向。</p>`);
+}
+
+/* ---- 开始练习 ---- */
+async function startPractice(override){
+  secTotal = secLeft = override || cur.seconds;
+  finalText = ""; interimText = ""; startedAt = Date.now(); lastSpeak = Date.now();
+  $('#p-title').textContent = cur.title;
+  $('#p-text').innerHTML = '<span style="color:var(--muted)">开口就会出现在这里。口癖词会自动标红。</span>';
+  $('#p-time').textContent = secLeft;
+  $('#p-hint').textContent = cur.difficulty==='hard'
+    ? '困难档不提供卡壳提示。' : '停顿超过几秒会自动给一句。';
+  $('#wcount').textContent = '0 字';
+  go('prac');
+  setKid('idle','等你开口');
+
+  timer = setInterval(tick, 1000);
+  await initMic();
+  initASR();
+}
+
+function tick(){
+  secLeft--;
+  $('#p-time').textContent = secLeft;
+  const prog = 1 - secLeft/secTotal;
+  $('#ringP').setAttribute('stroke-dashoffset', (301.6*prog).toFixed(1));
+  $('#ringP').setAttribute('stroke', secLeft<=10 ? 'var(--red)' : 'var(--accent)');
+  if(secLeft<=10 && secLeft>0) setKid('surprise', `还剩 ${secLeft} 秒`);
+  if(secLeft<=0) finish();
+
+  const quiet = (Date.now()-lastSpeak)/1000;
+  const trig = cur.difficulty==='easy' ? 2.5 : cur.difficulty==='medium' ? 3.5 : 999;
+  if(quiet > trig && cur.hints && cur.hints.length && secLeft>8){
+    const h = cur.hints[Math.floor(Math.random()*cur.hints.length)];
+    $('#p-hint').textContent = h;
+    setKid('shy','要不要提个醒');
+    lastSpeak = Date.now();
+  }
+}
+
+/* ---- 麦克风：真实音量驱动小星的嘴 ---- */
+async function initMic(){
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    src.connect(analyser);
+    const buf = new Uint8Array(analyser.frequencyBinCount);
+    const loop = () => {
+      analyser.getByteTimeDomainData(buf);
+      let sum = 0;
+      for(let i=0;i<buf.length;i++){ const v=(buf[i]-128)/128; sum += v*v; }
+      const rms = Math.sqrt(sum/buf.length);
+      const lvl = Math.min(1, rms*4.5);
+      $('#p-mic').style.width = Math.max(4, lvl*100)+'%';
+      if(kid2) kid2.mic(lvl);
+      if(lvl > 0.06){
+        lastSpeak = Date.now();
+        if(kid2 && kid2.state() !== 'sing' && secLeft>10) setKid('sing','我在听');
+      }
+      rafMic = requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){
+    $('#asrState').textContent = '没拿到麦克风';
+    simulate();
+  }
+}
+
+/* ---- 浏览器语音识别（Chrome 可用；不可用则模拟） ---- */
+function initASR(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ $('#asrState').textContent = '此浏览器不支持转写，用模拟文本'; simulate(); return; }
+  rec = new SR();
+  rec.lang = 'zh-CN'; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = e => {
+    interimText = '';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalText += t; else interimText += t;
+    }
+    lastSpeak = Date.now();
+    paintText();
+  };
+  rec.onerror = () => { $('#asrState').textContent = '转写没连上，用模拟文本'; simulate(); };
+  try{ rec.start(); $('#asrState').textContent = '实时转写中'; }
+  catch(e){ simulate(); }
+}
+
+const SIM = "那个，我觉得这个事情吧，其实我之前也想过，然后就是说，可能我需要先跟你说清楚一下，" +
+            "嗯，因为这个情况其实挺复杂的，然后我的想法是这样的，就是我们可以先把这个事情放一放，" +
+            "对吧，然后其实我觉得最重要的是，可能大家都需要一点时间。";
+function simulate(){
+  if(rec){ try{rec.stop()}catch(e){} rec=null; }
+  let i = 0;
+  const iv = setInterval(()=>{
+    if(secLeft<=0 || i>=SIM.length){ clearInterval(iv); return; }
+    finalText += SIM.slice(i, i+2); i += 2;
+    lastSpeak = Date.now();
+    if(kid2 && secLeft>10) setKid('sing','我在听');
+    paintText();
+  }, 180);
+}
+
+function paintText(){
+  const all = finalText + interimText;
+  const re = new RegExp('('+FILLERS.join('|')+')','g');
+  const html = finalText.replace(re,'<span class="filler">$1</span>')
+             + '<span class="interim">'+interimText+'</span>';
+  $('#p-text').innerHTML = html || '<span style="color:var(--muted)">开口就会出现在这里。</span>';
+  $('#wcount').textContent = all.length + ' 字';
+}
+
+/* ---- 结束与复盘 ---- */
+function finish(){
+  clearInterval(timer);
+  if(rafMic) cancelAnimationFrame(rafMic);
+  if(rec){ try{rec.stop()}catch(e){} rec=null; }
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  if(audioCtx) audioCtx.close();
+  if(kid2) kid2.mic(0);
+
+  const text = (finalText+interimText).trim();
+  const secs = Math.max(1, Math.round((Date.now()-startedAt)/1000));
+
+  const fill = {};
+  FILLERS.forEach(w=>{ const m=text.match(new RegExp(w,'g')); if(m) fill[w]=m.length; });
+  curRecId = 'r'+Date.now();
+  pushRecord({ id:curRecId, at:Date.now(), cardId:cur.id, title:cur.title,
+               domain:cur.domain, act:cur.act, difficulty:cur.difficulty,
+               secs, chars:text.length, transcript:text, fillers:fill });
+
+  setKid('cast','正在看你刚才说了什么');
+  go('review');
+  setTimeout(()=>renderReview(text, secs), 900);
+}
+
+function renderReview(text, secs){
+  const chars = text.length;
+  const counts = FILLERS.map(w => {
+    const m = text.match(new RegExp(w,'g'));
+    return {w, n: m?m.length:0};
+  }).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
+  const totalFiller = counts.reduce((a,b)=>a+b.n,0);
+  const perMin = chars>0 ? (chars/secs*60) : 0;
+
+  $('#r-sub').textContent = `${cur.domain} / ${cur.act} / ${cur.title}`;
+  const dt = $('#r-diffTag'); dt.textContent = DIFF_CN[cur.difficulty]+'档';
+  dt.className = 'tag d-'+cur.difficulty;
+  $('#r-blocker').textContent = cur.blocker;
+
+  $('#r-fillers').innerHTML = counts.length
+    ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:14px">
+        <span>${c.w}</span><span style="color:var(--red);font-variant-numeric:tabular-nums">${c.n} 次</span></div>`).join('')
+    : '<p class="note">这次一个口癖词都没有。</p>';
+  $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。
+    <span class="note">${perMin>320?'偏快，可以慢一点。':perMin<160&&chars>30?'偏慢，可以再流畅些。':'节奏合适。'}</span>`;
+  $('#r-transcript').innerHTML = text
+    ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
+    : '<span class="note">这次没有录到内容。</span>';
+
+  if(AI.key){ aiReview(text, secs, counts); }
+  else { fakeReview(text, secs, totalFiller, chars); }
+}
+
+/* ---- 无 AI 时的降级：明确告诉用户这不是真复盘 ---- */
+function fakeReview(text, secs, totalFiller, chars){
+  const density = chars>0 ? totalFiller/chars : 1;
+  const base = chars < 30 ? 3 : Math.max(3, Math.min(9, 9 - density*45));
+  const s = k => Math.max(3, Math.min(9, Math.round((base+k)*10)/10));
+  paintScores({'结构':s(-0.4),'内容':s(0.2),'表达':s(0),'用上背景':s(-0.8),'回应卡点':s(-1.1)});
+  $('#r-overall').innerHTML = '<span style="color:var(--red)">没有接 AI，这里不是真的复盘。</span>';
+  $('#r-quotes').innerHTML = '<p class="note">逐句点评需要 AI。点右上角「接上 AI」填入你自己的密钥后重试。</p>';
+  $('#r-diag').innerHTML = '<p class="note">诊断需要 AI。</p>';
+  $('#r-followups').innerHTML = '<p class="note">追问预演需要 AI。</p>';
+  $('#r-rewrite').innerHTML = '<p class="note">示范重讲需要 AI。</p>';
+  $('#r-flagtext').textContent = '口癖词、字数、语速是真算的。总评、逐句点评、诊断、追问预演都必须由 AI 生成，当前未接入，所以是空的。';
+  setKid('shy','先把 AI 接上吧');
+}
+
+function paintScores(sc){
+  if(curRecId) updateRecord(curRecId, {scores:sc});
+  $('#r-scores').innerHTML = Object.entries(sc).map(([k,v]) =>
+    `<div class="sc"><div class="k">${k}</div><div class="n" style="color:${v>=7?'var(--green)':v>=5?'var(--amber)':'var(--red)'}">${v}</div></div>`).join('');
+}
+
+/* ---- 真实 AI 复盘 ---- */
+/* ═══ 本地存储：练习记录 ═══ */
+const KEY_REC = 'xiaoxing:records';
+let RECORDS = [];
+try{ RECORDS = JSON.parse(localStorage.getItem(KEY_REC) || '[]'); }catch(e){ RECORDS = []; }
+function saveRecords(){ try{ localStorage.setItem(KEY_REC, JSON.stringify(RECORDS)); }catch(e){} }
+const dayKey = d => { const x=new Date(d); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
+
+function pushRecord(r){ RECORDS.push(r); saveRecords(); paintStreak(); }
+function updateRecord(id, patch){
+  const r = RECORDS.find(x=>x.id===id);
+  if(r){ Object.assign(r, patch); saveRecords(); }
+}
+
+function streakDays(){
+  const days = new Set(RECORDS.map(r=>dayKey(r.at)));
+  if(!days.size) return 0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let n = 0, cur = new Date(today);
+  if(!days.has(dayKey(cur))) cur.setDate(cur.getDate()-1);   // 今天还没练，从昨天起算
+  while(days.has(dayKey(cur))){ n++; cur.setDate(cur.getDate()-1); }
+  return n;
+}
+function weekSeconds(){
+  const now = new Date(); const start = new Date(now);
+  start.setDate(now.getDate() - ((now.getDay()+6)%7)); start.setHours(0,0,0,0);
+  return RECORDS.filter(r=>new Date(r.at)>=start).reduce((a,r)=>a+(r.secs||0),0);
+}
+function paintStreak(){
+  const n = streakDays();
+  $('#streakBadge').textContent = n>0 ? ('连续 '+n+' 天') : '今天还没练';
+}
+
+const AI = { url:'', key:'', model:'', persist:false };
+(function loadAI(){
+  const src = localStorage.getItem('ai_cfg') ? localStorage : sessionStorage;
+  try{
+    const c = JSON.parse(src.getItem('ai_cfg') || 'null');
+    if(c){ AI.url=c.url||''; AI.key=c.key||''; AI.model=c.model||''; AI.persist = src===localStorage; }
+  }catch(e){}
+  if(!AI.url) AI.url = 'https://wanqing.streamlakeapi.com/api/gateway/v1/messages';
+})();
+
+function setupAI(){
+  $('#aiUrl').value = AI.url;
+  $('#aiKey').value = AI.key;
+  $('#aiModel').value = AI.model;
+  $('#aiRemember').checked = AI.persist;
+  $('#aiMsg').innerHTML = AI.key
+    ? '<span style="color:var(--green)">当前已接入，密钥 ****'+AI.key.slice(-4)+'</span>' : '';
+  $('#aiMask').classList.add('on');
+  setTimeout(()=>$('#aiKey').focus(), 60);
+}
+function closeAI(){ $('#aiMask').classList.remove('on'); }
+
+function readForm(){
+  return { url:$('#aiUrl').value.trim(), key:$('#aiKey').value.trim(),
+           model:$('#aiModel').value.trim(), persist:$('#aiRemember').checked };
+}
+function saveAI(){
+  const c = readForm();
+  if(!c.url || !c.key || !c.model){ $('#aiMsg').innerHTML='<span style="color:var(--red)">三项都要填。</span>'; return; }
+  Object.assign(AI, c);
+  sessionStorage.removeItem('ai_cfg'); localStorage.removeItem('ai_cfg');
+  (c.persist ? localStorage : sessionStorage).setItem('ai_cfg',
+    JSON.stringify({url:c.url,key:c.key,model:c.model}));
+  paintAIBtn();
+paintStreak(); closeAI();
+}
+async function testAI(){
+  const c = readForm();
+  if(!c.url || !c.key || !c.model){ $('#aiMsg').innerHTML='<span style="color:var(--red)">三项都要填。</span>'; return; }
+  $('#aiMsg').innerHTML = '<span class="note">正在试…</span>';
+  try{
+    const res = await fetch(c.url, {method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.key,
+               'anthropic-version':'2023-06-01','x-api-key':c.key},
+      body: JSON.stringify({model:c.model, max_tokens:16, messages:[{role:'user',content:'说「好」'}]})});
+    if(!res.ok) throw new Error('HTTP '+res.status+'：'+(await res.text()).slice(0,140));
+    $('#aiMsg').innerHTML = '<span style="color:var(--green)">通了，可以保存。</span>';
+  }catch(e){
+    $('#aiMsg').innerHTML = '<span style="color:var(--red)">没通：'+String(e.message||e)+'</span>';
+  }
+}
+function paintAIBtn(){
+  const b=$('#aiBtn');
+  if(AI.key){ b.textContent='AI 已接入'; b.classList.add('pri'); }
+  else { b.textContent='接上 AI'; b.classList.remove('pri'); }
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAI(); });
+$('#aiMask').addEventListener('click', e=>{ if(e.target.id==='aiMask') closeAI(); });
+
+const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着下面这张场景卡讲了一段话，请给出复盘。
+
+场景卡：
+  情境：${c.situation}
+  他是谁：${c.role}
+  听众：${c.audience}
+  已发生：${c.facts}
+  他手上有：${c.assets}
+  卡点：${c.blocker}
+  要达成：${c.goal}
+  限制：${c.constraint}
+
+用户实际说的（语音转写，可能有错别字，按意思理解，不要点评错别字）：
+「${t}」
+
+要求：
+1. 必须逐字引用用户的原话。禁止出现「表达不够简洁」「逻辑可以更清晰」这类放在谁身上都成立的评语。每条点评都要能落到具体的删改动作上。
+2. 至少指出一条问题和一条亮点。亮点要说明为什么好，让他知道这个动作值得重复。
+3. 逐项诊断卡点、目标、听众要点、限制，「部分达成」必须说清楚部分在哪。
+4. 追问预演三条。每条都必须能追溯到用户的原话，在 trigger 里写明是他说的哪句给了对方这个口子。其中至少一条要是他完全没防到的盲区。
+5. 语气是教练不是考官。可以直说问题，但不要评判这个人。不要用「你应该」，用「下次可以」。
+6. 如果用户几乎没说话，或者说的内容和场景完全无关，不要硬凑点评。直接说明这一点，scores 全部给 3 分以下，followUps 留空。
+7. 用户可能带情绪，比如阴阳怪气或者明显在敷衍。照实指出来，这本身就是最值得复盘的地方。
+
+严格返回 JSON，不要 markdown 代码块，结构：
+{"overall":"一句话总评30字内","quotes":[{"said":"原话片段","kind":"问题或亮点","why":"...","better":"可直接替换的说法，亮点留空"}],"diagnosis":{"blocker":{"verdict":"正面处理/绕开了/反被将军","why":"..."},"goal":{"verdict":"达成/部分达成/未达成","why":"..."},"audience":{"verdict":"回应了/答非所问","why":"..."},"constraint":{"verdict":"遵守/越界","why":"..."}},"followUps":[{"q":"对方追问的原话","trigger":"因为你说了「…」","prep":"下次可以这样接"}],"scores":{"结构":7,"内容":8,"表达":7,"用上背景":6,"回应卡点":7},"rewrite":"示范重讲80字左右"}`;
+
+async function aiReview(text, secs, counts){
+  $('#r-overall').innerHTML = '<span class="note">小星正在看你刚才说了什么…</span>';
+  ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">生成中</p>');
+  $('#r-flagtext').textContent = '这一页的总评、逐句点评、诊断、追问预演由你接入的 AI 实时生成。口癖词、字数、语速为本地统计。';
+  try{
+    const res = await fetch(AI.url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI.key,
+               'anthropic-version':'2023-06-01','x-api-key':AI.key},
+      body: JSON.stringify({model:AI.model, max_tokens:2000,
+        messages:[{role:'user',content:REVIEW_PROMPT(cur,text||'（几乎没说话）')}]})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status+' '+(await res.text()).slice(0,200));
+    const data = await res.json();
+    let raw = (data.content && data.content[0] && data.content[0].text)
+           || (data.choices && data.choices[0].message.content) || '';
+    raw = raw.replace(/^```(?:json)?/,'').replace(/```$/,'').trim();
+    const r = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}')+1));
+    paintAI(r);
+  }catch(e){
+    $('#r-overall').innerHTML = '<span style="color:var(--red)">AI 调用失败：'+String(e.message||e)+'</span>';
+    ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">没拿到结果。</p>');
+    setKid('sad','这次没读出来');
+  }
+}
+
+function paintAI(r){
+  $('#r-overall').textContent = r.overall || '';
+  if(curRecId) updateRecord(curRecId, {overall:r.overall, ai:true});
+  paintScores(r.scores || {});
+
+  $('#r-quotes').innerHTML = (r.quotes||[]).map(q=>{
+    const good = (q.kind||'').includes('亮点');
+    return `<div style="padding:12px 0;border-bottom:1px dashed var(--border)">
+      <div style="border-left:3px solid ${good?'var(--green)':'var(--red)'};padding-left:11px;margin-bottom:8px">
+        <span class="tag ${good?'d-easy':'d-hard'}" style="margin-bottom:5px">${good?'亮点':'可以改'}</span>
+        <div style="font-size:15px;line-height:1.7">「${q.said}」</div>
+      </div>
+      <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${q.why||''}</div>
+      ${q.better?`<div style="margin-top:8px;font-size:14px;background:var(--greenBg);color:var(--green);padding:9px 12px;border-radius:var(--rCtl)">改成：${q.better}</div>`:''}
+    </div>`;
+  }).join('') || '<p class="note">这次没有可引用的内容。</p>';
+
+  const D = r.diagnosis||{};
+  const rows = [['卡点','blocker'],['目标','goal'],['听众要点','audience'],['限制','constraint']];
+  const bad = v => /未达成|绕开|反被|答非|越界/.test(v||'');
+  const mid = v => /部分/.test(v||'');
+  $('#r-diag').innerHTML = rows.map(([cn,k])=>{
+    const d = D[k]||{};
+    const col = bad(d.verdict)?'var(--red)':mid(d.verdict)?'var(--amber)':'var(--green)';
+    return `<div style="padding:10px 0;border-bottom:1px dashed var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span style="font-size:14px;color:var(--muted)">${cn}</span>
+        <b style="font-size:14px;color:${col}">${d.verdict||'未判定'}</b></div>
+      <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${d.why||''}</div></div>`;
+  }).join('');
+
+  $('#r-followups').innerHTML = (r.followUps||[]).map((f,i)=>`
+    <div style="padding:12px 0;${i?'border-top:1px dashed var(--accentMid)':''}">
+      <div style="font-size:15px;font-weight:500;line-height:1.6;margin-bottom:6px">「${f.q}」</div>
+      <div style="font-size:13px;color:var(--accent);margin-bottom:6px">${f.trigger||''}</div>
+      <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${f.prep||''}</div>
+    </div>`).join('') || '<p class="note">这次没有生成追问。</p>';
+
+  $('#r-rewrite').textContent = r.rewrite || '';
+
+  const vals = Object.values(r.scores||{});
+  const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  if(avg>=8) setKid('cheer','这次讲得真好');
+  else if(avg>=6) setKid('wink','比上次稳');
+  else setKid('shy','已经开口了，就是进步');
+}
+
+/* ---- 题库 ---- */
+function renderBank(){
+  const acts = [...new Set(CARDS.map(c=>c.act))];
+  const doms = [...new Set(CARDS.map(c=>c.domain))];
+  if(!$('#filters').dataset.built){
+    $('#filters').innerHTML =
+      `<button class="chip on" data-f="all">全部</button>` +
+      doms.map(d=>`<button class="chip" data-f="d:${d}">${d}</button>`).join('') +
+      acts.map(a=>`<button class="chip" data-f="a:${a}">${a}</button>`).join('') +
+      ['easy','medium','hard'].map(d=>`<button class="chip" data-f="x:${d}">${DIFF_CN[d]}</button>`).join('');
+    $('#filters').dataset.built = 1;
+    $('#filters').onclick = e => {
+      if(!e.target.dataset.f) return;
+      document.querySelectorAll('#filters .chip').forEach(c=>c.classList.remove('on'));
+      e.target.classList.add('on');
+      paintBank(e.target.dataset.f);
+    };
+  }
+  paintBank(document.querySelector('#filters .chip.on').dataset.f);
+}
+function paintBank(f){
+  let list = CARDS;
+  if(f && f!=='all'){
+    const [k,v] = f.split(':');
+    list = CARDS.filter(c => k==='d' ? c.domain===v : k==='a' ? c.act===v : c.difficulty===v);
+  }
+  $('#bankcount').textContent = `共 ${CARDS.length} 张，已开启 ${approved.size} 张`;
+  $('#banklist').innerHTML = list.map(c=>`
+    <div class="bankitem ${approved.has(c.id)?'':'off'}" data-id="${c.id}">
+      <div class="body">
+        <div class="t">${c.title}</div>
+        <div style="margin:6px 0 8px">
+          <span class="tag">${c.domain}</span><span class="tag">${c.act}</span>
+          <span class="tag">${c.relation}</span><span class="tag d-${c.difficulty}">${DIFF_CN[c.difficulty]}</span>
+        </div>
+        <div class="b">${c.blocker}</div>
+      </div>
+      <div class="sw ${approved.has(c.id)?'on':''}"></div>
+    </div>`).join('');
+  $('#banklist').querySelectorAll('.bankitem').forEach(el=>{
+    el.onclick = () => {
+      const id = el.dataset.id;
+      approved.has(id) ? approved.delete(id) : approved.add(id);
+      paintBank(f);
+    };
+  });
+}
+
+
+/* ═══ 人物转盘：三张邮票，中间正且最高，两侧压低外倾 ═══ */
+/* 关系由远及近排列。img 填了就用图，缺图自动回落到 emoji。图在 assets/people/ */
+const RELS = [
+  {k:'陌生人',   img:'assets/people/stranger.png',    face:'🙂',    st:'#DDE3E5', in:'#F2EFE9',
+   ctx:'你和他没有任何交情。好处是说砸了也没有明天，坏处是他没有任何理由给你面子。'},
+  {k:'服务人员', img:'assets/people/staff.png',       face:'💁',    st:'#D1D9CD', in:'#F2EFE9',
+   ctx:'他有业绩要完成，你有下一次还要来。这段关系不长，但会反复发生，所以不能靠翻脸解决。'},
+  {k:'面试官',   img:'assets/people/interviewer.png', face:'📋',    st:'#EBE5DB', in:'#F2EFE9',
+   ctx:'一次性博弈，但赌注很大。他手上还有别的候选人，你说的每一句话都在被评估。'},
+  {k:'直属领导',     img:'assets/people/boss.png',        face:'🧐',    st:'#DDC3B2', in:'#F2EFE9',
+   ctx:'权力不对等。他不需要说服你，是你需要说服他，而且他的时间比你贵。'},
+  {k:'同事',     img:'assets/people/coworker.png',    face:'🧑‍💻', st:'#DCD4C8', in:'#F2EFE9',
+   ctx:'今天说完，明天还要一起干活。所以赢不是目标，把事情推进下去才是。'},
+  {k:'同学',     img:'assets/people/classmate.png',   face:'🎒',    st:'#DEE0EC', in:'#F2EFE9',
+   ctx:'关系平等，但会被反复比较。说得太满显得张扬，说得太谦又容易被当真。'},
+  {k:'朋友',     img:'assets/people/friend.png',      face:'🤗',    st:'#E5D9BB', in:'#F2EFE9',
+   ctx:'最难开口的往往是这一类。话说重了会伤人，说轻了对方听不懂，而你还得继续跟他做朋友。'},
+  {k:'伴侣',     img:'assets/people/partner.png',     face:'💗',    st:'#EDD5D2', in:'#F2EFE9',
+   ctx:'最亲近，也最容易积怨。这里的难点不是把道理讲清楚，是让对方觉得你站在他那边。'},
+  {k:'家人',     img:'assets/people/family.png',      face:'🏠',    st:'#E0CFC9', in:'#F2EFE9',
+   ctx:'退不出去的关系。这一类的难点从来不是讲不讲得通道理，是情绪。'}
+];
+const N = RELS.length;
+const GAP = 330;
+let wPos = 0, wDrag = null, wVel = 0, wRaf = null, wEls = [];
+
+function relCount(k){ return CARDS.filter(c=>c.relation===k && approved.has(c.id)).length; }
+const curIdx = () => ((Math.round(wPos) % N) + N) % N;
+
+function buildWheel(){
+  const st = $('#wheelStage');
+  st.innerHTML = RELS.map((r,i)=>
+    `<div class="stamp" data-i="${i}" style="--st:${r.st}">
+       <div class="inner">${r.img
+         ? `<img src="${r.img}" alt="${r.k}" draggable="false"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'face',textContent:'${r.face}'}))">`
+         : `<div class="face">${r.face}</div>`}</div>
+     </div>`).join('');
+  wEls = [...st.querySelectorAll('.stamp')];
+  wEls.forEach(el => el.onclick = () => { if(!wMoved) enter(+el.dataset.i); });
+
+  $('#w-list').innerHTML = RELS.map((r,i)=>`<li data-i="${i}">${r.k}</li>`).join('');
+  $('#w-list').querySelectorAll('li').forEach(li => li.onclick = () => {
+    animateWheelTo(+li.dataset.i);   // 平滑转过去
+  });
+  layoutWheel();
+}
+
+/* 点击图片进入场景：FLIP 动画，邮票逐渐放大到右侧 */
+function enter(i){
+  const el = wEls[i];
+  if(!el) { openScene(i, null); return; }
+  const rect = el.getBoundingClientRect();
+  if(rect.width === 0) { openScene(i, null); return; }
+
+  // 创建浮空克隆，从当前位置开始
+  const clone = el.cloneNode(true);
+  clone.style.position = 'fixed';
+  clone.style.left   = rect.left + 'px';
+  clone.style.top    = rect.top + 'px';
+  clone.style.width  = rect.width + 'px';
+  clone.style.height = rect.height + 'px';
+  clone.style.margin = '0';
+  clone.style.zIndex = '999';
+  clone.style.transition = 'all 0.55s cubic-bezier(0.22,1,0.36,1)';
+  clone.style.pointerEvents = 'none';
+  clone.style.transform = 'none';
+  clone.style.filter = 'drop-shadow(0 6px 18px rgba(70,63,55,.12))';
+  document.body.appendChild(clone);
+
+  openScene(i, clone);
+}
+
+function openScene(i, clone){
+  const r = RELS[i];
+  // 导航到场景页
+  document.querySelectorAll('.screen').forEach(e => e.classList.remove('on'));
+  document.querySelector('nav').style.display = '';
+  $('#s-scene').classList.add('on');
+  window.scrollTo(0,0);
+
+  // 填充人像（先隐藏，等动画落地再显示）
+  const heroEl = $('#sc-hero');
+  heroEl.style.setProperty('--st', r.st);
+  heroEl.style.opacity = '0';
+  $('#sc-heroInner').innerHTML = r.img
+    ? `<img src="${r.img}" alt="${r.k}" draggable="false"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'face',textContent:'${r.face}'}))">`
+    : `<div class="face">${r.face}</div>`;
+
+  // 填充标题与上下文
+  $('#sc-who').textContent = r.k;
+  $('#sc-ctx').textContent = r.ctx;
+
+  // 过滤该关系的卡片
+  const cards = CARDS.filter(c => c.relation === r.k && approved.has(c.id));
+  $('#sc-qs').innerHTML = cards.length
+    ? cards.map((c,j)=>`<div class="qItem" data-id="${c.id}">
+         <span class="no">${j+1}</span>
+         <span>${c.title}</span>
+         <span class="tag d-${c.difficulty}" style="margin-left:auto;flex-shrink:0">${DIFF_CN[c.difficulty]}</span>
+       </div>`).join('')
+    : '<div class="qEmpty">这个关系下还没有开启的题，去题库里打开或点「直接开练」随机抽一张。</div>';
+
+  $('#sc-qs').querySelectorAll('.qItem').forEach(el => {
+    el.onclick = () => {
+      const c = CARDS.find(x => x.id === el.dataset.id);
+      if(c){ cur = c; renderCard(); go('home'); }
+    };
+  });
+
+  // 文字先隐藏
+  const top = $('#sc-top'), qwrap = $('#sc-qwrap');
+  top.classList.remove('in'); qwrap.classList.remove('in');
+
+  if(clone){
+    // FLIP：下一帧拿到 hero 位置，动画飞过去
+    requestAnimationFrame(() => {
+      const heroRect = heroEl.getBoundingClientRect();
+      clone.style.left   = heroRect.left + 'px';
+      clone.style.top    = heroRect.top + 'px';
+      clone.style.width  = heroRect.width + 'px';
+      clone.style.height = heroRect.height + 'px';
+      clone.style.filter = 'drop-shadow(0 12px 30px rgba(70,63,55,.14))';
+
+      let done = false;
+      const land = () => {
+        if(done) return; done = true;
+        clone.remove();
+        heroEl.style.opacity = '';
+        requestAnimationFrame(()=>{ top.classList.add('in'); qwrap.classList.add('in'); });
+      };
+      clone.addEventListener('transitionend', land, {once:true});
+      setTimeout(land, 600); // fallback
+    });
+  } else {
+    // 无克隆（键盘 Enter 等），直接显示
+    heroEl.style.opacity = '';
+    requestAnimationFrame(()=>{ top.classList.add('in'); qwrap.classList.add('in'); });
+  }
+}
+
+/* ═══ 转盘：邮票刚性贴在轮子上，圆心在 stage 底边中点 ═══
+   露出的上半圆里只看得到 3 张（中间 + 左右各一），第 4 张往后全部转到
+   底边以下被裁掉。不做淡入淡出，滑动时靠转出来 / 转下去一张一张推进。 */
+/* 每格该转多少度：参考图约 52°，但必须保证第 2 格（左右各第二张）整张
+   都落到底边以下才看不见，所以从 52° 起往上找第一个满足的角度。 */
+const TILT = 16;                             // 每格倾斜多少度（越小越正）
+
+function stepDeg(B, cardW, cardH){
+  const rad = Math.PI/180, MARGIN = 20, sc = 1 - 2*0.045;
+  const w = cardW*sc, h = cardH*sc, t = 2*TILT*rad;
+  const hh = (w/2)*Math.abs(Math.sin(t)) + (h/2)*Math.abs(Math.cos(t));
+  for(let d = 54; d <= 80; d++){
+    const cy = -B * Math.cos(2*d*rad);          // 相对底边，正=在底边以下
+    if(cy - hh >= MARGIN) return d;             // 顶端也沉到底边以下
+  }
+  return 80;
+}
+
+function layoutWheel(){
+  const stage = document.getElementById('wheelStage');
+  if(!stage || !wEls.length) return;
+  const sh = stage.clientHeight || 700;
+  const sw = stage.clientWidth  || 1020;
+  const cardH = wEls[0].offsetHeight || 290;
+  const cardW = wEls[0].offsetWidth || 238;
+  const RATIO = 0.884;                        // B/A，越小两侧掉得越少
+  const s1 = 1 - 0.045, t1 = TILT * Math.PI/180;
+  const hw1 = (cardW*s1/2)*Math.cos(t1) + (cardH*s1/2)*Math.sin(t1); // 侧边那张的半宽
+  const A0 = Math.min((sw/2 - hw1 - 10) / Math.sin(60*Math.PI/180), 620); // 横半轴，保证不被切边
+  const B  = Math.min(A0 * RATIO, sh * 0.60); // 竖半轴，受画面高度约束
+  const A  = B / RATIO;
+  const DEG = stepDeg(B, cardW, cardH);       // 每格转过的角度
+  const rad = Math.PI/180;
+  /* 整轮往下沉：让两侧那张的下沿刚好探出画面底部一点点，
+     再往后的卡片就整张沉到画面以下，转的时候看不到底下有卡片在跑。 */
+  const CROP = -8;                            // 负值＝两侧那张整张留在画面内，下沿离底边 8px
+  const hh1 = (cardW*s1/2)*Math.sin(t1) + (cardH*s1/2)*Math.cos(t1);
+  const DROP = B*Math.cos(DEG*rad) - hh1 + CROP;
+
+  wEls.forEach((el,i)=>{
+    let off = i - wPos;
+    off = ((off % N) + N) % N;
+    if(off > N/2) off -= N;
+    el.style.opacity = 1;                    // 全部常亮，只靠裁切藏起来
+    el.style.pointerEvents = 'auto';
+
+    const a  = off * DEG * rad;
+    const x  = A * Math.sin(a);                            // 椭圆轨迹
+    const y  = -B * Math.cos(a) + cardH / 2 + DROP;        // 元素本身已贴底
+    const rt = off * TILT;                                 // 只倾一点点
+    const sc = Math.max(.7, 1 - Math.abs(off) * .045);     // 远处微缩
+
+    el.style.zIndex = 100 - Math.round(Math.abs(off) * 10);
+    el.style.transform =
+      `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${rt.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+  });
+  const ci = curIdx();
+  const list = $('#w-list');
+  if(list) list.querySelectorAll('li').forEach((li,i)=>{
+    li.classList.toggle('on', i===ci);
+    if(i===ci) li.scrollIntoView({block:'nearest', behavior:'smooth'});
+  });
+}
+/* 目录点击：平滑转动 */
+function animateWheelTo(target){
+  if(wRaf){ cancelAnimationFrame(wRaf); wRaf=null; }
+  // 走最短路径
+  let delta = target - wPos;
+  delta = ((delta % N) + N) % N;
+  if(delta > N/2) delta -= N;
+  const start = wPos, end = start + delta;
+  const t0 = performance.now();
+  const dur = 420;
+  wVel = 0;
+  (function step(now){
+    const t = Math.min((now-t0)/dur, 1);
+    const ease = 1 - Math.pow(1-t, 3);           // ease-out
+    wPos = start + delta * ease;
+    layoutWheel();
+    if(t < 1) wRaf = requestAnimationFrame(step);
+    else { wPos = end; layoutWheel(); wRaf = null; }
+  })(t0);
+}
+
+let wMoved = false;
+(function bindWheel(){
+  const st = $('#wheelStage');
+  st.addEventListener('pointerdown', e=>{
+    st.setPointerCapture(e.pointerId); st.classList.add('drag');
+    wMoved = false;
+    wDrag = {x:e.clientX, base:wPos, t:performance.now(), last:wPos};
+    if(wRaf){ cancelAnimationFrame(wRaf); wRaf=null; }
+  });
+  st.addEventListener('pointermove', e=>{
+    if(!wDrag) return;
+    const dx = e.clientX - wDrag.x;
+    if(Math.abs(dx) > 4) wMoved = true;
+    wPos = wDrag.base - dx/GAP;
+    const now = performance.now();
+    if(now - wDrag.t > 16){ wVel = (wPos-wDrag.last)/(now-wDrag.t)*16; wDrag.t = now; wDrag.last = wPos; }
+    layoutWheel();
+  });
+  const end = e => {
+    if(!wDrag) return;
+    const moved = wMoved; wDrag = null; st.classList.remove('drag');
+    if(e && e.pointerId!=null && st.hasPointerCapture?.(e.pointerId)) st.releasePointerCapture(e.pointerId);
+    if(!moved){ wVel = 0; return; }
+    const glide = () => {                       // 自然滑行，慢下来再吸附到整格
+      wVel *= 0.915;
+      if(Math.abs(wVel) < 0.010){
+        wRaf = null; wPos = Math.round(wPos); layoutWheel();
+        setTimeout(()=>{ wMoved = false; }, 60);
+        return;
+      }
+      wPos += wVel; layoutWheel();
+      wRaf = requestAnimationFrame(glide);
+    };
+    wRaf = requestAnimationFrame(glide);
+  };
+  st.addEventListener('pointerup', end);
+  st.addEventListener('pointercancel', end);
+  window.addEventListener('resize', ()=>{ if(wEls.length) layoutWheel(); });
+  document.addEventListener('keydown', e=>{
+    if(!$('#s-wheel').classList.contains('on')) return;
+    if(e.key==='ArrowLeft'){  e.preventDefault(); wPos-=1; layoutWheel(); }
+    if(e.key==='ArrowRight'){ e.preventDefault(); wPos+=1; layoutWheel(); }
+    if(e.key==='Enter'){      e.preventDefault(); enter(curIdx()); }
+  });
+})();
+
+/* ---- 记录页：全部来自本地记录 ---- */
+function renderRecord(){
+  const n = RECORDS.length;
+  $('#m-streak').textContent = streakDays();
+  $('#m-min').textContent = Math.round(weekSeconds()/60);
+  $('#m-cnt').textContent = n;
+  $('#m-chars').textContent = RECORDS.reduce((a,r)=>a+(r.chars||0),0);
+
+  // 口癖趋势：取出现最多的那个词，画每分钟频次
+  const tot = {};
+  RECORDS.forEach(r => Object.entries(r.fillers||{}).forEach(([w,c]) => tot[w]=(tot[w]||0)+c));
+  const top = Object.entries(tot).sort((a,b)=>b[1]-a[1])[0];
+  if(!top || n < 2){
+    $('#m-trend').innerHTML = '<p class="note">再练几次就能看到趋势了。至少需要两次记录。</p>';
+  } else {
+    const w = top[0];
+    const pts = RECORDS.map(r => ((r.fillers||{})[w]||0) / Math.max(1,r.secs) * 60);
+    const max = Math.max(...pts, 1);
+    const W=560, H=130, L=24, R=24, T=18, Bm=28;
+    const x = i => n<2 ? L : L + i*(W-L-R)/(n-1);
+    const y = v => T + (1 - v/max)*(H-T-Bm);
+    const poly = pts.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join(' ');
+    const first = pts[0].toFixed(1), last = pts[n-1].toFixed(1);
+    const better = pts[n-1] < pts[0];
+    $('#m-trend').innerHTML = `
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+        <polyline points="${poly}" fill="none" stroke="${better?'var(--green)':'var(--amber)'}"
+          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        ${pts.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3"
+          fill="${better?'var(--green)':'var(--amber)'}" opacity="${i===n-1?1:.45}"/>`).join('')}
+        <text x="${L}" y="${H-8}" font-size="11" fill="var(--muted)">第 1 次</text>
+        <text x="${W-R}" y="${H-8}" font-size="11" fill="var(--muted)" text-anchor="end">第 ${n} 次</text>
+      </svg>
+      <p class="note" style="margin-top:6px">你说得最多的是「${w}」，从每分钟 ${first} 次到 ${last} 次。${
+        better ? '在往下走。' : n>2 ? '还在波动，多练几次看看。' : ''}</p>`;
+  }
+
+  $('#rechist').innerHTML = n
+    ? RECORDS.slice().reverse().slice(0,20).map(r=>{
+        const d = new Date(r.at);
+        const avg = r.scores ? (Object.values(r.scores).reduce((a,b)=>a+b,0)/Object.values(r.scores).length).toFixed(1) : null;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed var(--border)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px">${r.title}</div>
+            <div style="margin-top:5px">
+              <span class="tag d-${r.difficulty}">${DIFF_CN[r.difficulty]}档</span>
+              <span class="tag">${r.act}</span>
+              <span class="note">${d.getMonth()+1}月${d.getDate()}日 · ${r.secs}秒 · ${r.chars}字</span>
+            </div>
+          </div>
+          <b style="font-variant-numeric:tabular-nums;color:var(--inkSoft)">${avg || '<span class="note">未评分</span>'}</b>
+        </div>`;
+      }).join('')
+    : '<p class="note">还没有记录。回首页讲一次，这里就有了。</p>';
+}
+
+function clearRecords(){
+  if(!RECORDS.length) return;
+  if(!confirm('清空全部 '+RECORDS.length+' 条练习记录？这个操作不能撤销。')) return;
+  RECORDS = []; saveRecords(); paintStreak(); renderRecord();
+}
+
+/* ---- 启动 ---- */
+document.querySelector('nav').style.display = 'none'; // 初始在转盘页，隐藏顶部导航
+kid1 = mountKid($('#kidhost'), 260);
+kid2 = mountKid($('#kidhost2'), 190);
+drawCard();
+buildWheel();
+setKid('idle','今天想讲哪一位？');
+paintAIBtn();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vite:*)",
+      "Bash(gh repo:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s -w '\\\\n--- HTTP %{http_code} ---' https://wanqing.streamlakeapi.com/api/gateway/v1/messages -H 'Authorization: Bearer OBu-QYSXFTv62BCOaxtE6rQPqpbN2nsdUbzcYjWC4E0' -H 'Content-Type: application/json' -d '{:*)",
+      "Bash(mkdir -p /Users/yuan/Documents/Codex/2026-08-02/speaking/.claude/skills)",
+      "Bash(cp /tmp/taste-skill/skills/taste-skill/SKILL.md /Users/yuan/Documents/Codex/2026-08-02/speaking/.claude/skills/taste-skill.md)"
+    ]
+  }
+}

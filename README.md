@@ -103,6 +103,16 @@ open xiaoxing.html      # Windows 用 start，Linux 用 xdg-open
 
 `scripts/build-site.mjs` 会把 `xiaoxing.html` 拷成 `public/index.html`。源文件只有一份，继续改 `xiaoxing.html` 就行。
 
+### 开启账号功能（可选）
+
+1. supabase.com 建一个项目，把 `supabase-schema.sql` 整段贴进 SQL Editor 跑一次
+2. 在 `xiaoxing.html` 里填上 `SUPA_URL` 和 `SUPA_ANON`（Settings → API 里的 Project URL 和 anon public key）
+3. Authentication → Providers 里确认 Email 是开的
+
+anon key 本来就是设计成公开的，数据隔离靠表上的行级安全策略——**那条策略不要删**。不填这两个常量的话，登录按钮不会出现，应用退回纯本地模式。
+
+SQL 文件末尾还有三个视图（`stat_cards` / `stat_users` / `stat_fillers`），在 Supabase 后台直接查就能看到哪些题练得最多、每个人练了多久、口癖有没有随次数下降。前端不会调它们。
+
 > 代理没有做频率限制。上线后拿到网址的人都能消耗你的额度，先小范围发比较稳。
 
 ---
@@ -111,7 +121,9 @@ open xiaoxing.html      # Windows 用 start，Linux 用 xdg-open
 
 **语音转写用的是浏览器自带的 Web Speech API**，只有 Chrome 和 Edge 支持。Safari 和 Firefox 打开会自动退回模拟文本，其他功能不受影响。麦克风需要 HTTPS 或者 `localhost`。
 
-**所有数据都在本地。** 练习记录、上传的题目、AI 配置都存在浏览器的 localStorage 里，没有账号，没有服务器数据库。换浏览器或者清缓存就没了。
+**默认所有数据都在本地。** 练习记录、上传的题目、AI 配置都存在浏览器的 localStorage 里。不登录的话换浏览器或者清缓存就没了。
+
+**登录是可选的。** 登录之后只同步元数据——练了哪张卡、几秒、多少字、口癖各几次、五项评分、练习时间。**转写正文、AI 复盘正文、你填的 AI 密钥不上传**，只留在你自己的浏览器里。自己上传的题目只记 id 不记标题。账号页有一键删除全部云端记录的入口。
 
 **这是一个 demo。** 前端是单个 HTML 文件，没有构建步骤，改完刷新就见效。
 

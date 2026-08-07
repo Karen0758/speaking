@@ -283,6 +283,9 @@ h2{font-size:20px;font-weight:500}
   background:var(--k-light);border-radius:var(--rCtl);transition:background .2s}
 .dlg .drop:hover,.dlg .drop.over{background:var(--k-mid)}
 .upSec{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.privacyBox{margin-top:16px;padding:14px 16px;background:var(--k-light);border-radius:var(--rCtl);
+  font-size:13px;line-height:1.75;color:var(--inkSoft)}
+.privacyBox b{color:var(--m-ink);font-weight:500}
 /* 历史记录：整行可点，进去看当时那份复盘 */
 .recrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding:11px 8px 11px 2px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -321,6 +324,7 @@ h2{font-size:20px;font-weight:500}
     <span class="streak" id="streakBadge">连续 6 天</span>
     <button class="btn ghost" onclick="go('bank')">我的题库</button>
     <button class="btn ghost" onclick="go('record')">记录</button>
+    <button class="btn ghost" id="acctBtn" onclick="openAcct()" style="display:none">登录</button>
     <button class="btn" id="aiBtn" onclick="setupAI()">接上 AI</button>
   </div>
 </nav>
@@ -567,6 +571,54 @@ h2{font-size:20px;font-weight:500}
   <p class="kidcap" id="kidcap">今天想讲哪一位？</p>
 </div>
 <button class="kidReopen" id="kidReopen">叫 momo 回来</button>
+
+<div class="mask" id="acctMask">
+  <div class="dlg" style="max-width:480px">
+    <h3 id="acctTitle">登录，把记录带到别的设备</h3>
+
+    <div id="acctSignedOut">
+      <p class="note">不登录也能一直用，记录就存在这个浏览器里。登录之后换设备、清缓存都不会丢，连续天数也接得上。</p>
+
+      <div class="privacyBox">
+        <div class="lbl" style="margin-bottom:8px">登录后会上传什么</div>
+        <p><b>会上传：</b>你练了哪张卡、讲了几秒、多少字、各个口癖词出现几次、五项评分、练习时间。</p>
+        <p style="margin-top:6px"><b>不会上传：</b>你说话的转写内容、AI 复盘的正文、你填的 AI 密钥。这三样只留在你自己的浏览器里，服务器上没有。</p>
+        <p style="margin-top:6px" class="note">自己上传的题目只记 id，不记标题。任何时候都可以在这里一键删掉全部云端记录。</p>
+      </div>
+
+      <div class="fld">
+        <label>邮箱</label>
+        <input id="acctEmail" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+      </div>
+      <div class="fld" id="acctCodeWrap" style="display:none">
+        <label>邮箱里收到的 6 位验证码</label>
+        <input id="acctCode" inputmode="numeric" placeholder="000000" autocomplete="one-time-code">
+      </div>
+      <div class="dlgmsg" id="acctMsg"></div>
+      <div class="dlgrow">
+        <button class="btn pri" id="acctSend" onclick="acctSendCode()">发送验证码</button>
+        <button class="btn" id="acctVerify" onclick="acctVerify()" style="display:none">登录</button>
+        <span style="flex:1"></span>
+        <button class="btn" onclick="closeAcct()">关闭</button>
+      </div>
+    </div>
+
+    <div id="acctSignedIn" style="display:none">
+      <p class="note" id="acctWho"></p>
+      <div class="dlgmsg" id="acctMsg2"></div>
+      <div class="dlgrow">
+        <button class="btn" onclick="acctSync()">立即同步</button>
+        <span style="flex:1"></span>
+        <button class="btn ghost" onclick="acctWipe()">删除我的云端记录</button>
+        <button class="btn" onclick="acctSignOut()">退出登录</button>
+      </div>
+      <div class="dlgrow" style="margin-top:10px">
+        <span style="flex:1"></span>
+        <button class="btn" onclick="closeAcct()">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="mask" id="upMask">
   <div class="dlg" style="max-width:560px">
@@ -3090,7 +3142,7 @@ function finish(){
   FILLERS.forEach(w=>{ const m=text.match(new RegExp(w,'g')); if(m) fill[w]=m.length; });
   curRecId = 'r'+Date.now();
   pushRecord({ id:curRecId, at:Date.now(), cardId:cur.id, title:cur.title,
-               domain:cur.domain, act:cur.act, difficulty:cur.difficulty,
+               domain:cur.domain, act:cur.act, relation:cur.relation, difficulty:cur.difficulty,
                secs, chars:text.length, transcript:text, fillers:fill });
 
   setKidMood('reviewing');
@@ -3155,7 +3207,146 @@ try{ RECORDS = JSON.parse(localStorage.getItem(KEY_REC) || '[]'); }catch(e){ REC
 function saveRecords(){ try{ localStorage.setItem(KEY_REC, JSON.stringify(RECORDS)); }catch(e){} }
 const dayKey = d => { const x=new Date(d); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
 
-function pushRecord(r){ RECORDS.push(r); saveRecords(); paintStreak(); }
+function pushRecord(r){ RECORDS.push(r); saveRecords(); paintStreak(); pushOne(r); }
+
+/* ═══════════ 账号与同步 ═══════════
+   只同步元数据：练了哪张卡、几秒、多少字、口癖各几次、五项评分、什么时候练的。
+   转写正文、AI 复盘正文、AI 密钥一律不上传。 */
+const SUPA_URL  = '';   // ← 填 Supabase 项目的 Project URL
+const SUPA_ANON = '';   // ← 填 anon public key（这个 key 本来就是公开的，靠行级安全隔离数据）
+
+let sb = null, me = null;
+
+async function initAuth(){
+  if(!SUPA_URL || !SUPA_ANON) return;          // 没配就当没有登录功能
+  try{
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    sb = createClient(SUPA_URL, SUPA_ANON);
+    $('#acctBtn').style.display = '';
+    const { data } = await sb.auth.getSession();
+    me = data.session ? data.session.user : null;
+    paintAcct();
+    if(me) acctSync();
+    sb.auth.onAuthStateChange((_e, s)=>{ me = s ? s.user : null; paintAcct(); });
+  }catch(e){ console.warn('账号模块没加载上：', e); }
+}
+
+function paintAcct(){
+  const b = $('#acctBtn');
+  if(!sb) return;
+  b.textContent = me ? (me.email || '已登录') : '登录';
+  $('#acctSignedOut').style.display = me ? 'none' : '';
+  $('#acctSignedIn').style.display  = me ? '' : 'none';
+  $('#acctTitle').textContent = me ? '你的账号' : '登录，把记录带到别的设备';
+  if(me) $('#acctWho').textContent = `已登录：${me.email}。记录会自动同步，换设备登录同一个邮箱就能接上。`;
+}
+
+function openAcct(){ $('#acctMask').classList.add('on'); $('#acctMsg').innerHTML=''; $('#acctMsg2').innerHTML=''; }
+function closeAcct(){ $('#acctMask').classList.remove('on'); }
+
+async function acctSendCode(){
+  const email = $('#acctEmail').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    $('#acctMsg').innerHTML = '<span style="color:var(--red)">邮箱格式看着不对。</span>'; return; }
+  $('#acctMsg').innerHTML = '<span class="note">正在发…</span>';
+  const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true } });
+  if(error){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">没发出去：'+error.message+'</span>'; return; }
+  $('#acctCodeWrap').style.display = '';
+  $('#acctSend').textContent = '重新发送';
+  $('#acctVerify').style.display = '';
+  $('#acctMsg').innerHTML = '<span class="note">验证码发到 '+email+' 了，可能在垃圾箱里。</span>';
+  setTimeout(()=>$('#acctCode').focus(), 60);
+}
+
+async function acctVerify(){
+  const email = $('#acctEmail').value.trim(), token = $('#acctCode').value.trim();
+  if(!token){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">把验证码填上。</span>'; return; }
+  $('#acctMsg').innerHTML = '<span class="note">正在验…</span>';
+  const { data, error } = await sb.auth.verifyOtp({ email, token, type:'email' });
+  if(error){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">验证码不对或者过期了：'+error.message+'</span>'; return; }
+  me = data.user; paintAcct();
+  $('#acctMsg2').innerHTML = '<span class="note">正在同步…</span>';
+  await acctSync();
+}
+
+async function acctSignOut(){
+  await sb.auth.signOut(); me = null; paintAcct();
+  $('#acctMsg').innerHTML = '<span class="note">已退出。本地记录还在。</span>';
+}
+
+/* 本地记录 → 上传用的元数据。这里是唯一决定"什么会离开这台电脑"的地方 */
+function toRow(r){
+  const custom = String(r.cardId||'').startsWith('my');
+  return {
+    user_id: me.id,
+    local_id: r.id,
+    card_id: r.cardId || '',
+    card_title: custom ? null : (r.title || null),   // 自己传的题，标题算用户的内容，不上传
+    is_custom: custom,
+    relation: r.relation || null,
+    act: r.act || null,
+    domain: r.domain || null,
+    difficulty: r.difficulty || null,
+    secs: r.secs || 0,
+    chars: r.chars || 0,
+    fillers: r.fillers || {},
+    scores: r.scores || null,
+    has_ai: !!r.ai,
+    practiced_at: new Date(r.at).toISOString()
+  };
+}
+
+async function pushOne(r){
+  if(!sb || !me) return;
+  try{ await sb.from('practices').upsert(toRow(r), { onConflict:'user_id,local_id' }); }
+  catch(e){ console.warn('这条没同步上去：', e); }
+}
+
+/* 双向合并：本地缺的从云端补下来，云端缺的推上去 */
+async function acctSync(){
+  if(!sb || !me) return;
+  const msg = $('#acctMsg2');
+  try{
+    const { data: rows, error } = await sb.from('practices')
+      .select('*').eq('user_id', me.id).order('practiced_at', { ascending:true });
+    if(error) throw error;
+
+    const localIds = new Set(RECORDS.map(r=>r.id));
+    let pulled = 0;
+    rows.forEach(row=>{
+      if(localIds.has(row.local_id)) return;
+      RECORDS.push({
+        id: row.local_id, at: new Date(row.practiced_at).getTime(),
+        cardId: row.card_id, title: row.card_title || '（这条来自别的设备）',
+        domain: row.domain, act: row.act, difficulty: row.difficulty || 'medium',
+        secs: row.secs, chars: row.chars, fillers: row.fillers || {},
+        scores: row.scores || null, ai: row.has_ai, remote: true
+      });
+      pulled++;
+    });
+    if(pulled){ RECORDS.sort((a,b)=>a.at-b.at); saveRecords(); }
+
+    const remoteIds = new Set(rows.map(r=>r.local_id));
+    const toPush = RECORDS.filter(r=>!remoteIds.has(r.id)).map(toRow);
+    if(toPush.length){
+      const { error: e2 } = await sb.from('practices').upsert(toPush, { onConflict:'user_id,local_id' });
+      if(e2) throw e2;
+    }
+    paintStreak();
+    if($('#s-record').classList.contains('on')) renderRecord();
+    msg.innerHTML = `<span class="note">同步完成：拉回 ${pulled} 条，上传 ${toPush.length} 条。</span>`;
+  }catch(e){
+    msg.innerHTML = '<span style="color:var(--red)">同步失败：'+String(e.message||e)+'</span>';
+  }
+}
+
+async function acctWipe(){
+  if(!confirm('把云端的练习记录全部删掉？这台电脑上的本地记录不受影响，但下次同步会把它们又传上去——想彻底清空的话，删完顺手退出登录。')) return;
+  const { error } = await sb.from('practices').delete().eq('user_id', me.id);
+  $('#acctMsg2').innerHTML = error
+    ? '<span style="color:var(--red)">没删掉：'+error.message+'</span>'
+    : '<span class="note">云端记录已清空。</span>';
+}
 
 /* ---- 翻看某一条历史记录：把当时的复盘原样铺回复盘页 ---- */
 function openRecord(id){
@@ -3183,7 +3374,9 @@ function openRecord(id){
   $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。`;
   $('#r-transcript').innerHTML = text
     ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
-    : '<span class="note">这次没有录到内容。</span>';
+    : rec.remote
+      ? '<span class="note">这条是从别的设备同步过来的。转写内容不上传云端，只留在当时那台设备上。</span>'
+      : '<span class="note">这次没有录到内容。</span>';
 
   if(rec.review){
     paintAI(rec.review);
@@ -3203,7 +3396,7 @@ function openRecord(id){
 }
 function updateRecord(id, patch){
   const r = RECORDS.find(x=>x.id===id);
-  if(r){ Object.assign(r, patch); saveRecords(); }
+  if(r){ Object.assign(r, patch); saveRecords(); pushOne(r); }   // 评分是后到的，补传一次
 }
 
 function streakDays(){
@@ -4191,6 +4384,7 @@ try{
 $('#kidFloatBody').addEventListener('click', ()=>setKidMood('poke'));
 $('#kidFloatBody').style.cursor = 'pointer';
 ['pointerdown','keydown'].forEach(t=>document.addEventListener(t, kidWake, {passive:true}));
+initAuth();
 drawCard();
 buildWheel();
 setKidMood('boot');

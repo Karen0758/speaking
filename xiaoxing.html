@@ -283,9 +283,57 @@ h2{font-size:20px;font-weight:500}
   background:var(--k-light);border-radius:var(--rCtl);transition:background .2s}
 .dlg .drop:hover,.dlg .drop.over{background:var(--k-mid)}
 .upSec{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
-.privacyBox{margin-top:16px;padding:14px 16px;background:var(--k-light);border-radius:var(--rCtl);
-  font-size:13px;line-height:1.75;color:var(--inkSoft)}
-.privacyBox b{color:var(--m-ink);font-weight:500}
+.bigInput{width:100%;font:inherit;font-size:16px;padding:14px 16px;border-radius:var(--rCtl);
+  border:1px solid var(--border);background:#fff;color:var(--ink)}
+.bigInput:focus{outline:none;border-color:var(--k-deep);box-shadow:0 0 0 3px rgba(122,106,78,.12)}
+.bigInput::placeholder{color:var(--muted)}
+.linkish{font-size:13px;color:var(--muted);cursor:pointer;border-bottom:1px solid transparent}
+.linkish:hover{color:var(--k-deep);border-bottom-color:var(--k-mid)}
+#acctMask .dlg{padding:34px 32px 30px}
+.acctH{text-align:center;font-size:26px;font-weight:500;letter-spacing:.08em;margin-bottom:22px}
+.acctLogo{display:block;width:150px;height:auto;margin:0 auto 32px}
+.oauthBtn{width:100%;margin-top:28px;display:flex;align-items:center;justify-content:center;gap:11px;
+  background:#fff;border:1px solid var(--border);border-radius:var(--rCtl);padding:13px;
+  font-size:15px;color:var(--ink);transition:border-color .18s,background .18s}
+.oauthBtn:hover{border-color:var(--k-mid);background:var(--k-light)}
+.oauthBtn svg{width:19px;height:19px;flex-shrink:0}
+.modalBtn{width:100%;margin-top:28px;background:var(--k-deep);color:#fff;
+  border:none;border-radius:var(--rCtl);padding:14px;font-size:15px;text-align:center;
+  transition:background .18s}
+.modalBtn:hover{background:var(--k-deepHover)}
+.acctFoot{margin-top:30px;padding-top:22px;border-top:1px solid var(--line);text-align:center}
+.consent{display:flex;align-items:flex-start;justify-content:center;gap:9px;margin-top:24px;
+  font-size:13px;line-height:1.7;color:var(--inkSoft);cursor:pointer}
+.consent input{margin-top:4px;flex-shrink:0;accent-color:var(--k-deep);width:15px;height:15px}
+/* 隐私说明：悬停浮窗，条文式排版 */
+.tipWrap{position:relative;display:inline-block}
+.tip{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);
+  width:340px;max-width:78vw;padding:14px 16px;background:#FFFDFA;border-radius:var(--rCtl);
+  box-shadow:0 10px 30px rgba(42,37,33,.16);z-index:210;
+  font-size:12px;line-height:1.7;color:var(--inkSoft);text-align:left;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s,transform .18s}
+.tipWrap:hover .tip,.tipWrap:focus-within .tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.tip::after{content:"";position:absolute;left:50%;top:100%;margin-left:-6px;
+  border:6px solid transparent;border-top-color:#FFFDFA}
+.tip b{display:block;font-size:12px;font-weight:500;color:var(--m-ink);
+  letter-spacing:.08em;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.tip p + p{margin-top:7px}
+.tip i{display:block;font-style:normal;color:var(--m-ink);font-size:12px}
+/* 头像 */
+.avaGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ava{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:var(--k-light);transition:box-shadow .18s,transform .18s}
+.ava:hover{transform:translateY(-2px)}
+.ava.on{box-shadow:0 0 0 2px var(--k-deep)}
+.ava svg{width:66%;height:66%;display:block}
+.avaMini{width:44px;height:44px;border-radius:50%;background:var(--k-light);
+  display:grid;place-items:center;flex-shrink:0}
+.avaMini svg{width:66%;height:66%;display:block}
+.acctChip{display:flex;align-items:center;gap:0;padding:0;background:none;border:none}
+.acctChip .avaMini{width:32px;height:32px}
+.wheelAcct{position:absolute;right:26px;top:22px;z-index:4;
+  opacity:0;animation:inviteIn 1.4s ease-out .3s forwards}
+@media(max-width:900px){.wheelAcct{right:14px;top:14px}}
 /* 历史记录：整行可点，进去看当时那份复盘 */
 .recrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding:11px 8px 11px 2px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -293,6 +341,9 @@ h2{font-size:20px;font-weight:500}
 .recrow:hover{background:var(--k-light)}
 .recrow:last-child{border-bottom:none}
 .dlg{max-height:88vh;overflow-y:auto}
+/* 账号弹窗不滚动，否则隐私说明的浮窗会被 overflow 裁掉半截 */
+#acctMask .dlg{overflow:visible;max-height:none}
+#acctMask{overflow-y:auto}
 
 /* momo：常驻右下角的悬浮小人，可关掉 */
 .kidFloat{position:fixed;right:22px;bottom:20px;z-index:120;width:186px;
@@ -364,6 +415,7 @@ h2{font-size:20px;font-weight:500}
 <section id="s-wheel" class="screen on">
   <div class="wheelPage">
     <img class="wheelLogo" src="assets/logo-h.png" alt="momo">
+    <button class="btn ghost wheelAcct" id="wheelAcctBtn" onclick="openAcct()" style="display:none">登录</button>
     <div class="wheelInvite">
       <h1>今天，你想和谁聊一聊？</h1>
       <p>momo 会陪你练习每一次重要的表达。</p>
@@ -573,37 +625,47 @@ h2{font-size:20px;font-weight:500}
 <button class="kidReopen" id="kidReopen">叫 momo 回来</button>
 
 <div class="mask" id="acctMask">
-  <div class="dlg" style="max-width:480px">
-    <h3 id="acctTitle">登录，把记录带到别的设备</h3>
+  <div class="dlg" style="max-width:384px">
+    <h3 id="acctTitle" class="acctH">登录</h3>
+    <img class="acctLogo" src="assets/logo-v.png" alt="momo">
 
     <div id="acctSignedOut">
-      <p class="note">不登录也能一直用，记录就存在这个浏览器里。登录之后换设备、清缓存都不会丢，连续天数也接得上。</p>
+      <label class="consent">
+        <input type="checkbox" id="acctAgree">
+        <span>我已阅读并同意<span class="tipWrap"><span class="linkish" tabindex="0">《隐私说明》</span><span class="tip" role="tooltip">
+          <b>隐私说明</b>
+          <p><i>一、收集范围</i>登录后，本产品记录你的练习行为数据，包括题目编号、练习时长、字数、用词统计及评分结果，用于同步练习进度与统计连续练习天数。</p>
+          <p><i>二、不收集的内容</i>语音转写正文、AI 复盘正文及你自行填写的 AI 密钥，仅保存于本机浏览器，不会上传至服务器。</p>
+          <p><i>三、使用方式</i>上述数据仅用于向你提供跨设备同步服务，并以匿名形式用于产品改进统计，不会出售或提供给第三方用于营销。</p>
+          <p><i>四、你的权利</i>你可随时在账号页删除全部云端记录，或退出登录以停止同步。</p>
+        </span></span></span>
+      </label>
 
-      <div class="privacyBox">
-        <div class="lbl" style="margin-bottom:8px">登录后会上传什么</div>
-        <p><b>会上传：</b>你练了哪张卡、讲了几秒、多少字、各个口癖词出现几次、五项评分、练习时间。</p>
-        <p style="margin-top:6px"><b>不会上传：</b>你说话的转写内容、AI 复盘的正文、你填的 AI 密钥。这三样只留在你自己的浏览器里，服务器上没有。</p>
-        <p style="margin-top:6px" class="note">自己上传的题目只记 id，不记标题。任何时候都可以在这里一键删掉全部云端记录。</p>
-      </div>
+      <button class="oauthBtn" id="acctGoogle" onclick="acctGoogle()">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5-4.4 6.6v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.3z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.3l-7.1-5.5c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.6-3.9-12.4-9.1H4.3v5.7C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 28.2c-.5-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.7H4.3C2.8 17 2 20.4 2 24s.8 7 2.3 9.9l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 6.9 4.3 14.1l7.3 5.7c1.8-5.2 6.6-9.1 12.4-9.1z"/></svg>
+        <span>用 Google 账号登录</span>
+      </button>
+      <div class="dlgmsg" id="acctMsg" style="text-align:center"></div>
 
-      <div class="fld">
-        <label>邮箱</label>
-        <input id="acctEmail" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false">
-      </div>
-      <div class="fld" id="acctCodeWrap" style="display:none">
-        <label>邮箱里收到的 6 位验证码</label>
-        <input id="acctCode" inputmode="numeric" placeholder="000000" autocomplete="one-time-code">
-      </div>
-      <div class="dlgmsg" id="acctMsg"></div>
-      <div class="dlgrow">
-        <button class="btn pri" id="acctSend" onclick="acctSendCode()">发送验证码</button>
-        <button class="btn" id="acctVerify" onclick="acctVerify()" style="display:none">登录</button>
-        <span style="flex:1"></span>
-        <button class="btn" onclick="closeAcct()">关闭</button>
+      <div class="acctFoot">
+        <span class="linkish" onclick="closeAcct()">先不登录，直接使用</span>
       </div>
     </div>
 
+    <div id="acctPick" style="display:none">
+      <p class="note" style="margin-bottom:24px;text-align:center">选一个头像，之后可以随时换。</p>
+      <div class="avaGrid" id="avaGrid"></div>
+      <button class="modalBtn" onclick="acctDonePick()">就它了</button>
+    </div>
+
     <div id="acctSignedIn" style="display:none">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+        <span id="acctAva"></span>
+        <div style="min-width:0">
+          <div id="acctEmailShow" style="font-size:15px"></div>
+          <span class="linkish" onclick="acctRepick()">换个头像</span>
+        </div>
+      </div>
       <p class="note" id="acctWho"></p>
       <div class="dlgmsg" id="acctMsg2"></div>
       <div class="dlgrow">
@@ -3212,10 +3274,49 @@ function pushRecord(r){ RECORDS.push(r); saveRecords(); paintStreak(); pushOne(r
 /* ═══════════ 账号与同步 ═══════════
    只同步元数据：练了哪张卡、几秒、多少字、口癖各几次、五项评分、什么时候练的。
    转写正文、AI 复盘正文、AI 密钥一律不上传。 */
-const SUPA_URL  = '';   // ← 填 Supabase 项目的 Project URL
-const SUPA_ANON = '';   // ← 填 anon public key（这个 key 本来就是公开的，靠行级安全隔离数据）
+const SUPA_URL  = 'https://bhunwtfliutdphxqxftv.supabase.co';
+const SUPA_ANON = 'sb_publishable_QtG-Q-oz1jr-Mi8pTd9KSQ_OyXynT7m';
+/* 这个 key 是 publishable 的，本来就设计成公开、可以进版本库。
+   数据隔离完全靠 practices 表上那条行级安全策略，别把它关掉。 */
 
 let sb = null, me = null;
+
+/* ---- 默认头像：六个手绘感的小图形，用站内配色，不额外加载图片 ---- */
+const AVATARS = {
+  cloud:{bg:'#FBEAD2', d:'<path d="M22 40c-6 0-10-4-10-9s4-9 9-9c1-7 7-12 14-12s13 5 14 12h1c6 0 11 4 11 9s-5 9-11 9z" fill="#F5C97A"/><circle cx="30" cy="34" r="2" fill="#463F37"/><circle cx="42" cy="34" r="2" fill="#463F37"/>'},
+  star:{ bg:'#DCEDF5', d:'<path d="M36 10l8 17 18 2-13 13 4 18-17-9-17 9 4-18-13-13 18-2z" fill="#6EC8E6"/><circle cx="31" cy="32" r="2" fill="#463F37"/><circle cx="41" cy="32" r="2" fill="#463F37"/>'},
+  moon:{ bg:'#F3EBDA', d:'<path d="M44 12a24 24 0 100 48 19 19 0 010-48z" fill="#E8C56A"/><circle cx="34" cy="32" r="2" fill="#463F37"/><circle cx="44" cy="32" r="2" fill="#463F37"/>'},
+  leaf:{ bg:'#E4EBDD', d:'<path d="M20 52C14 34 26 16 52 14c2 26-14 40-32 38z" fill="#9DBB86"/><path d="M22 50C30 40 38 30 48 22" stroke="#6E8A5A" stroke-width="2.5" fill="none" stroke-linecap="round"/>'},
+  pebble:{bg:'#EDE6DA', d:'<path d="M36 14c14 0 22 9 22 20s-9 20-22 20-22-8-22-20 8-20 22-20z" fill="#C9BCA2"/><circle cx="30" cy="33" r="2" fill="#463F37"/><circle cx="42" cy="33" r="2" fill="#463F37"/><path d="M32 42c2.5 2 5.5 2 8 0" stroke="#463F37" stroke-width="2" fill="none" stroke-linecap="round"/>'},
+  bloom:{bg:'#F8E3E0', d:'<circle cx="36" cy="20" r="9" fill="#EDA898"/><circle cx="52" cy="32" r="9" fill="#EDA898"/><circle cx="46" cy="50" r="9" fill="#EDA898"/><circle cx="26" cy="50" r="9" fill="#EDA898"/><circle cx="20" cy="32" r="9" fill="#EDA898"/><circle cx="36" cy="36" r="8" fill="#F5C97A"/>'}
+};
+const AVA_KEYS = Object.keys(AVATARS);
+const avatarSVG = k => {
+  const a = AVATARS[k] || AVATARS.cloud;
+  return `<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">${a.d}</svg>`;
+};
+const avaBg = k => (AVATARS[k] || AVATARS.cloud).bg;
+
+const KEY_AVA = 'momo:avatar';
+let myAva = localStorage.getItem(KEY_AVA) || 'cloud';
+
+function paintAvaGrid(){
+  $('#avaGrid').innerHTML = AVA_KEYS.map(k=>
+    `<div class="ava${k===myAva?' on':''}" data-k="${k}" style="background:${avaBg(k)}">${avatarSVG(k)}</div>`).join('');
+  $('#avaGrid').querySelectorAll('.ava').forEach(el=>{
+    el.onclick = () => { myAva = el.dataset.k; paintAvaGrid(); };
+  });
+}
+function acctRepick(){
+  $('#acctSignedIn').style.display='none'; $('#acctPick').style.display='';
+  paintAvaGrid();
+}
+async function acctDonePick(){
+  localStorage.setItem(KEY_AVA, myAva);
+  if(sb && me){ try{ await sb.auth.updateUser({ data:{ avatar: myAva } }); }catch(e){} }
+  $('#acctPick').style.display='none';
+  paintAcct();
+}
 
 async function initAuth(){
   if(!SUPA_URL || !SUPA_ANON) return;          // 没配就当没有登录功能
@@ -3225,48 +3326,65 @@ async function initAuth(){
     $('#acctBtn').style.display = '';
     const { data } = await sb.auth.getSession();
     me = data.session ? data.session.user : null;
+    if(me && me.user_metadata && me.user_metadata.avatar){
+      myAva = me.user_metadata.avatar; localStorage.setItem(KEY_AVA, myAva);
+    }
     paintAcct();
     if(me) acctSync();
-    sb.auth.onAuthStateChange((_e, s)=>{ me = s ? s.user : null; paintAcct(); });
+    sb.auth.onAuthStateChange((_e, sess)=>{
+      const wasOut = !me;
+      me = sess ? sess.user : null;
+      if(me){
+        const av = me.user_metadata && me.user_metadata.avatar;
+        if(av){ myAva = av; localStorage.setItem(KEY_AVA, myAva); paintAcct(); }
+        else if(wasOut){ $('#acctPick').style.display = ''; paintAvaGrid(); paintAcct(); openAcct(); }
+        else paintAcct();
+        if(wasOut) acctSync();
+      }else paintAcct();
+    });
   }catch(e){ console.warn('账号模块没加载上：', e); }
 }
 
 function paintAcct(){
-  const b = $('#acctBtn');
   if(!sb) return;
-  b.textContent = me ? (me.email || '已登录') : '登录';
-  $('#acctSignedOut').style.display = me ? 'none' : '';
-  $('#acctSignedIn').style.display  = me ? '' : 'none';
-  $('#acctTitle').textContent = me ? '你的账号' : '登录，把记录带到别的设备';
-  if(me) $('#acctWho').textContent = `已登录：${me.email}。记录会自动同步，换设备登录同一个邮箱就能接上。`;
+  const picking = $('#acctPick').style.display !== 'none';
+  $('#acctSignedOut').style.display = me ? 'none' : (picking ? 'none' : '');
+  $('#acctSignedIn').style.display  = (me && !picking) ? '' : 'none';
+  $('#acctTitle').textContent = picking ? '选个头像' : me ? '账号' : '登录';
+
+  /* 顶部导航和转盘首页两个入口：登录后都变成头像 */
+  const chip = me
+    ? `<span class="avaMini" style="background:${avaBg(myAva)}">${avatarSVG(myAva)}</span>`
+    : '登录';
+  ['#acctBtn','#wheelAcctBtn'].forEach(sel=>{
+    const el = $(sel); if(!el) return;
+    el.innerHTML = chip;
+    el.classList.toggle('acctChip', !!me);
+    el.title = me ? (me.email || '账号') : '登录';
+    el.style.display = '';
+  });
+
+  if(me){
+    $('#acctAva').innerHTML = `<span class="avaMini" style="background:${avaBg(myAva)}">${avatarSVG(myAva)}</span>`;
+    $('#acctEmailShow').textContent = me.email || '';
+    $('#acctWho').textContent = '记录会自动同步。换设备登录同一个邮箱就能接上。';
+  }
 }
 
 function openAcct(){ $('#acctMask').classList.add('on'); $('#acctMsg').innerHTML=''; $('#acctMsg2').innerHTML=''; }
 function closeAcct(){ $('#acctMask').classList.remove('on'); }
 
-async function acctSendCode(){
-  const email = $('#acctEmail').value.trim();
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-    $('#acctMsg').innerHTML = '<span style="color:var(--red)">邮箱格式看着不对。</span>'; return; }
-  $('#acctMsg').innerHTML = '<span class="note">正在发…</span>';
-  const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true } });
-  if(error){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">没发出去：'+error.message+'</span>'; return; }
-  $('#acctCodeWrap').style.display = '';
-  $('#acctSend').textContent = '重新发送';
-  $('#acctVerify').style.display = '';
-  $('#acctMsg').innerHTML = '<span class="note">验证码发到 '+email+' 了，可能在垃圾箱里。</span>';
-  setTimeout(()=>$('#acctCode').focus(), 60);
-}
-
-async function acctVerify(){
-  const email = $('#acctEmail').value.trim(), token = $('#acctCode').value.trim();
-  if(!token){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">把验证码填上。</span>'; return; }
-  $('#acctMsg').innerHTML = '<span class="note">正在验…</span>';
-  const { data, error } = await sb.auth.verifyOtp({ email, token, type:'email' });
-  if(error){ $('#acctMsg').innerHTML = '<span style="color:var(--red)">验证码不对或者过期了：'+error.message+'</span>'; return; }
-  me = data.user; paintAcct();
-  $('#acctMsg2').innerHTML = '<span class="note">正在同步…</span>';
-  await acctSync();
+async function acctGoogle(){
+  if(!$('#acctAgree').checked){
+    $('#acctMsg').innerHTML = '<span style="color:var(--red)">请先勾选同意《隐私说明》。</span>'; return; }
+  if(location.protocol === 'file:'){
+    $('#acctMsg').innerHTML = '<span style="color:var(--red)">本地用 file:// 打开时没法跳转授权，部署之后才能登录。</span>'; return; }
+  $('#acctMsg').innerHTML = '<span class="note">正在跳转到 Google…</span>';
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.origin + location.pathname }
+  });
+  if(error) $('#acctMsg').innerHTML = '<span style="color:var(--red)">跳不过去：'+error.message+'</span>';
 }
 
 async function acctSignOut(){

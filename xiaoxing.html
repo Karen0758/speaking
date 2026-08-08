@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-font="wenkai">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-light.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans-sc@5.3.0/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-serif-sc@5.3.0/index.css">
 <style>
 :root{
   --bg:#F7F4EE; --pg:#F7F4EE; --surface:#FFFFFF; --ink:#2A2521; --inkSoft:#5C5349; --muted:#837868;
@@ -25,6 +27,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font:16px/1.75 'LXGW WenKai','Xiaolai SC','PingFang SC','Noto Sans SC',system-ui,sans-serif;
      color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+html[data-font="sans"] body{font-family:'Noto Sans SC Variable','Source Han Sans SC','PingFang SC',system-ui,sans-serif}
+html[data-font="serif"] body{font-family:'Noto Serif SC Variable','Source Han Serif SC','Songti SC','STSong',serif}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
 nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
 .brand{display:flex;align-items:center;gap:9px;font-weight:500;font-size:15px;cursor:pointer}
@@ -289,9 +293,27 @@ h2{font-size:20px;font-weight:500}
 .bigInput::placeholder{color:var(--muted)}
 .linkish{font-size:13px;color:var(--muted);cursor:pointer;border-bottom:1px solid transparent}
 .linkish:hover{color:var(--k-deep);border-bottom-color:var(--k-mid)}
-#acctMask .dlg{padding:34px 32px 30px}
-.acctH{text-align:center;font-size:26px;font-weight:500;letter-spacing:.08em;margin-bottom:22px}
-.acctLogo{display:block;width:150px;height:auto;margin:0 auto 32px}
+#acctMask .dlg{position:relative;padding:28px 34px 30px}
+.acctH{text-align:center;font-size:24px;font-weight:500;letter-spacing:.08em;margin-bottom:12px}
+.acctLogo{display:block;width:96px;height:auto;margin:0 auto 22px}
+.acctClose{position:absolute;top:18px;right:18px;width:34px;height:34px;display:grid;place-items:center;
+  border-radius:50%;background:transparent;color:var(--muted);font-size:20px;line-height:1}
+.acctClose:hover{background:var(--k-light);color:var(--ink)}
+.fontPicker{margin:0}
+.fontPickerLabel{display:block;margin-bottom:7px;text-align:center;font-size:11px;
+  letter-spacing:.08em;color:var(--muted)}
+.fontChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:4px;
+  background:var(--k-light);border-radius:var(--rCtl)}
+.fontChoice{min-width:0;padding:8px 6px;border-radius:8px;background:transparent;
+  color:var(--muted);font-size:12px;white-space:nowrap}
+.fontChoice[data-font="wenkai"]{font-family:'LXGW WenKai','Xiaolai SC',sans-serif}
+.fontChoice[data-font="sans"]{font-family:'Noto Sans SC Variable','Source Han Sans SC',sans-serif}
+.fontChoice[data-font="serif"]{font-family:'Noto Serif SC Variable','Source Han Serif SC',serif}
+.fontChoice:hover{color:var(--ink)}
+html[data-font="wenkai"] .fontChoice[data-font="wenkai"],
+html[data-font="sans"] .fontChoice[data-font="sans"],
+html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface);color:var(--ink);
+  box-shadow:0 1px 4px rgba(42,37,33,.08)}
 .oauthBtn{width:100%;margin-top:28px;display:flex;align-items:center;justify-content:center;gap:11px;
   background:#fff;border:1px solid var(--border);border-radius:var(--rCtl);padding:13px;
   font-size:15px;color:var(--ink);transition:border-color .18s,background .18s}
@@ -302,6 +324,43 @@ h2{font-size:20px;font-weight:500}
   transition:background .18s}
 .modalBtn:hover{background:var(--k-deepHover)}
 .acctFoot{margin-top:30px;padding-top:22px;border-top:1px solid var(--line);text-align:center}
+.acctProfile{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;
+  background:var(--k-light);border-radius:var(--rCtl)}
+.acctProfile .avaMini{width:52px;height:52px}
+.acctIdentity{min-width:0;text-align:left}
+.acctEmail{font-size:15px;line-height:1.45;overflow-wrap:anywhere;margin-bottom:2px}
+.acctProfileLinks{display:flex;align-items:center;gap:12px}
+.acctPersonal{position:relative}
+.acctPersonal summary{list-style:none;font-size:13px;color:var(--muted);cursor:pointer;
+  border-bottom:1px solid transparent}
+.acctPersonal summary::-webkit-details-marker{display:none}
+.acctPersonal summary:hover,.acctPersonal[open] summary{color:var(--k-deep);border-bottom-color:var(--k-mid)}
+.acctPersonalPopover{position:absolute;left:-72px;top:calc(100% + 10px);z-index:220;width:300px;
+  padding:16px;background:#FFFDFA;border:1px solid var(--border);border-radius:var(--rCard);
+  box-shadow:0 12px 32px rgba(42,37,33,.14)}
+.acctPersonalPopover::before{content:"";position:absolute;left:92px;bottom:100%;
+  border:7px solid transparent;border-bottom-color:var(--border)}
+.acctPersonalPopover::after{content:"";position:absolute;left:93px;bottom:100%;
+  border:6px solid transparent;border-bottom-color:#FFFDFA}
+.acctApiBtn{width:100%;margin-top:12px;padding:10px;border-top:1px solid var(--line);
+  background:transparent;color:var(--inkSoft);font-size:13px;text-align:center}
+.acctApiBtn:hover{color:var(--k-deep);background:var(--k-light);border-radius:8px}
+.acctNote{margin-top:16px;font-size:13px;line-height:1.7;color:var(--inkSoft)}
+.acctActions{display:grid;gap:8px;margin-top:22px}
+.acctActions button{width:100%;min-height:46px;border-radius:var(--rCtl);font-size:15px}
+.acctSync{background:var(--k-deep);border:1px solid var(--k-deep);color:#fff;white-space:nowrap}
+.acctSync:hover{background:var(--k-deepHover);border-color:var(--k-deepHover)}
+.acctSignOut{background:transparent;border:1px solid var(--border);color:var(--inkSoft)}
+.acctSignOut:hover{border-color:var(--k-mid);background:var(--k-light)}
+.acctDanger{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:center}
+.acctWipe{padding:6px 10px;background:transparent;color:var(--muted);font-size:12px;white-space:nowrap}
+.acctWipe:hover{color:var(--red)}
+@media(max-width:560px){
+  #acctMask .dlg{margin:18px 14px;padding:26px 22px 24px}
+  .acctClose{top:14px;right:14px}
+  .acctPersonalPopover{left:-112px;width:min(280px,calc(100vw - 56px))}
+  .acctPersonalPopover::before{left:132px}.acctPersonalPopover::after{left:133px}
+}
 .consent{display:flex;align-items:flex-start;justify-content:center;gap:9px;margin-top:24px;
   font-size:13px;line-height:1.7;color:var(--inkSoft);cursor:pointer}
 .consent input{margin-top:4px;flex-shrink:0;accent-color:var(--k-deep);width:15px;height:15px}
@@ -625,7 +684,8 @@ h2{font-size:20px;font-weight:500}
 <button class="kidReopen" id="kidReopen">叫 momo 回来</button>
 
 <div class="mask" id="acctMask">
-  <div class="dlg" style="max-width:384px">
+  <div class="dlg" style="max-width:520px">
+    <button class="acctClose" onclick="closeAcct()" aria-label="关闭账号弹窗" title="关闭"><i class="ti ti-x"></i></button>
     <h3 id="acctTitle" class="acctH">登录</h3>
     <img class="acctLogo" src="assets/logo-v.png" alt="momo">
 
@@ -659,24 +719,37 @@ h2{font-size:20px;font-weight:500}
     </div>
 
     <div id="acctSignedIn" style="display:none">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+      <div class="acctProfile">
         <span id="acctAva"></span>
-        <div style="min-width:0">
-          <div id="acctEmailShow" style="font-size:15px"></div>
-          <span class="linkish" onclick="acctRepick()">换个头像</span>
+        <div class="acctIdentity">
+          <div class="acctEmail" id="acctEmailShow"></div>
+          <div class="acctProfileLinks">
+            <span class="linkish" onclick="acctRepick()">换个头像</span>
+            <details class="acctPersonal">
+              <summary>个性化设置</summary>
+              <div class="acctPersonalPopover">
+                <div class="fontPicker" aria-label="网页字体">
+                  <span class="fontPickerLabel">网页字体</span>
+                  <div class="fontChoices">
+                    <button class="fontChoice" data-font="wenkai" onclick="setFont('wenkai')">霞鹜文楷</button>
+                    <button class="fontChoice" data-font="sans" onclick="setFont('sans')">思源黑体</button>
+                    <button class="fontChoice" data-font="serif" onclick="setFont('serif')">思源宋体</button>
+                  </div>
+                </div>
+                <button class="acctApiBtn" onclick="openAIFromAccount()">AI API 设置</button>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
-      <p class="note" id="acctWho"></p>
+      <p class="acctNote" id="acctWho"></p>
       <div class="dlgmsg" id="acctMsg2"></div>
-      <div class="dlgrow">
-        <button class="btn" onclick="acctSync()">立即同步</button>
-        <span style="flex:1"></span>
-        <button class="btn ghost" onclick="acctWipe()">删除我的云端记录</button>
-        <button class="btn" onclick="acctSignOut()">退出登录</button>
+      <div class="acctActions">
+        <button class="acctSync" onclick="acctSync()">立即同步</button>
+        <button class="acctSignOut" onclick="acctSignOut()">退出登录</button>
       </div>
-      <div class="dlgrow" style="margin-top:10px">
-        <span style="flex:1"></span>
-        <button class="btn" onclick="closeAcct()">关闭</button>
+      <div class="acctDanger">
+        <button class="acctWipe" onclick="acctWipe()">删除我的云端记录</button>
       </div>
     </div>
   </div>
@@ -2882,6 +2955,14 @@ window.mountKid = function(host, size){
 const $ = s => document.querySelector(s);
 const FILLERS = ["然后","就是","呃","嗯","那个","这个","其实","可能","大概","对吧","啊"];
 const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
+const KEY_FONT = 'momo:font';
+
+function setFont(font){
+  if(!['wenkai','sans','serif'].includes(font)) font = 'wenkai';
+  document.documentElement.dataset.font = font;
+  try{ localStorage.setItem(KEY_FONT, font); }catch(e){}
+}
+try{ setFont(localStorage.getItem(KEY_FONT) || 'wenkai'); }catch(e){ setFont('wenkai'); }
 
 let kid1, kid2, cur = null, diffFilter = "all";
 
@@ -3572,6 +3653,7 @@ function setupAI(){
   setTimeout(()=>$('#aiKey').focus(), 60);
 }
 function closeAI(){ $('#aiMask').classList.remove('on'); }
+function openAIFromAccount(){ closeAcct(); setupAI(); }
 
 function readForm(){
   return { url:$('#aiUrl').value.trim(), key:$('#aiKey').value.trim(),

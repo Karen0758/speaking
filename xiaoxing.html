@@ -399,6 +399,27 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
   margin:0 -8px 0 -2px;border-radius:var(--rCtl);transition:background .15s}
 .recrow:hover{background:var(--k-light)}
 .recrow:last-child{border-bottom:none}
+.recordInsights{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.85fr);gap:1px;
+  margin-bottom:16px;background:var(--line);border-radius:var(--rCard);overflow:hidden}
+.recordInsights > .card{border-radius:0;min-width:0}
+.calendarHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.calendarTitle{font-size:14px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.calendarNav{display:flex;gap:4px}
+.calendarNav button{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
+  background:transparent;color:var(--muted);font-size:16px}
+.calendarNav button:hover{background:var(--k-light);color:var(--ink)}
+.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.calendarWeek{padding-bottom:3px;text-align:center;font-size:10px;color:var(--muted)}
+.calendarDay{aspect-ratio:1;min-height:31px;display:grid;place-items:center;border-radius:9px;
+  font-size:12px;color:var(--inkSoft);font-variant-numeric:tabular-nums;position:relative}
+.calendarDay.empty{visibility:hidden}
+.calendarDay.today{box-shadow:inset 0 0 0 1px var(--k-mid)}
+.calendarDay.practiced{background:var(--k-mid);color:var(--m-ink);font-weight:500}
+.calendarDay.practiced.level2{background:#C8BA9F}
+.calendarDay.practiced.level3{background:var(--k-deep);color:#fff}
+.calendarDay.practiced::after{content:"";position:absolute;bottom:4px;width:3px;height:3px;
+  border-radius:50%;background:currentColor;opacity:.7}
+@media(max-width:760px){.recordInsights{grid-template-columns:1fr}.calendarDay{min-height:34px}}
 .dlg{max-height:88vh;overflow-y:auto}
 /* 账号弹窗不滚动，否则隐私说明的浮窗会被 overflow 裁掉半截 */
 #acctMask .dlg{overflow:visible;max-height:none}
@@ -435,7 +456,6 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
     <button class="btn ghost" onclick="go('bank')">我的题库</button>
     <button class="btn ghost" onclick="go('record')">记录</button>
     <button class="btn ghost" id="acctBtn" onclick="openAcct()" style="display:none">登录</button>
-    <button class="btn" id="aiBtn" onclick="setupAI()">接上 AI</button>
   </div>
 </nav>
 
@@ -661,11 +681,26 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
     <div class="sc"><div class="k">累计练习</div><div class="n" id="m-cnt">0</div></div>
     <div class="sc"><div class="k">总字数</div><div class="n" id="m-chars">0</div></div>
   </div>
-  <div class="sheet" style="margin-bottom:40px">
+  <div class="recordInsights">
     <div class="card">
       <div class="lbl" style="margin-bottom:14px">口癖词频次<span class="note" style="margin-left:8px">每分钟，真实统计</span></div>
       <div id="m-trend"></div>
     </div>
+    <div class="card">
+      <div class="calendarHead">
+        <div>
+          <div class="lbl">练习日历</div>
+          <div class="calendarTitle" id="practiceCalendarTitle"></div>
+        </div>
+        <div class="calendarNav">
+          <button onclick="movePracticeMonth(-1)" aria-label="上个月" title="上个月"><i class="ti ti-chevron-left"></i></button>
+          <button onclick="movePracticeMonth(1)" aria-label="下个月" title="下个月"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="calendarGrid" id="practiceCalendar"></div>
+    </div>
+  </div>
+  <div class="sheet" style="margin-bottom:40px">
     <div class="card">
       <div class="lbl" style="margin-bottom:12px">练过的题</div>
       <div id="rechist"></div>
@@ -3666,8 +3701,7 @@ function saveAI(){
   sessionStorage.removeItem('ai_cfg'); localStorage.removeItem('ai_cfg');
   (c.persist ? localStorage : sessionStorage).setItem('ai_cfg',
     JSON.stringify({url:c.url,key:c.key,model:c.model}));
-  paintAIBtn();
-paintStreak(); closeAI();
+  paintStreak(); closeAI();
 }
 async function testAI(){
   const c = readForm();
@@ -3683,12 +3717,6 @@ async function testAI(){
   }catch(e){
     $('#aiMsg').innerHTML = '<span style="color:var(--red)">没通：'+String(e.message||e)+'</span>';
   }
-}
-function paintAIBtn(){
-  const b=$('#aiBtn');
-  if(AI.key){ b.textContent='用我的密钥'; b.classList.add('pri'); }
-  else if(HAS_PROXY){ b.textContent='AI 设置'; b.classList.remove('pri'); }
-  else { b.textContent='接上 AI'; b.classList.remove('pri'); }
 }
 /* 弹窗只能靠里面的按钮关掉：点框外和按 Esc 都太容易误触，填了一半的东西没了 */
 
@@ -4488,12 +4516,40 @@ let wMoved = false;
 })();
 
 /* ---- 记录页：全部来自本地记录 ---- */
+let practiceMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+function movePracticeMonth(step){
+  practiceMonth = new Date(practiceMonth.getFullYear(), practiceMonth.getMonth()+step, 1);
+  renderPracticeCalendar();
+}
+function renderPracticeCalendar(){
+  const counts = {};
+  RECORDS.forEach(r=>counts[dayKey(r.at)]=(counts[dayKey(r.at)]||0)+1);
+  const year = practiceMonth.getFullYear(), month = practiceMonth.getMonth();
+  const days = new Date(year, month+1, 0).getDate();
+  const offset = (new Date(year, month, 1).getDay()+6)%7;
+  const today = dayKey(Date.now());
+  $('#practiceCalendarTitle').textContent = `${year} 年 ${month+1} 月`;
+  const cells = ['一','二','三','四','五','六','日'].map(w=>`<div class="calendarWeek">${w}</div>`);
+  for(let i=0;i<42;i++){
+    const date = i-offset+1;
+    if(date<1 || date>days){ cells.push('<div class="calendarDay empty"></div>'); continue; }
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
+    const count = counts[key] || 0;
+    const level = count>=3 ? ' level3' : count===2 ? ' level2' : '';
+    const classes = `calendarDay${count?' practiced'+level:''}${key===today?' today':''}`;
+    const label = count ? `${month+1}月${date}日，练习 ${count} 次` : `${month+1}月${date}日，没有练习`;
+    cells.push(`<div class="${classes}" title="${label}" aria-label="${label}">${date}</div>`);
+  }
+  $('#practiceCalendar').innerHTML = cells.join('');
+}
+
 function renderRecord(){
   const n = RECORDS.length;
   $('#m-streak').textContent = streakDays();
   $('#m-min').textContent = Math.round(weekSeconds()/60);
   $('#m-cnt').textContent = n;
   $('#m-chars').textContent = RECORDS.reduce((a,r)=>a+(r.chars||0),0);
+  renderPracticeCalendar();
 
   // 口癖趋势：取出现最多的那个词，画每分钟频次
   const tot = {};
@@ -4589,7 +4645,6 @@ drawCard();
 buildWheel();
 setKidMood('boot');
 kidWake();
-paintAIBtn();
 </script>
 </body>
 </html>

@@ -25,3 +25,13 @@ test('account dialog offers and persists all three font choices', () => {
   assert.match(html, /document\.documentElement\.dataset\.font = font/);
   assert.match(html, /localStorage\.setItem\(KEY_FONT, font\)/);
 });
+
+test('record page has a navigable monthly practice calendar', () => {
+  assert.doesNotMatch(html, /id="aiBtn"/);
+  assert.match(html, /class="recordInsights"[\s\S]*id="m-trend"[\s\S]*id="practiceCalendar"/);
+  assert.match(html, /onclick="movePracticeMonth\(-1\)"/);
+  assert.match(html, /onclick="movePracticeMonth\(1\)"/);
+  assert.match(html, /function renderPracticeCalendar\(\)/);
+  assert.match(html, /RECORDS\.forEach\(r=>counts\[dayKey\(r\.at\)\]/);
+  assert.match(html, /renderPracticeCalendar\(\);/);
+});

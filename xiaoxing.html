@@ -458,6 +458,11 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 /* Prevent the source-language markup from flashing before the saved language is applied. */
 body{visibility:hidden}
 </style>
+<!-- Vercel Web Analytics: page views plus the custom events wired below. -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -3118,6 +3123,7 @@ function renderContestModal(){
   set('contestLink','了解比赛'); set('contestStory','作品背后的故事'); set('contestLater','先看看项目');
   const visual = $('#contestVisual'); if(visual) visual.alt = language === 'en' ? 'Xiaoyoukewei 2026 AI for Good Innovation Challenge' : '小有可为 2026 AI 向善创新挑战赛';
 }
+function trackMomoEvent(name, data){ try{ if(typeof window.va === 'function') window.va('event', {name, data}); }catch(e){} }
 function closeContest(){ $('#contestMask')?.classList.remove('on'); }
 function openContest(){ renderContestModal(); $('#contestMask')?.classList.add('on'); }
 function maybeShowContest(){ openContest(); }
@@ -4837,8 +4843,8 @@ kidWake();
 renderContestModal();
 $('#contestClose').onclick = closeContest;
 $('#contestLater').onclick = closeContest;
-$('#contestLink').onclick = closeContest;
-$('#contestStory').onclick = closeContest;
+$('#contestLink').onclick = () => { trackMomoEvent('competition_link_click', {destination:'xiaoyoukewei', language}); closeContest(); };
+$('#contestStory').onclick = () => { trackMomoEvent('project_story_click', {destination:'bilibili', language}); closeContest(); };
 setTimeout(maybeShowContest, 700);
 </script>
 </body>

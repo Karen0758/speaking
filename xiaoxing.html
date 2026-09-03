@@ -355,13 +355,15 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 .acctDanger{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:center}
 .acctWipe{padding:6px 10px;background:transparent;color:var(--muted);font-size:12px;white-space:nowrap}
 .acctWipe:hover{color:var(--red)}
-.contestDlg{max-width:520px;text-align:center;padding:34px 34px 30px;position:relative}
+.contestDlg{width:min(760px,calc(100vw - 36px));max-width:760px;text-align:center;padding:42px 42px 36px;position:relative}
 .contestClose{position:absolute;top:14px;right:16px;border:0;background:transparent;color:var(--muted);font-size:24px;cursor:pointer}
 .contestKicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
 .contestDlg h3{margin:0 28px 12px;font-size:25px;font-weight:500}
-.contestDlg p{margin:0 auto 22px;max-width:410px;line-height:1.8;color:var(--inkSoft)}
+.contestVisual{display:block;width:100%;max-height:285px;object-fit:cover;border-radius:18px;margin:0 auto 26px;border:1px solid var(--border)}
+.contestDlg p{margin:0 auto 24px;max-width:570px;line-height:1.8;color:var(--inkSoft)}
 .contestActions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .contestActions .btn{min-width:150px}
+@media(max-width:560px){.contestDlg{padding:34px 22px 28px}.contestVisual{max-height:180px;border-radius:12px}.contestDlg h3{font-size:22px}}
 @media(max-width:560px){
   #acctMask .dlg{margin:18px 14px;padding:26px 22px 24px}
   .acctClose{top:14px;right:14px}
@@ -736,6 +738,7 @@ body{visibility:hidden}
     <button class="contestClose" id="contestClose" aria-label="关闭" title="关闭">×</button>
     <div class="contestKicker" id="contestKicker">AI for good</div>
     <h3 id="contestTitle">小有可为 AI 公益赛</h3>
+    <img class="contestVisual" src="assets/xiaoyoukewei-banner.png" alt="小有可为 2026 AI 向善创新挑战赛">
     <p id="contestBody">Momo Speaking 正在参加阿里的“小有可为”AI 公益比赛。欢迎了解比赛，也欢迎回来继续练习。</p>
     <div class="contestActions">
       <a class="btn pri" id="contestLink" href="https://opc.aliyun.com/xiaoyoukewei?display_mode=3" target="_blank" rel="noopener">了解比赛</a>
@@ -3112,6 +3115,7 @@ function renderContestModal(){
   set('contestKicker','AI for good'); set('contestTitle','小有可为 AI 公益赛');
   set('contestBody','Momo Speaking 正在参加阿里的“小有可为”AI 公益比赛。欢迎了解比赛，也欢迎回来继续练习。');
   set('contestLink','了解比赛'); set('contestLater','先看看项目');
+  const visual = $('#contestVisual'); if(visual) visual.alt = language === 'en' ? 'Xiaoyoukewei 2026 AI for Good Innovation Challenge' : '小有可为 2026 AI 向善创新挑战赛';
 }
 function closeContest(){ $('#contestMask')?.classList.remove('on'); try{ localStorage.setItem('momo:contestNoticeSeen','1'); }catch(e){} }
 function openContest(){ renderContestModal(); $('#contestMask')?.classList.add('on'); }

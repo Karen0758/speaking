@@ -446,6 +446,8 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
   border:1px solid var(--border);font-size:13px;color:var(--inkSoft);display:none}
 .kidReopen.on{display:block}
 @media(max-width:760px){.kidFloat{width:132px;right:12px;bottom:12px}.kidcap{display:none}}
+/* Prevent the source-language markup from flashing before the saved language is applied. */
+body{visibility:hidden}
 </style>
 </head>
 <body>
@@ -3081,6 +3083,7 @@ function translatePage(){
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const nodes=[];
   while(walker.nextNode()) nodes.push(walker.currentNode);
   nodes.forEach(n => { if(n.parentElement?.id === 'langBtn') return; const raw=n.nodeValue, trimmed=raw.trim(); if(!trimmed) return; const next=tr(trimmed); if(next!==trimmed) n.nodeValue=raw.replace(trimmed,next); });
+  document.body.style.visibility = 'visible';
 }
 function toggleLanguage(){ language = language === 'en' ? 'zh' : 'en'; try{ localStorage.setItem(LANG_KEY, language); }catch(e){} translatePage(); if(typeof buildWheel==='function') buildWheel(); if(typeof renderCard==='function' && cur) renderCard(); if(typeof renderBank==='function' && $('#s-bank')?.classList.contains('on')) renderBank(); if(typeof renderRecord==='function' && $('#s-record')?.classList.contains('on')) renderRecord(); setTimeout(translatePage, 0); }
 setTimeout(translatePage, 0);

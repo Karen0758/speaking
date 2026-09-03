@@ -3118,13 +3118,9 @@ function renderContestModal(){
   set('contestLink','了解比赛'); set('contestStory','作品背后的故事'); set('contestLater','先看看项目');
   const visual = $('#contestVisual'); if(visual) visual.alt = language === 'en' ? 'Xiaoyoukewei 2026 AI for Good Innovation Challenge' : '小有可为 2026 AI 向善创新挑战赛';
 }
-const CONTEST_NOTICE_KEY = 'momo:contestNoticeSeen:v2';
-function closeContest(){ $('#contestMask')?.classList.remove('on'); try{ localStorage.setItem(CONTEST_NOTICE_KEY,'1'); }catch(e){} }
+function closeContest(){ $('#contestMask')?.classList.remove('on'); }
 function openContest(){ renderContestModal(); $('#contestMask')?.classList.add('on'); }
-function maybeShowContest(){
-  try{ if(localStorage.getItem(CONTEST_NOTICE_KEY) === '1') return; }catch(e){}
-  openContest();
-}
+function maybeShowContest(){ openContest(); }
 function toggleLanguage(){ language = language === 'en' ? 'zh' : 'en'; try{ localStorage.setItem(LANG_KEY, language); }catch(e){} translatePage(); renderContestModal(); if(typeof buildWheel==='function') buildWheel(); if(typeof renderCard==='function' && cur) renderCard(); if(typeof renderBank==='function' && $('#s-bank')?.classList.contains('on')) renderBank(); if(typeof renderRecord==='function' && $('#s-record')?.classList.contains('on')) renderRecord(); setTimeout(translatePage, 0); }
 setTimeout(translatePage, 0);
 const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
@@ -4841,8 +4837,8 @@ kidWake();
 renderContestModal();
 $('#contestClose').onclick = closeContest;
 $('#contestLater').onclick = closeContest;
-$('#contestLink').onclick = () => { try{ localStorage.setItem(CONTEST_NOTICE_KEY,'1'); }catch(e){} };
-$('#contestStory').onclick = () => { try{ localStorage.setItem(CONTEST_NOTICE_KEY,'1'); }catch(e){} };
+$('#contestLink').onclick = closeContest;
+$('#contestStory').onclick = closeContest;
 setTimeout(maybeShowContest, 700);
 </script>
 </body>

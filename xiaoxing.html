@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-font="wenkai">
+<html lang="en" data-font="wenkai">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -392,7 +392,9 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 .acctChip .avaMini{width:32px;height:32px}
 .wheelAcct{position:absolute;right:26px;top:22px;z-index:4;
   opacity:0;animation:inviteIn 1.4s ease-out .3s forwards}
-@media(max-width:900px){.wheelAcct{right:14px;top:14px}}
+.wheelLang{position:absolute;right:86px;top:22px;z-index:4;
+  opacity:0;animation:inviteIn 1.4s ease-out .2s forwards}
+@media(max-width:900px){.wheelAcct{right:14px;top:14px}.wheelLang{right:74px;top:14px}}
 /* 历史记录：整行可点，进去看当时那份复盘 */
 .recrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding:11px 8px 11px 2px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -452,6 +454,7 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 <nav>
   <div class="brand" onclick="go('wheel')"><img src="assets/logo-h.png" alt="momo"></div>
   <div class="navr">
+    <button class="btn ghost" id="langBtn" onclick="toggleLanguage()">中文</button>
     <span class="streak" id="streakBadge">连续 6 天</span>
     <button class="btn ghost" onclick="go('bank')">我的题库</button>
     <button class="btn ghost" onclick="go('record')">记录</button>
@@ -494,6 +497,7 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 <section id="s-wheel" class="screen on">
   <div class="wheelPage">
     <img class="wheelLogo" src="assets/logo-h.png" alt="momo">
+    <button class="btn ghost wheelLang" id="wheelLangBtn" onclick="toggleLanguage()">中文</button>
     <button class="btn ghost wheelAcct" id="wheelAcctBtn" onclick="openAcct()" style="display:none">登录</button>
     <div class="wheelInvite">
       <h1>今天，你想和谁聊一聊？</h1>
@@ -2989,6 +2993,97 @@ window.mountKid = function(host, size){
 /* ═══════════ 应用逻辑 ═══════════ */
 const $ = s => document.querySelector(s);
 const FILLERS = ["然后","就是","呃","嗯","那个","这个","其实","可能","大概","对吧","啊"];
+const LANG_KEY = 'momo:language';
+let language = (() => { try { return localStorage.getItem(LANG_KEY) || 'en'; } catch(e) { return 'en'; } })();
+const EN = {
+  '登录':'Log in','我的题库':'My deck','记录':'History','连续 6 天':'6-day streak','今天，你想和谁聊一聊？':'Who would you like to talk to today?','momo 会陪你练习每一次重要的表达。':'momo will be here for every conversation that matters.','换个人':'Choose someone else','可以练的题':'Prompts to practice','开麦，':'Speak for ','秒':' sec','随机换一张':'Draw another','返回':'Back','去题库里挑':'Choose from deck','随机范围：':'Difficulty: ','全部':'All','一屏看完，不用点开任何东西。开麦前先把「要拿到」那句读一遍。':'Everything is on one screen. Read the “goal” once before you speak.','录音中':'Recording','正在听':'Listening','音量':'Volume','momo 的嘴跟着你的音量动。':'momo’s mouth follows your volume.','卡壳提示':'Stuck?','停顿超过几秒会自动给一句。':'Pause for a few seconds and you’ll get a gentle hint.','困难档不提供卡壳提示。':'Hard prompts do not include hints.','讲完了':'I’m done','实时转写':'Live transcript','开口就会出现在这里。口癖词会自动标红。':'Your words will appear here. Filler words are highlighted.','复盘':'Review','再练一张':'Practice another','看记录':'View history','总评':'Overall','这张卡想练的是':'What this prompt is for','口癖词':'Filler words','真实统计':'Live count','语速':'Speaking rate','逐句点评':'Line-by-line notes','诊断':'Diagnosis','对方接下来会问':'What they may ask next','上传题库':'Upload deck','直接开练':'Start practicing','清空记录':'Clear history','关闭':'Close','保存':'Save','取消':'Cancel','测试连接':'Test connection','AI API 设置':'AI API settings','什么场合':'Situation','要拿到':'Goal','不能做':'Constraint','这张卡没填这一栏':'This card has no details here','简单档给提纲':'Easy prompts include an outline','困难档不给提纲，也不给卡壳提示。':'Hard prompts include no outline or hints.','中等档不给提纲，卡壳时会给一句方向。':'Medium prompts include a gentle direction if you get stuck.','服务人员':'Service staff','面试官':'Interviewer','直属领导':'Manager','同事':'Colleague','同学':'Classmate','朋友':'Friend','伴侣':'Partner','家人':'Family','陌生人':'Stranger','头脑风暴':'Brainstorming'
+};
+Object.assign(EN, {'把「要拿到」读一遍':'Read the “goal” once','今天想讲哪一位？':'Who would you like to talk to?','今天想对谁说？':'Who do you want to talk to?','先选人，再选题':'Choose a person, then a prompt','准备好就开麦':'Ready when you are','不急，看完再开口':'Take your time—read it first','想好第一句就行':'Just think of your first sentence','深呼吸，然后开始':'Take a breath, then begin','我在听':'I’m listening','慢慢来':'Take it slow','就这张吧':'This one looks good','这张有意思':'This one is interesting'});
+Object.assign(EN, {'筛选':'Filter','清空筛选':'Clear filters','筛选（全部题目）':'Filter (all prompts)','这批全开':'Enable all shown','这批全关':'Disable all shown','点题目本身就直接开练；右边的开关只决定它进不进「随机换一张」的池子。':'Click a prompt to practice it. The switch only controls whether it appears in the random draw pool.','清空我上传的':'Clear my uploads','关闭':'Close','登录':'Log in','退出登录':'Log out','立即同步':'Sync now','删除我的云端记录':'Delete my cloud records','选择头像':'Choose an avatar','选一个头像，之后可以随时换。':'Choose an avatar—you can change it later.','就它了':'Use this one','用 Google 账号登录':'Continue with Google','先不登录，直接使用':'Continue without logging in','网页字体':'Web font','个性化设置':'Personalization','AI 设置':'AI settings','复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。':'AI is needed for the review, line notes, and follow-up preview. Your request goes directly from this device.','记住密钥（存在这台电脑上，否则关掉标签页就清除）':'Remember key (stored on this device; cleared when the tab closes)','这是本地 demo 的临时做法。正式版密钥只存服务端，浏览器永远拿不到。':'This is a local demo. In production, the key stays on the server.','没有现成的题？让 AI 按格式写':'No prompts yet? Ask AI to write them','清空记录':'Clear history','连续天数':'Streak','本周分钟':'Minutes this week','累计练习':'Total practices','总字数':'Total words','口癖词频次':'Filler frequency','每分钟，真实统计':'Per minute, live count','练习日历':'Practice calendar','练过的题':'Practiced prompts','再练几次就能看到趋势了。至少需要两次记录。':'Practice a few more times to see a trend. At least two records are needed.','还没有记录。回首页讲一次，这里就有了。':'No history yet. Practice once from the home page to see it here.','收起 momo':'Hide momo','叫 momo 回来':'Bring momo back','今天也要开口哦':'Speak up today, too'});
+Object.assign(EN, {'中等':'Medium','困难':'Hard','简单':'Easy','职场':'Workplace','澄清':'Clarify','划界限':'Set a boundary','坏消息':'Difficult news','表态':'Take a position','谈判':'Negotiate','行业活动上有人问你是做什么的':'Someone at an industry event asks what you do','刚蹭之后向交警陈述事发经过':'Explain what happened after a minor traffic accident','窗口办事材料差一份你要争取通融':'A service counter is missing one document and you want an exception','相亲第一次见面，对方说你先介绍下自己':'At a first date, they ask you to introduce yourself','业主群里你要说明一件大家吵翻了的事':'Clarify a heated issue in your homeowners’ group','看房时房东同时约了另外两组人':'The landlord scheduled two other viewings at the same time','实习生被同事集体甩锅':'A colleague blames you for a team mistake','新人拒绝领导强加的额外工作':'A new hire pushes back on extra work from their manager','跟同事走太近说了不该说的话':'You got too close to a colleague and overshared','被仰慕的领导背刺后提离职':'Resigning after a manager you admired let you down','前同事套话后把聊天记录发给HR':'A former colleague sends your chat history to HR','工作两年犹豫辞职不知道怎么开口':'You want to resign after two years but do not know how to say it'});
+Object.assign(EN, {'争取':'Ask for an exception','消费':'Consumer issue','拒绝':'Decline','自我介绍':'Self-introduction','求职':'Job search','生活':'Daily life','道歉':'Apologize','亲密':'Close relationship','已开启':'Enabled','已关闭':'Disabled','就讲这张':'Let’s practice this one','好，这张':'Good choice','那就开始吧':'Let’s begin','这张我陪你':'I’ll practice this one with you','看完场景再开口':'Read the scene, then speak','准备好了叫我':'Let me know when you’re ready','嗯，继续':'Mm-hmm, keep going','听着呢':'I’m listening','继续说':'Keep going','别停':'Don’t stop','卡住了？':'Stuck?','给你递一句？':'Want a hint?','需要提示就停一下':'Pause if you need a hint','让我理一理':'Let me think this through','在看了':'I’m looking','等我一下':'One moment','稳':'Steady','比我想的还清楚':'Clearer than I expected','这段可以留着':'Keep this part','有条理':'Well structured','有进步':'That’s progress','中间那段挺好':'The middle section was strong','越说越顺了':'You’re getting smoother','开口比讲得好更重要':'Speaking up matters more than being perfect','下次会顺一点':'It’ll feel smoother next time','第一遍都这样':'First tries are like this','没听到声音':'I didn’t hear anything','麦克风好像没进来':'The microphone may not be connected','回头看看那次':'Let’s revisit that practice','看看那天说了什么':'Let’s see what you said that day','翻翻旧的':'Look back at an older one','先把 AI 接上吧':'Connect AI first','复盘要接了 AI 才有':'AI is needed for a review','接上 AI 我才看得懂':'Connect AI so I can review it'});
+Object.assign(EN, {'对象':'Audience','难度':'Difficulty','领域':'Category','说话动作':'Speaking action','来源':'Source','不限':'All','自带':'Built-in','我上传的':'My uploads','账号':'Account','选个头像':'Choose an avatar','换个头像':'Change avatar','记录会自动同步。换设备登录同一个邮箱就能接上。':'Your records sync automatically. Sign in with the same email on another device to pick up where you left off.','请求':'Request','霞鹜文楷':'LXGW WenKai','思源黑体':'Source Han Sans','思源宋体':'Source Han Serif','实时转写中':'Live transcription','转写没连上，用模拟文本':'Transcription unavailable—using a sample transcript','此浏览器不支持转写，用模拟文本':'This browser does not support transcription—using a sample transcript','旅行社违规服务维权':'Travel agency rights protection against illegal services','讲你最近在忙什么、在意什么，比讲你是谁更有信息量':'Talking about what you are working on and caring about lately tells more than simply saying who you are','开口就会出现在这里。口癖词会自动标红。':'Your words will appear here. Filler words are highlighted.','开口就会出现在这里。':'Your words will appear here.'});
+Object.assign(EN, {'这次一个口癖词都没有。':'No filler words this time.','讲了':'Spoke for','字':'words','约每分钟':'about','偏快，可以慢一点。':'A little fast—try slowing down.','偏慢，可以再流畅些。':'A little slow—try a smoother pace.','节奏合适。':'The pace feels good.','这次没有录到内容。':'No speech was recorded.','没有接 AI，这里不是真的复盘。':'AI is not connected, so this is not a full review.','逐句点评需要 AI。点右上角「接上 AI」填入你自己的密钥后重试。':'Line-by-line notes need AI. Connect AI in the top-right and try again.','诊断需要 AI。':'Diagnosis needs AI.','追问预演需要 AI。':'Follow-up preview needs AI.','示范重讲需要 AI。':'A sample rewrite needs AI.','总评、逐句点评、诊断、追问预演都必须由 AI 生成，当前未接入，所以是空的。':'The overall review, line notes, diagnosis, and follow-up preview are generated by AI. AI is not connected, so these sections are empty.','momo 正在看你刚才说了什么…':'momo is reviewing what you just said…','生成中':'Generating…','没拿到结果。':'No result returned.','亮点':'Highlight','可以改':'Could improve','改成：':'Try this:','这次没有可引用的内容。':'Nothing to quote this time.','未判定':'Not determined','这次没有生成追问。':'No follow-ups generated.','这一页的总评、逐句点评、诊断、追问预演由你接入的 AI 实时生成。口癖词、字数、语速为本地统计。':'The overall review, line notes, diagnosis, and follow-up preview are generated live by your connected AI. Fillers, word count, and speaking rate are calculated locally.','卡点':'Blocker','目标':'Goal','听众要点':'Audience','限制':'Constraint','这张卡已经不在题库里了。':'This prompt is no longer in your deck.','这次没有 AI 复盘，只有本地统计。':'No AI review was saved—only local stats.','这次练习当时没接 AI，没有留下这部分。':'AI was not connected for this practice, so these sections were not saved.','示范重讲':'Sample rewrite','你说了什么':'What you said','演示说明':'Demo note'});
+Object.assign(EN, {'正面处理':'Addressed','绕开了':'Avoided','反被将军':'Countered','达成':'Met','部分达成':'Partly met','未达成':'Not met','回应了':'Answered','答非所问':'Off topic','遵守':'Followed','越界':'Broken','这次没有生成追问。':'No follow-ups generated.','这次是从别的设备同步过来的。转写内容不上传云端，只留在当时那台设备上。':'This practice was synced from another device. The transcript stays on that device and is not uploaded.','这是':'This is','那次的复盘存档，不会重新生成。':'an archived review and will not be regenerated.','那次的存档。口癖词、字数、语速是当时真算的。':'an archived practice. Fillers, word count, and speaking rate were calculated at the time.'});
+Object.assign(EN, {'每一条都追溯到你的哪句话':'Each one traces back to something you said'});
+const CN_BY_EN = Object.fromEntries(Object.entries(EN).map(([cn,en]) => [en,cn]));
+function tr(text){
+  if(!text) return text;
+  if(language !== 'en') return CN_BY_EN[text] || text;
+  if(EN[text]) return EN[text];
+  let m;
+  if((m=text.match(/^(\d+)月(\d+)日$/))) return `${m[1]}/${m[2]}`;
+  if((m=text.match(/^(\d+)月(\d+)日，练习 (\d+) 次$/))) return `${m[1]}/${m[2]} · ${m[3]} practice${m[3]==='1'?'':'s'}`;
+  if((m=text.match(/^(\d+)月(\d+)日，没有练习$/))) return `${m[1]}/${m[2]} · no practice`;
+  if((m=text.match(/^(\d+)月(\d+)日 · (\d+)秒 · (\d+)字( · 有 AI 复盘)?$/))) return `${m[1]}/${m[2]} · ${m[3]}s · ${m[4]} words${m[5]?' · AI review':''}`;
+  if((m=text.match(/^连续 (\d+) 天$/))) return `${m[1]}-day streak`;
+  if((m=text.match(/^第 (\d+) 次$/))) return `Practice ${m[1]}`;
+  if((m=text.match(/^(\d{4}) 年 (\d+) 月$/))) return `${['January','February','March','April','May','June','July','August','September','October','November','December'][Number(m[2])-1] || m[2]} ${m[1]}`;
+  if({'一':'Mon','二':'Tue','三':'Wed','四':'Thu','五':'Fri','六':'Sat','日':'Sun'}[text]) return {'一':'Mon','二':'Tue','三':'Wed','四':'Thu','五':'Fri','六':'Sat','日':'Sun'}[text];
+  if((m=text.match(/^(\d+)秒$/))) return `${m[1]}s`;
+  if((m=text.match(/^(\d+)字$/))) return `${m[1]} words`;
+  if(/^中等档$/.test(text)) return 'Medium';
+  if(/^困难档$/.test(text)) return 'Hard';
+  if(/^简单档$/.test(text)) return 'Easy';
+  if((m=text.match(/^筛出 (\d+) 张，其中开着 (\d+) 张$/))) return `${m[1]} shown, ${m[2]} enabled`;
+  if((m=text.match(/^共 (\d+) 张，已开启 (\d+) 张$/))) return `${m[1]} prompts, ${m[2]} enabled`;
+  if((m=text.match(/^你说得最多的是「(.+?)」，从每分钟 ([\d.]+) 次到 ([\d.]+) 次。(.+)$/))) return `Most frequent filler: “${tr(m[1])}”, from ${m[2]} to ${m[3]} per minute. ${m[4]==='还在波动，多练几次看看。'?'Still variable—practice a few more times.':m[4]}`;
+  return text;
+}
+const CARD_TRANSLATIONS = {};
+async function translateCardText(text){
+  if(language !== 'en' || !text || !/[\u4e00-\u9fff]/.test(text)) return text;
+  if(CARD_TRANSLATIONS[text]) return CARD_TRANSLATIONS[text];
+  try{
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=en&dt=t&q=' + encodeURIComponent(text);
+    const data = await fetch(url).then(r=>r.json());
+    const out = (data?.[0] || []).map(x=>x?.[0] || '').join('').trim();
+    if(out){ CARD_TRANSLATIONS[text] = out; return out; }
+  }catch(e){ console.warn('Card translation unavailable', e); }
+  return text;
+}
+async function translateCardView(card){
+  if(language !== 'en' || !card) return;
+  const fields = [card.title, card.situation, card.goal, card.constraint, ...(card.outline||[]), ...(card.hints||[])].filter(Boolean);
+  const translated = await Promise.all(fields.map(translateCardText));
+  const map = Object.fromEntries(fields.map((v,i)=>[v,translated[i]]));
+  const set = (sel, value) => { const el=$(sel); if(el && value) el.textContent = map[value] || value; };
+  set('#h-title', card.title);
+  const vals = [card.situation, card.goal, card.constraint]; document.querySelectorAll('#h-canvas .cell .v').forEach((el,i)=>{ if(vals[i]) el.textContent = map[vals[i]] || vals[i]; });
+  document.querySelectorAll('#h-outline li').forEach(el=>{ const raw=el.textContent; if(map[raw]) el.textContent=map[raw]; });
+}
+async function translateSceneView(relation, cards){
+  if(language !== 'en') return;
+  const values = [relation?.ctx, ...(cards||[]).map(c=>c.title)].filter(Boolean);
+  const translated = await Promise.all(values.map(translateCardText));
+  const map = Object.fromEntries(values.map((v,i)=>[v,translated[i]]));
+  const ctx=$('#sc-ctx'); if(ctx && relation?.ctx) ctx.textContent=map[relation.ctx]||relation.ctx;
+  document.querySelectorAll('#sc-qs .qItem > span:nth-child(2)').forEach(el=>{ const raw=el.textContent; if(map[raw]) el.textContent=map[raw]; });
+}
+async function translateBankView(cards){
+  if(language !== 'en') return;
+  const values = (cards||[]).flatMap(c=>[c.title,c.situation]).filter(Boolean);
+  const translated = await Promise.all(values.map(translateCardText));
+  const map = Object.fromEntries(values.map((v,i)=>[v,translated[i]]));
+  document.querySelectorAll('#banklist .bankitem').forEach((el,i)=>{ const c=(cards||[])[i]; if(!c) return; const title=el.querySelector('.t'), body=el.querySelector('.b'); if(title) title.textContent=map[c.title]||c.title; if(body) body.textContent=(map[c.situation]||c.situation||'').slice(0,60); });
+}
+async function translateHistoryView(){
+  if(language !== 'en') return;
+  const records = RECORDS.slice().reverse();
+  const values = records.map(r=>r.title).filter(Boolean);
+  const translated = await Promise.all(values.map(translateCardText));
+  const map = Object.fromEntries(values.map((v,i)=>[v,translated[i]]));
+  document.querySelectorAll('#rechist .recrow').forEach((el,i)=>{ const title=el.querySelector('div[style*="font-size:14px"]'); const raw=records[i]?.title; if(title && raw) title.textContent=map[raw]||raw; });
+}
+function translatePage(){
+  document.documentElement.lang = language === 'en' ? 'en' : 'zh-CN';
+  [$('#langBtn'), $('#wheelLangBtn')].forEach(button => { if(button) button.textContent = language === 'en' ? '中文' : 'English'; });
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const nodes=[];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { if(n.parentElement?.id === 'langBtn') return; const raw=n.nodeValue, trimmed=raw.trim(); if(!trimmed) return; const next=tr(trimmed); if(next!==trimmed) n.nodeValue=raw.replace(trimmed,next); });
+}
+function toggleLanguage(){ language = language === 'en' ? 'zh' : 'en'; try{ localStorage.setItem(LANG_KEY, language); }catch(e){} translatePage(); if(typeof buildWheel==='function') buildWheel(); if(typeof renderCard==='function' && cur) renderCard(); if(typeof renderBank==='function' && $('#s-bank')?.classList.contains('on')) renderBank(); if(typeof renderRecord==='function' && $('#s-record')?.classList.contains('on')) renderRecord(); setTimeout(translatePage, 0); }
+setTimeout(translatePage, 0);
 const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
 const KEY_FONT = 'momo:font';
 
@@ -3030,13 +3125,14 @@ function go(name){
   if(name==='wheel') buildWheel();
   if(name==='wheel') setKidMood('pickPerson');
   if(typeof paintKid === 'function') paintKid();
+  setTimeout(translatePage, 0);
 }
 
 /* ---- momo ---- */
 function setKid(state, cap){
   if(kid1) kid1.set(state);
   if(kid2 && kid2 !== kid1) kid2.set(state);
-  if(cap !== undefined) $('#kidcap').textContent = cap;
+  if(cap !== undefined) $('#kidcap').textContent = tr(cap);
 }
 
 /* momo 的台词库：每个时刻多备几句，随机挑，连着两次不重样。
@@ -3162,14 +3258,14 @@ const CELLS = [
 
 function renderCard(){
   const c = cur;
-  $('#h-title').textContent = c.title;
+  $('#h-title').textContent = tr(c.title);
   /* 上传的题可能只填了标题，空字段就别摆个空壳子出来 */
-  const tag = (sel, v) => { const el = $(sel); el.textContent = v || ''; el.style.display = v ? '' : 'none'; };
+  const tag = (sel, v) => { const el = $(sel); el.textContent = v ? tr(v) : ''; el.style.display = v ? '' : 'none'; };
   tag('#h-domain', c.domain);
   tag('#h-act', c.act);
-  const d = $('#h-diff'); d.textContent = DIFF_CN[c.difficulty]; d.className = 'tag d-'+c.difficulty;
+  const d = $('#h-diff'); d.textContent = tr(DIFF_CN[c.difficulty]); d.className = 'tag d-'+c.difficulty;
   const back = $('#h-back');
-  back.textContent = c.relation ? `返回和${c.relation}的交流` : '返回选人';
+  back.textContent = language === 'en' ? (c.relation ? `Back to ${tr(c.relation)}` : 'Back to people') : (c.relation ? `返回和${c.relation}的交流` : '返回选人');
   secAdj = 0; paintSec();
 
   /* 头脑风暴不是情境题，是议论题，三格的抬头换个说法 */
@@ -3179,7 +3275,7 @@ function renderCard(){
     const v = (c.brief && c.brief[m.k]) || c[m.k] || '';
     return `
     <div class="cell ${m.cls}">
-      <div class="h"><i class="ti ${isBrain&&m.k==='situation'?'ti-messages':m.ic}"></i><span>${isBrain?BRAIN_CN[m.k]:m.cn}</span></div>
+      <div class="h"><i class="ti ${isBrain&&m.k==='situation'?'ti-messages':m.ic}"></i><span>${tr(isBrain?BRAIN_CN[m.k]:m.cn)}</span></div>
       <div class="v">${v || '<span class="blank">这张卡没填这一栏</span>'}</div>
     </div>`;
   }).join('');
@@ -3190,20 +3286,34 @@ function renderCard(){
     : (c.difficulty==='hard'
         ? `<p class="note" style="margin-top:16px">困难档不给提纲，也不给卡壳提示。</p>`
         : `<p class="note" style="margin-top:16px">中等档不给提纲，卡壳时会给一句方向。</p>`);
+  setTimeout(translatePage, 0);
+  translateCardView(c);
+}
+
+async function translatePracticeCard(card){
+  if(language !== 'en' || !card) return;
+  const title = await translateCardText(card.title);
+  if(cur === card && $('#s-prac').classList.contains('on')) $('#p-title').textContent = title;
+  if(card.hints && card.hints.length){
+    const hint = await translateCardText(card.hints[0]);
+    if(cur === card && $('#s-prac').classList.contains('on') && !$('#p-hint').dataset.userHint) $('#p-hint').textContent = hint;
+  }
 }
 
 /* ---- 开始练习 ---- */
 async function startPractice(override){
   secTotal = secLeft = override || curSeconds();
   finalText = ""; interimText = ""; startedAt = Date.now(); lastSpeak = Date.now();
-  $('#p-title').textContent = cur.title;
-  $('#p-text').innerHTML = '<span style="color:var(--muted)">开口就会出现在这里。口癖词会自动标红。</span>';
+  const practiceCard = cur;
+  $('#p-title').textContent = tr(cur.title);
+  $('#p-text').innerHTML = `<span style="color:var(--muted)">${tr('开口就会出现在这里。口癖词会自动标红。')}</span>`;
   $('#p-time').textContent = secLeft;
-  $('#p-hint').textContent = cur.difficulty==='hard'
-    ? '困难档不提供卡壳提示。' : '停顿超过几秒会自动给一句。';
-  $('#wcount').textContent = '0 字';
+  $('#p-hint').dataset.userHint = '';
+  $('#p-hint').textContent = tr(cur.difficulty==='hard' ? '困难档不提供卡壳提示。' : '停顿超过几秒会自动给一句。');
+  $('#wcount').textContent = language === 'en' ? '0 words' : '0 字';
   go('prac');
   setKidMood('start');
+  translatePracticeCard(practiceCard);
 
   timer = setInterval(tick, 1000);
   await initMic();
@@ -3216,14 +3326,18 @@ function tick(){
   const prog = 1 - secLeft/secTotal;
   $('#ringP').setAttribute('stroke-dashoffset', (301.6*prog).toFixed(1));
   $('#ringP').setAttribute('stroke', secLeft<=10 ? 'var(--red)' : 'var(--accent)');
-  if(secLeft<=10 && secLeft>0) setKid('surprise', secLeft<=3 ? `${secLeft}` : secLeft<=6 ? `${secLeft} 秒，收个尾` : `还剩 ${secLeft} 秒`);
+  if(secLeft<=10 && secLeft>0) setKid('surprise', language === 'en'
+    ? (secLeft<=3 ? `${secLeft}` : secLeft<=6 ? `${secLeft}s — wrap it up` : `${secLeft}s left`)
+    : (secLeft<=3 ? `${secLeft}` : secLeft<=6 ? `${secLeft} 秒，收个尾` : `还剩 ${secLeft} 秒`));
   if(secLeft<=0) finish();
 
   const quiet = (Date.now()-lastSpeak)/1000;
   const trig = cur.difficulty==='easy' ? 2.5 : cur.difficulty==='medium' ? 3.5 : 999;
   if(quiet > trig && cur.hints && cur.hints.length && secLeft>8){
     const h = cur.hints[Math.floor(Math.random()*cur.hints.length)];
-    $('#p-hint').textContent = h;
+    $('#p-hint').dataset.userHint = '1';
+    $('#p-hint').textContent = tr(h);
+    if(language === 'en') translateCardText(h).then(v=>{ if($('#p-hint').dataset.userHint) $('#p-hint').textContent = v; });
     setKidMood('stuck');
     lastSpeak = Date.now();
   }
@@ -3263,9 +3377,9 @@ async function initMic(){
 /* ---- 浏览器语音识别（Chrome 可用；不可用则模拟） ---- */
 function initASR(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ $('#asrState').textContent = '此浏览器不支持转写，用模拟文本'; simulate(); return; }
+  if(!SR){ $('#asrState').textContent = tr('此浏览器不支持转写，用模拟文本'); simulate(); return; }
   rec = new SR();
-  rec.lang = 'zh-CN'; rec.continuous = true; rec.interimResults = true;
+  rec.lang = language === 'en' ? 'en-US' : 'zh-CN'; rec.continuous = true; rec.interimResults = true;
   rec.onresult = e => {
     interimText = '';
     for(let i=e.resultIndex;i<e.results.length;i++){
@@ -3275,8 +3389,8 @@ function initASR(){
     lastSpeak = Date.now();
     paintText();
   };
-  rec.onerror = () => { $('#asrState').textContent = '转写没连上，用模拟文本'; simulate(); };
-  try{ rec.start(); $('#asrState').textContent = '实时转写中'; }
+  rec.onerror = () => { $('#asrState').textContent = tr('转写没连上，用模拟文本'); simulate(); };
+  try{ rec.start(); $('#asrState').textContent = tr('实时转写中'); }
   catch(e){ simulate(); }
 }
 
@@ -3300,8 +3414,8 @@ function paintText(){
   const re = new RegExp('('+FILLERS.join('|')+')','g');
   const html = finalText.replace(re,'<span class="filler">$1</span>')
              + '<span class="interim">'+interimText+'</span>';
-  $('#p-text').innerHTML = html || '<span style="color:var(--muted)">开口就会出现在这里。</span>';
-  $('#wcount').textContent = all.length + ' 字';
+  $('#p-text').innerHTML = html || `<span style="color:var(--muted)">${tr('开口就会出现在这里。')}</span>`;
+  $('#wcount').textContent = language === 'en' ? all.length + (all.length === 1 ? ' word' : ' words') : all.length + ' 字';
 }
 
 /* ---- 结束与复盘 ---- */
@@ -3337,20 +3451,27 @@ function renderReview(text, secs){
   const totalFiller = counts.reduce((a,b)=>a+b.n,0);
   const perMin = chars>0 ? (chars/secs*60) : 0;
 
-  $('#r-sub').textContent = `${cur.domain} / ${cur.act} / ${cur.title}`;
-  const dt = $('#r-diffTag'); dt.textContent = DIFF_CN[cur.difficulty]+'档';
+  $('#r-sub').textContent = `${tr(cur.domain)} / ${tr(cur.act)} / ${tr(cur.title)}`;
+  const dt = $('#r-diffTag'); dt.textContent = tr(DIFF_CN[cur.difficulty]+'档');
   dt.className = 'tag d-'+cur.difficulty;
-  $('#r-blocker').textContent = cur.goal || cur.situation || '';
+  $('#r-blocker').textContent = tr(cur.goal || cur.situation || '');
+  if(language === 'en'){
+    const reviewCard = cur;
+    Promise.all([translateCardText(cur.title), translateCardText(cur.goal || cur.situation || '')]).then(([title,goal])=>{
+      if(cur === reviewCard){ $('#r-sub').textContent = `${tr(reviewCard.domain)} / ${tr(reviewCard.act)} / ${title}`; $('#r-blocker').textContent = goal; }
+    });
+  }
 
   $('#r-fillers').innerHTML = counts.length
     ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px">
         <span>${c.w}</span><span style="color:var(--red);font-variant-numeric:tabular-nums">${c.n} 次</span></div>`).join('')
-    : '<p class="note">这次一个口癖词都没有。</p>';
-  $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。
-    <span class="note">${perMin>320?'偏快，可以慢一点。':perMin<160&&chars>30?'偏慢，可以再流畅些。':'节奏合适。'}</span>`;
+    : `<p class="note">${tr('这次一个口癖词都没有。')}</p>`;
+  $('#r-rate').innerHTML = language === 'en'
+    ? `Spoke for <b>${secs}s</b>, <b>${chars}</b> words, about <b>${Math.round(perMin)}</b> words per minute. <span class="note">${tr(perMin>320?'偏快，可以慢一点。':perMin<160&&chars>30?'偏慢，可以再流畅些。':'节奏合适。')}</span>`
+    : `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。<span class="note">${perMin>320?'偏快，可以慢一点。':perMin<160&&chars>30?'偏慢，可以再流畅些。':'节奏合适。'}</span>`;
   $('#r-transcript').innerHTML = text
     ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
-    : '<span class="note">这次没有录到内容。</span>';
+    : `<span class="note">${tr('这次没有录到内容。')}</span>`;
 
   if(aiReady()){ aiReview(text, secs, counts); }
   else { fakeReview(text, secs, totalFiller, chars); }
@@ -3362,19 +3483,19 @@ function fakeReview(text, secs, totalFiller, chars){
   const base = chars < 30 ? 3 : Math.max(3, Math.min(9, 9 - density*45));
   const s = k => Math.max(3, Math.min(9, Math.round((base+k)*10)/10));
   paintScores({'结构':s(-0.4),'内容':s(0.2),'表达':s(0),'用上背景':s(-0.8),'回应卡点':s(-1.1)});
-  $('#r-overall').innerHTML = '<span style="color:var(--red)">没有接 AI，这里不是真的复盘。</span>';
-  $('#r-quotes').innerHTML = '<p class="note">逐句点评需要 AI。点右上角「接上 AI」填入你自己的密钥后重试。</p>';
-  $('#r-diag').innerHTML = '<p class="note">诊断需要 AI。</p>';
-  $('#r-followups').innerHTML = '<p class="note">追问预演需要 AI。</p>';
-  $('#r-rewrite').innerHTML = '<p class="note">示范重讲需要 AI。</p>';
-  $('#r-flagtext').textContent = '口癖词、字数、语速是真算的。总评、逐句点评、诊断、追问预演都必须由 AI 生成，当前未接入，所以是空的。';
+  $('#r-overall').innerHTML = `<span style="color:var(--red)">${tr('没有接 AI，这里不是真的复盘。')}</span>`;
+  $('#r-quotes').innerHTML = `<p class="note">${tr('逐句点评需要 AI。点右上角「接上 AI」填入你自己的密钥后重试。')}</p>`;
+  $('#r-diag').innerHTML = `<p class="note">${tr('诊断需要 AI。')}</p>`;
+  $('#r-followups').innerHTML = `<p class="note">${tr('追问预演需要 AI。')}</p>`;
+  $('#r-rewrite').innerHTML = `<p class="note">${tr('示范重讲需要 AI。')}</p>`;
+  $('#r-flagtext').textContent = tr('总评、逐句点评、诊断、追问预演都必须由 AI 生成，当前未接入，所以是空的。');
   setKidMood('needAI');
 }
 
 function paintScores(sc){
   if(curRecId) updateRecord(curRecId, {scores:sc});
   $('#r-scores').innerHTML = Object.entries(sc).map(([k,v]) =>
-    `<div class="sc"><div class="k">${k}</div><div class="n" style="color:${v>=7?'var(--green)':v>=5?'var(--amber)':'var(--red)'}">${v}</div></div>`).join('');
+    `<div class="sc"><div class="k">${tr(k)}</div><div class="n" style="color:${v>=7?'var(--green)':v>=5?'var(--amber)':'var(--red)'}">${v}</div></div>`).join('');
 }
 
 /* ---- 真实 AI 复盘 ---- */
@@ -3466,28 +3587,28 @@ function paintAcct(){
   const picking = $('#acctPick').style.display !== 'none';
   $('#acctSignedOut').style.display = me ? 'none' : (picking ? 'none' : '');
   $('#acctSignedIn').style.display  = (me && !picking) ? '' : 'none';
-  $('#acctTitle').textContent = picking ? '选个头像' : me ? '账号' : '登录';
+  $('#acctTitle').textContent = tr(picking ? '选个头像' : me ? '账号' : '登录');
 
   /* 顶部导航和转盘首页两个入口：登录后都变成头像 */
   const chip = me
     ? `<span class="avaMini" style="background:${avaBg(myAva)}">${avatarSVG(myAva)}</span>`
-    : '登录';
+    : tr('登录');
   ['#acctBtn','#wheelAcctBtn'].forEach(sel=>{
     const el = $(sel); if(!el) return;
     el.innerHTML = chip;
     el.classList.toggle('acctChip', !!me);
-    el.title = me ? (me.email || '账号') : '登录';
+    el.title = me ? (me.email || tr('账号')) : tr('登录');
     el.style.display = '';
   });
 
   if(me){
     $('#acctAva').innerHTML = `<span class="avaMini" style="background:${avaBg(myAva)}">${avatarSVG(myAva)}</span>`;
     $('#acctEmailShow').textContent = me.email || '';
-    $('#acctWho').textContent = '记录会自动同步。换设备登录同一个邮箱就能接上。';
+    $('#acctWho').textContent = tr('记录会自动同步。换设备登录同一个邮箱就能接上。');
   }
 }
 
-function openAcct(){ $('#acctMask').classList.add('on'); $('#acctMsg').innerHTML=''; $('#acctMsg2').innerHTML=''; }
+function openAcct(){ $('#acctMask').classList.add('on'); $('#acctMsg').innerHTML=''; $('#acctMsg2').innerHTML=''; setTimeout(translatePage, 0); }
 function closeAcct(){ $('#acctMask').classList.remove('on'); }
 
 async function acctGoogle(){
@@ -3593,24 +3714,30 @@ function openRecord(id){
   const d = new Date(rec.at);
   const stamp = `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 
-  $('#r-sub').textContent = `${stamp} · ${rec.domain||''}${rec.domain?' / ':''}${rec.act||''}${rec.act?' / ':''}${rec.title||''}`;
-  const dt = $('#r-diffTag'); dt.textContent = DIFF_CN[rec.difficulty]+'档';
+  $('#r-sub').textContent = `${stamp} · ${tr(rec.domain||'')}${rec.domain?' / ':''}${tr(rec.act||'')}${rec.act?' / ':''}${tr(rec.title||'')}`;
+  const dt = $('#r-diffTag'); dt.textContent = tr(DIFF_CN[rec.difficulty]+'档');
   dt.className = 'tag d-'+rec.difficulty;
   const card = CARDS.find(c=>c.id===rec.cardId);
-  $('#r-blocker').textContent = card ? (card.goal || card.situation || '') : '这张卡已经不在题库里了。';
+  $('#r-blocker').textContent = card ? tr(card.goal || card.situation || '') : tr('这张卡已经不在题库里了。');
+  if(language === 'en' && card){
+    Promise.all([translateCardText(card.title), translateCardText(card.goal || card.situation || '')]).then(([title,goal])=>{
+      $('#r-sub').textContent = `${stamp} · ${tr(rec.domain||'')}${rec.domain?' / ':''}${tr(rec.act||'')}${rec.act?' / ':''}${title}`;
+      $('#r-blocker').textContent = goal;
+    });
+  }
 
   const counts = Object.entries(rec.fillers||{}).map(([w,n])=>({w,n})).sort((a,b)=>b.n-a.n);
   $('#r-fillers').innerHTML = counts.length
     ? counts.slice(0,6).map(c=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px">
         <span>${c.w}</span><span style="color:var(--red);font-variant-numeric:tabular-nums">${c.n} 次</span></div>`).join('')
-    : '<p class="note">这次一个口癖词都没有。</p>';
+    : `<p class="note">${tr('这次一个口癖词都没有。')}</p>`;
   const perMin = secs>0 ? chars/secs*60 : 0;
-  $('#r-rate').innerHTML = `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。`;
+  $('#r-rate').innerHTML = language === 'en' ? `Spoke for <b>${secs}s</b>, <b>${chars}</b> words, about <b>${Math.round(perMin)}</b> words per minute.` : `讲了 <b>${secs}</b> 秒，<b>${chars}</b> 字，约每分钟 <b>${Math.round(perMin)}</b> 字。`;
   $('#r-transcript').innerHTML = text
     ? text.replace(new RegExp('('+FILLERS.join('|')+')','g'),'<span class="filler">$1</span>')
     : rec.remote
-      ? '<span class="note">这条是从别的设备同步过来的。转写内容不上传云端，只留在当时那台设备上。</span>'
-      : '<span class="note">这次没有录到内容。</span>';
+      ? `<span class="note">${tr('这次是从别的设备同步过来的。转写内容不上传云端，只留在当时那台设备上。')}</span>`
+      : `<span class="note">${tr('这次没有录到内容。')}</span>`;
 
   if(rec.review){
     paintAI(rec.review);
@@ -3620,9 +3747,9 @@ function openRecord(id){
     paintScores(rec.scores || {});
     $('#r-overall').innerHTML = rec.overall
       ? rec.overall
-      : '<span class="note">这次没有 AI 复盘，只有本地统计。</span>';
+      : `<span class="note">${tr('这次没有 AI 复盘，只有本地统计。')}</span>`;
     ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>
-      $(k).innerHTML = '<p class="note">这次练习当时没接 AI，没有留下这部分。</p>');
+      $(k).innerHTML = `<p class="note">${tr('这次练习当时没接 AI，没有留下这部分。')}</p>`);
     $('#r-flagtext').textContent = `这是 ${stamp} 那次的存档。口癖词、字数、语速是当时真算的。`;
   }
   go('review');
@@ -3678,12 +3805,12 @@ function setupAI(){
   $('#aiKey').value = AI.key;
   $('#aiModel').value = AI.model;
   $('#aiRemember').checked = AI.persist;
-  $('#aiIntro').textContent = HAS_PROXY
-    ? '复盘默认走这个站点自己的 AI，你不用填任何东西。想用自己的密钥再填下面三项——填了就以你的为准，请求从这台电脑直接发出。'
-    : '复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。';
+  $('#aiIntro').textContent = language === 'en'
+    ? (HAS_PROXY ? 'Reviews use this site’s built-in AI by default—no setup needed. Add your own key below if you prefer; requests are sent directly from this device.' : 'AI powers the overall review, line notes, and follow-up preview. Add your own key; requests are sent directly from this device.')
+    : (HAS_PROXY ? '复盘默认走这个站点自己的 AI，你不用填任何东西。想用自己的密钥再填下面三项——填了就以你的为准，请求从这台电脑直接发出。' : '复盘的总评、逐句点评、追问预演都需要 AI。填你自己的密钥，请求从这台电脑直接发出，不经过任何第三方。');
   $('#aiMsg').innerHTML = AI.key
     ? '<span style="color:var(--k-deep)">正在用你自己的密钥 ****'+AI.key.slice(-4)+'</span>'
-    : HAS_PROXY ? '<span class="note">当前用的是站点自带的 AI。</span>' : '';
+    : HAS_PROXY ? `<span class="note">${language === 'en' ? 'Using the site’s built-in AI.' : '当前用的是站点自带的 AI。'}</span>` : '';
   $('#aiMask').classList.add('on');
   setTimeout(()=>$('#aiKey').focus(), 60);
 }
@@ -3720,7 +3847,7 @@ async function testAI(){
 }
 /* 弹窗只能靠里面的按钮关掉：点框外和按 Esc 都太容易误触，填了一半的东西没了 */
 
-const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着下面这张场景卡讲了一段话，请给出复盘。
+const REVIEW_PROMPT_ZH = (c, t) => `你是一个表达教练。用户刚刚对着下面这张场景卡讲了一段话，请给出复盘。
 
 场景卡：
   情境：${c.situation}
@@ -3743,6 +3870,21 @@ const REVIEW_PROMPT = (c, t) => `你是一个表达教练。用户刚刚对着�
 
 严格返回 JSON，不要 markdown 代码块，结构：
 {"overall":"一句话总评30字内","quotes":[{"said":"原话片段","kind":"问题或亮点","why":"...","better":"可直接替换的说法，亮点留空"}],"diagnosis":{"blocker":{"verdict":"正面处理/绕开了/反被将军","why":"..."},"goal":{"verdict":"达成/部分达成/未达成","why":"..."},"audience":{"verdict":"回应了/答非所问","why":"..."},"constraint":{"verdict":"遵守/越界","why":"..."}},"followUps":[{"q":"对方追问的原话","trigger":"因为你说了「…」","prep":"下次可以这样接"}],"scores":{"结构":7,"内容":8,"表达":7,"用上背景":6,"回应卡点":7},"rewrite":"示范重讲80字左右"}`;
+
+const REVIEW_PROMPT = (c, t) => language !== 'en' ? REVIEW_PROMPT_ZH(c, t) : `You are a thoughtful speaking coach. Review the user's response to this scenario card.
+
+Situation: ${c.situation}
+Conversation partner: ${c.relation}
+Speaking action: ${c.act}
+Goal: ${c.goal}
+Constraint: ${c.constraint}
+
+User's transcript (may contain recognition errors; do not critique typos):
+"${t}"
+
+Requirements: respond entirely in English; quote the user's exact words; give at least one concrete strength and one specific improvement; diagnose the blocker, goal, audience, and constraint; preview three follow-up questions traced to exact quotes; use a warm coach tone. If they said almost nothing or went off-topic, say so and score below 3.
+Return strict JSON only, no markdown:
+{"overall":"one-sentence summary under 30 words","quotes":[{"said":"exact quote","kind":"issue or highlight","why":"why it matters","better":"replacement wording, or empty for a highlight"}],"diagnosis":{"blocker":{"verdict":"addressed/avoided/countered","why":"..."},"goal":{"verdict":"met/partly met/not met","why":"..."},"audience":{"verdict":"answered/off topic","why":"..."},"constraint":{"verdict":"followed/broken","why":"..."}},"followUps":[{"q":"follow-up question","trigger":"Because you said ...","prep":"A way to answer next time"}],"scores":{"Structure":7,"Content":8,"Delivery":7,"Background":6,"Handling":7},"rewrite":"an 80-word example rewrite"}`;
 
 /* 从各家返回体里把正文抠出来。
    Anthropic 是 content 数组，开了思考模式时第一块是 thinking 不是 text；
@@ -3784,9 +3926,9 @@ function extractJSON(raw){
 }
 
 async function aiReview(text, secs, counts){
-  $('#r-overall').innerHTML = '<span class="note">momo 正在看你刚才说了什么…</span>';
-  ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">生成中</p>');
-  $('#r-flagtext').textContent = '这一页的总评、逐句点评、诊断、追问预演由你接入的 AI 实时生成。口癖词、字数、语速为本地统计。';
+  $('#r-overall').innerHTML = `<span class="note">${tr('momo 正在看你刚才说了什么…')}</span>`;
+  ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML=`<p class="note">${tr('生成中')}</p>`);
+  $('#r-flagtext').textContent = tr('这一页的总评、逐句点评、诊断、追问预演由你接入的 AI 实时生成。口癖词、字数、语速为本地统计。');
   try{
     const res = await fetch(aiEndpoint(),{
       method:'POST',
@@ -3802,8 +3944,8 @@ async function aiReview(text, secs, counts){
     if(!r) throw new Error('返回的不是完整 JSON，可能被 max_tokens 截断了。模型说：'+raw.slice(0,300));
     paintAI(r);
   }catch(e){
-    $('#r-overall').innerHTML = '<span style="color:var(--red)">AI 调用失败：'+String(e.message||e)+'</span>';
-    ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML='<p class="note">没拿到结果。</p>');
+    $('#r-overall').innerHTML = `<span style="color:var(--red)">${language === 'en' ? 'AI call failed: ' : 'AI 调用失败：'}${String(e.message||e)}</span>`;
+    ['#r-quotes','#r-diag','#r-followups','#r-rewrite'].forEach(k=>$(k).innerHTML=`<p class="note">${tr('没拿到结果。')}</p>`);
     setKidMood('empty');
   }
 }
@@ -3815,16 +3957,16 @@ function paintAI(r){
   paintScores(r.scores || {});
 
   $('#r-quotes').innerHTML = (r.quotes||[]).map(q=>{
-    const good = (q.kind||'').includes('亮点');
+    const good = (q.kind||'').includes('亮点') || (q.kind||'').toLowerCase().includes('highlight');
     return `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
       <div style="border-left:2px solid ${good?'var(--k-deep)':'var(--red)'};padding-left:11px;margin-bottom:8px">
-        <span class="tag ${good?'d-easy':'d-hard'}" style="margin-bottom:5px">${good?'亮点':'可以改'}</span>
+        <span class="tag ${good?'d-easy':'d-hard'}" style="margin-bottom:5px">${tr(good?'亮点':'可以改')}</span>
         <div style="font-size:15px;line-height:1.7">「${q.said}」</div>
       </div>
       <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${q.why||''}</div>
-      ${q.better?`<div style="margin-top:8px;font-size:14px;background:var(--greenBg);color:var(--green);padding:9px 12px;border-radius:var(--rCtl)">改成：${q.better}</div>`:''}
+      ${q.better?`<div style="margin-top:8px;font-size:14px;background:var(--greenBg);color:var(--green);padding:9px 12px;border-radius:var(--rCtl)">${tr('改成：')}${q.better}</div>`:''}
     </div>`;
-  }).join('') || '<p class="note">这次没有可引用的内容。</p>';
+  }).join('') || `<p class="note">${tr('这次没有可引用的内容。')}</p>`;
 
   const D = r.diagnosis||{};
   const rows = [['卡点','blocker'],['目标','goal'],['听众要点','audience'],['限制','constraint']];
@@ -3835,8 +3977,8 @@ function paintAI(r){
     const col = bad(d.verdict)?'var(--red)':mid(d.verdict)?'var(--amber)':'var(--green)';
     return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-        <span style="font-size:14px;color:var(--muted)">${cn}</span>
-        <b style="font-size:14px;color:${col}">${d.verdict||'未判定'}</b></div>
+        <span style="font-size:14px;color:var(--muted)">${tr(cn)}</span>
+        <b style="font-size:14px;color:${col}">${tr(d.verdict||'未判定')}</b></div>
       <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${d.why||''}</div></div>`;
   }).join('');
 
@@ -3845,7 +3987,7 @@ function paintAI(r){
       <div style="font-size:15px;font-weight:500;line-height:1.6;margin-bottom:6px">「${f.q}」</div>
       <div style="font-size:13px;color:var(--accent);margin-bottom:6px">${f.trigger||''}</div>
       <div style="font-size:14px;line-height:1.7;color:var(--inkSoft)">${f.prep||''}</div>
-    </div>`).join('') || '<p class="note">这次没有生成追问。</p>';
+    </div>`).join('') || `<p class="note">${tr('这次没有生成追问。')}</p>`;
 
   $('#r-rewrite').textContent = r.rewrite || '';
 
@@ -4115,7 +4257,7 @@ function fValues(key){
   if(key==='difficulty') return ['easy','medium','hard'];
   return [...new Set(CARDS.map(c=>c[key]))].filter(Boolean);
 }
-const fLabel = (key,v) => key==='difficulty' ? DIFF_CN[v] : key==='src' ? SRC_CN[v] : v;
+const fLabel = (key,v) => key==='difficulty' ? tr(DIFF_CN[v]) : key==='src' ? tr(SRC_CN[v]) : tr(v);
 const fVal = (c,key) => key==='src' ? cardSrc(c) : c[key];
 
 /* 组内多选＝或，组与组之间＝且；某组一个都没选＝这一维不限 */
@@ -4132,8 +4274,8 @@ function renderBank(){
       if(!vals.length) return '';
       return `
       <div class="fgroup" data-g="${g.key}">
-        <span class="fgLabel">${g.cn}</span>
-        <button class="chip all" data-g="${g.key}" data-v="">不限</button>
+        <span class="fgLabel">${tr(g.cn)}</span>
+        <button class="chip all" data-g="${g.key}" data-v="">${tr('不限')}</button>
         ${vals.map(v=>`<button class="chip" data-g="${g.key}" data-v="${v}">${fLabel(g.key,v)}</button>`).join('')}
       </div>`;
     }).join('');
@@ -4152,6 +4294,8 @@ function renderBank(){
     };
   }
   paintBank();
+  setTimeout(translatePage, 0);
+  translateBankView(bankFiltered());
 }
 
 function paintChips(){
@@ -4222,6 +4366,8 @@ function paintBank(){
       paintBank();
     };
   });
+  setTimeout(translatePage, 0);
+  translateBankView(list);
 }
 
 
@@ -4321,7 +4467,7 @@ function openScene(i, clone){
     : `<div class="face">${r.face}</div>`;
 
   // 填充标题与上下文
-  $('#sc-who').textContent = r.k;
+  $('#sc-who').textContent = tr(r.k);
   $('#sc-ctx').textContent = r.ctx;
 
   // 过滤该关系的卡片
@@ -4329,8 +4475,8 @@ function openScene(i, clone){
   $('#sc-qs').innerHTML = cards.length
     ? cards.map((c,j)=>`<div class="qItem" data-id="${c.id}">
          <span class="no">${j+1}</span>
-         <span>${c.title}</span>
-         <span class="tag d-${c.difficulty}" style="margin-left:auto;flex-shrink:0">${DIFF_CN[c.difficulty]}</span>
+         <span>${tr(c.title)}</span>
+         <span class="tag d-${c.difficulty}" style="margin-left:auto;flex-shrink:0">${tr(DIFF_CN[c.difficulty])}</span>
        </div>`).join('')
     : '<div class="qEmpty">这个关系下还没有开启的题，去题库里打开或点「直接开练」随机抽一张。</div>';
 
@@ -4340,6 +4486,8 @@ function openScene(i, clone){
       if(c){ cur = c; renderCard(); go('home'); }
     };
   });
+  translateSceneView(r, cards);
+  setTimeout(translatePage, 0);
 
   // 文字先隐藏
   const top = $('#sc-top'), qwrap = $('#sc-qwrap');
@@ -4603,6 +4751,8 @@ function renderRecord(){
     el.onclick = () => openRecord(el.dataset.rec);
     el.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openRecord(el.dataset.rec); } };
   });
+  setTimeout(translatePage, 0);
+  translateHistoryView();
 }
 
 function clearRecords(){

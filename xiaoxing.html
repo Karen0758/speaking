@@ -42,6 +42,8 @@ button:active{transform:scale(.98)}
 .btn:hover{border-color:var(--accentMid)}
 .btn.pri{background:var(--m-btn);color:#fff;border-color:var(--m-btn)}
 .btn.ghost{background:none;border:none;color:var(--muted);padding:7px 10px;font-size:13px}
+.githubLink{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.githubLink i{font-size:18px;line-height:1}
 .streak{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--accent);background:var(--accentLight);
         padding:5px 11px;border-radius:999px;font-weight:500}
 /* 纸张：整块一张纸，没有外框；里面的格子靠 1px 缝隙分开 */
@@ -403,7 +405,9 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
   opacity:0;animation:inviteIn 1.4s ease-out .3s forwards}
 .wheelLang{position:absolute;right:86px;top:22px;z-index:4;
   opacity:0;animation:inviteIn 1.4s ease-out .2s forwards}
-@media(max-width:900px){.wheelAcct{right:14px;top:14px}.wheelLang{right:74px;top:14px}}
+.wheelGithub{position:absolute;right:26px;top:22px;z-index:4;
+  opacity:0;animation:inviteIn 1.4s ease-out .1s forwards}
+@media(max-width:900px){.wheelAcct{right:72px;top:14px}.wheelLang{right:126px;top:14px}.wheelGithub{right:14px;top:14px}}
 /* 历史记录：整行可点，进去看当时那份复盘 */
 .recrow{display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding:11px 8px 11px 2px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -474,6 +478,7 @@ body{visibility:hidden}
     <span class="streak" id="streakBadge">连续 6 天</span>
     <button class="btn ghost" onclick="go('bank')">我的题库</button>
     <button class="btn ghost" onclick="go('record')">记录</button>
+    <a class="btn ghost githubLink" href="https://github.com/Karen0758/speaking" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository" title="GitHub repository"><i class="ti ti-brand-github" aria-hidden="true"></i></a>
     <button class="btn ghost" id="acctBtn" onclick="openAcct()" style="display:none">登录</button>
   </div>
 </nav>
@@ -514,6 +519,7 @@ body{visibility:hidden}
   <div class="wheelPage">
     <img class="wheelLogo" src="assets/logo-h.png" alt="momo">
     <button class="btn ghost wheelLang" id="wheelLangBtn" onclick="toggleLanguage()">中文</button>
+    <a class="btn ghost wheelGithub githubLink" href="https://github.com/Karen0758/speaking" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository" title="GitHub repository"><i class="ti ti-brand-github" aria-hidden="true"></i></a>
     <button class="btn ghost wheelAcct" id="wheelAcctBtn" onclick="openAcct()" style="display:none">登录</button>
     <div class="wheelInvite">
       <h1>今天，你想和谁聊一聊？</h1>

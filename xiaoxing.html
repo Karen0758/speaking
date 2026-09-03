@@ -355,6 +355,13 @@ html[data-font="serif"] .fontChoice[data-font="serif"]{background:var(--surface)
 .acctDanger{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:center}
 .acctWipe{padding:6px 10px;background:transparent;color:var(--muted);font-size:12px;white-space:nowrap}
 .acctWipe:hover{color:var(--red)}
+.contestDlg{max-width:520px;text-align:center;padding:34px 34px 30px;position:relative}
+.contestClose{position:absolute;top:14px;right:16px;border:0;background:transparent;color:var(--muted);font-size:24px;cursor:pointer}
+.contestKicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.contestDlg h3{margin:0 28px 12px;font-size:25px;font-weight:500}
+.contestDlg p{margin:0 auto 22px;max-width:410px;line-height:1.8;color:var(--inkSoft)}
+.contestActions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.contestActions .btn{min-width:150px}
 @media(max-width:560px){
   #acctMask .dlg{margin:18px 14px;padding:26px 22px 24px}
   .acctClose{top:14px;right:14px}
@@ -723,6 +730,19 @@ body{visibility:hidden}
   <p class="kidcap" id="kidcap">今天想讲哪一位？</p>
 </div>
 <button class="kidReopen" id="kidReopen">叫 momo 回来</button>
+
+<div class="mask" id="contestMask">
+  <div class="dlg contestDlg">
+    <button class="contestClose" id="contestClose" aria-label="关闭" title="关闭">×</button>
+    <div class="contestKicker" id="contestKicker">AI for good</div>
+    <h3 id="contestTitle">小有可为 AI 公益赛</h3>
+    <p id="contestBody">Momo Speaking 正在参加阿里的“小有可为”AI 公益比赛。欢迎了解比赛，也欢迎回来继续练习。</p>
+    <div class="contestActions">
+      <a class="btn pri" id="contestLink" href="https://opc.aliyun.com/xiaoyoukewei?display_mode=3" target="_blank" rel="noopener">了解比赛</a>
+      <button class="btn" id="contestLater">先看看项目</button>
+    </div>
+  </div>
+</div>
 
 <div class="mask" id="acctMask">
   <div class="dlg" style="max-width:520px">
@@ -3009,6 +3029,7 @@ Object.assign(EN, {'这次一个口癖词都没有。':'No filler words this tim
 Object.assign(EN, {'正面处理':'Addressed','绕开了':'Avoided','反被将军':'Countered','达成':'Met','部分达成':'Partly met','未达成':'Not met','回应了':'Answered','答非所问':'Off topic','遵守':'Followed','越界':'Broken','这次没有生成追问。':'No follow-ups generated.','这次是从别的设备同步过来的。转写内容不上传云端，只留在当时那台设备上。':'This practice was synced from another device. The transcript stays on that device and is not uploaded.','这是':'This is','那次的复盘存档，不会重新生成。':'an archived review and will not be regenerated.','那次的存档。口癖词、字数、语速是当时真算的。':'an archived practice. Fillers, word count, and speaking rate were calculated at the time.'});
 Object.assign(EN, {'每一条都追溯到你的哪句话':'Each one traces back to something you said'});
 Object.assign(EN, {'这几个条件下没有题，松一个试试。':'No prompts match these filters. Try clearing one.'});
+Object.assign(EN, {'AI 公益赛':'AI-for-good competition','小有可为 AI 公益赛':'Xiaoyoukewei AI-for-good competition','Momo Speaking 正在参加阿里的“小有可为”AI 公益比赛。欢迎了解比赛，也欢迎回来继续练习。':'Momo Speaking is taking part in Alibaba’s Xiaoyoukewei AI-for-good competition. Learn more about the event, then come back and keep practicing.','了解比赛':'Learn about the competition','先看看项目':'Keep exploring Momo','AI for good':'AI for good'});
 const CN_BY_EN = Object.fromEntries(Object.entries(EN).map(([cn,en]) => [en,cn]));
 function tr(text){
   if(!text) return text;
@@ -3086,7 +3107,19 @@ function translatePage(){
   nodes.forEach(n => { if(n.parentElement?.id === 'langBtn') return; const raw=n.nodeValue, trimmed=raw.trim(); if(!trimmed) return; const next=tr(trimmed); if(next!==trimmed) n.nodeValue=raw.replace(trimmed,next); });
   document.body.style.visibility = 'visible';
 }
-function toggleLanguage(){ language = language === 'en' ? 'zh' : 'en'; try{ localStorage.setItem(LANG_KEY, language); }catch(e){} translatePage(); if(typeof buildWheel==='function') buildWheel(); if(typeof renderCard==='function' && cur) renderCard(); if(typeof renderBank==='function' && $('#s-bank')?.classList.contains('on')) renderBank(); if(typeof renderRecord==='function' && $('#s-record')?.classList.contains('on')) renderRecord(); setTimeout(translatePage, 0); }
+function renderContestModal(){
+  const set = (id, key) => { const el = $('#'+id); if(el) el.textContent = tr(key); };
+  set('contestKicker','AI for good'); set('contestTitle','小有可为 AI 公益赛');
+  set('contestBody','Momo Speaking 正在参加阿里的“小有可为”AI 公益比赛。欢迎了解比赛，也欢迎回来继续练习。');
+  set('contestLink','了解比赛'); set('contestLater','先看看项目');
+}
+function closeContest(){ $('#contestMask')?.classList.remove('on'); try{ localStorage.setItem('momo:contestNoticeSeen','1'); }catch(e){} }
+function openContest(){ renderContestModal(); $('#contestMask')?.classList.add('on'); }
+function maybeShowContest(){
+  try{ if(localStorage.getItem('momo:contestNoticeSeen') === '1') return; }catch(e){}
+  openContest();
+}
+function toggleLanguage(){ language = language === 'en' ? 'zh' : 'en'; try{ localStorage.setItem(LANG_KEY, language); }catch(e){} translatePage(); renderContestModal(); if(typeof buildWheel==='function') buildWheel(); if(typeof renderCard==='function' && cur) renderCard(); if(typeof renderBank==='function' && $('#s-bank')?.classList.contains('on')) renderBank(); if(typeof renderRecord==='function' && $('#s-record')?.classList.contains('on')) renderRecord(); setTimeout(translatePage, 0); }
 setTimeout(translatePage, 0);
 const DIFF_CN = {easy:"简单", medium:"中等", hard:"困难"};
 const KEY_FONT = 'momo:font';
@@ -4799,6 +4832,11 @@ drawCard();
 buildWheel();
 setKidMood('boot');
 kidWake();
+renderContestModal();
+$('#contestClose').onclick = closeContest;
+$('#contestLater').onclick = closeContest;
+$('#contestLink').onclick = () => { try{ localStorage.setItem('momo:contestNoticeSeen','1'); }catch(e){} };
+setTimeout(maybeShowContest, 700);
 </script>
 </body>
 </html>
